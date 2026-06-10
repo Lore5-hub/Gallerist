@@ -24,7 +24,10 @@ class ECommento {
     public function setTesto(string $testo): void { $this->testo = $testo; }
 
     public function getValutazione(): int { return $this->valutazione; }
-    public function setValutazione(int $valutazione): void { $this->valutazione = $valutazione; }
+    public function setValutazione(int $valutazione): void {
+        if ($valutazione < 1 || $valutazione > 5) {
+            throw new \InvalidArgumentException("La valutazione deve essere compresa tra 1 e 5.");}
+         $this->valutazione = $valutazione; }
 
     public function getData(): string { return $this->data; }
     public function setData(string $data): void { $this->data = $data; }
