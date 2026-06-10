@@ -1,5 +1,6 @@
 <?php
 require_once 'EUtente.php';
+require_once 'EOpera.php';
 
 /*da ricontrollare per il formato di data*/
 
@@ -12,12 +13,14 @@ class ECommento {
     private int $valutazione; // Valutazione in stelle (es. da 1 a 5)
     private string $data;
     private EUtente $autore; // Associazione "rilascia" con l'entità Utente
+    private EOpera $opera;
 
     public function __construct(string $testo, int $valutazione, string $data, EUtente $autore) {
         $this->testo = $testo;
         $this->valutazione = $valutazione;
         $this->data = $data;
         $this->autore = $autore;
+        $this->opera = $opera;
     }
 
     public function getTesto(): string { return $this->testo; }
@@ -34,5 +37,8 @@ class ECommento {
 
     public function getAutore(): EUtente { return $this->autore; }
     public function setAutore(EUtente $autore): void { $this->autore = $autore; }
+
+    public function getOpera(): EOpera { return $this->opera; }
+    public function setOpera(EOpera $opera): void { $this->opera = $opera; }
 }
 ?>
