@@ -19,7 +19,6 @@ class EOpera {
     private string $dimensioni;
     private string $descrizione;
     private float $prezzo;
-    private float $valutazioneMedia;
     private EStatoOpera $statoOpera; // Es. "In vendita", "Venduta", "Riservata"
 
     // Associazioni dirette ed aggregazioni di tipo strutturato (Slide 13 del PPT 10)
@@ -31,7 +30,7 @@ class EOpera {
     
     public function __construct(
         int $id, string $titolo, int $anno, ETecnica $tecnica, string $dimensioni,
-        string $descrizione, float $prezzo, float $valutazioneMedia, EStatoOpera $statoOpera = null,
+        string $descrizione, float $prezzo, EStatoOpera $statoOpera = null,
         EArtista $artista, ECategoria $categoria
     ) {
         $this->id = $id;
@@ -41,11 +40,24 @@ class EOpera {
         $this->dimensioni = $dimensioni;
         $this->descrizione = $descrizione;
         $this->prezzo = $prezzo;
-        $this->valutazioneMedia = $valutazioneMedia;
         $this->artista = $artista;
         $this->categoria = $categoria;
         // Di default l'opera nasce come semplicemente inserita (esposta)
         $this->statoOpera = $statoOpera ?? new EStatoInserito();
+    }
+    /**
+     * Calcola dinamicamente la valutazione media ciclando sulle recensioni associate.
+     * Sostituisce l'attributo statico rimosso su indicazione del professore.
+     */
+    public function getValutazioneMedia(): float {
+        if (empty($this->commenti)) {
+            return 0.0; // Nessun commento presente
+        }
+        $somma = 0;
+        foreach ($this->commenti as $commento) {
+            $somma += $commento->getValutazione();
+        }
+        return round($somma / count($this->commenti), 2);
     }
 
     // --- GETTER & SETTER ---
@@ -63,8 +75,6 @@ class EOpera {
     public function setDescrizione(string $descrizione): void { $this->descrizione = $descrizione; }
     public function getPrezzo(): float { return $this->prezzo; }
     public function setPrezzo(float $prezzo): void { $this->prezzo = $prezzo; }
-    public function getValutazioneMedia(): float { return $this->valutazioneMedia; }
-    public function setValutazioneMedia(float $valutazioneMedia): void { $this->valutazioneMedia = $valutazioneMedia; }
     public function getArtista(): EArtista { return $this->artista; }
     public function setArtista(EArtista $artista): void { $this->artista = $artista; }
     public function getStatoOpera(): EStatoOpera { return $this->statoOpera; }
