@@ -5,6 +5,7 @@ require_once 'EImmagine.php';
 require_once 'ETag.php';
 require_once 'ECommento.php';
 require_once 'ETecnica.php'; /* Include la classe associata per la tecnica */
+require_once 'EPrezzo.php'; /* Include la classe associata per il prezzo */
 require_once 'EStatoOpera.php'; /* Include la gestione dello State Pattern dell'opera */
 
 /**
@@ -18,7 +19,7 @@ class EOpera {
     private ETecnica $tecnica;
     private string $dimensioni;
     private string $descrizione;
-    private float $prezzo;
+    private EPrezzo $prezzo;
     private EStatoOpera $statoOpera; // Es. "In vendita", "Venduta", "Riservata"
 
     // Associazioni dirette ed aggregazioni di tipo strutturato (Slide 13 del PPT 10)
@@ -30,7 +31,7 @@ class EOpera {
     
     public function __construct(
         int $id, string $titolo, int $anno, ETecnica $tecnica, string $dimensioni,
-        string $descrizione, float $prezzo, EStatoOpera $statoOpera = null,
+        string $descrizione, EPrezzo $prezzo, EStatoOpera $statoOpera = null,
         EArtista $artista, ECategoria $categoria
     ) {
         $this->id = $id;
@@ -73,8 +74,8 @@ class EOpera {
     public function setDimensioni(string $dimensioni): void { $this->dimensioni = $dimensioni; }
     public function getDescrizione(): string { return $this->descrizione; }
     public function setDescrizione(string $descrizione): void { $this->descrizione = $descrizione; }
-    public function getPrezzo(): float { return $this->prezzo; }
-    public function setPrezzo(float $prezzo): void { $this->prezzo = $prezzo; }
+    public function getPrezzo(): EPrezzo { return $this->prezzo; }
+    public function setPrezzo(EPrezzo $prezzo): void { $this->prezzo = $prezzo; }
     public function getArtista(): EArtista { return $this->artista; }
     public function setArtista(EArtista $artista): void { $this->artista = $artista; }
     public function getStatoOpera(): EStatoOpera { return $this->statoOpera; }
