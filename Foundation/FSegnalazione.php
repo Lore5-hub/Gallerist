@@ -20,7 +20,7 @@ class FSegnalazione extends FDataBase {
         
         // Salviamo sul database il nome testuale della classe dello Stato (State Pattern)
         $stmt->bindValue(':stato', get_class($segnalazione->getStato()), PDO::PARAM_STR);
-        $stmt->bindValue(':data', $segnalazione->getDataSegnalazione(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', $segnalazione->getDataSegnalazione()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
     }
 
     public static function getClass() { return static::$class; }
@@ -45,7 +45,7 @@ class FSegnalazione extends FDataBase {
 
             $segnalazione = new ESegnalazione(
                 $result['id'], $result['tipoOggetto'], $result['motivo'], 
-                $result['nota'], $statoOggetto, $result['data']
+                $result['nota'], $statoOggetto, new DateTimeImmutable($result['data'])
             );
         } 
         else if (($result != null) && ($rows_number > 1)) {
@@ -56,7 +56,7 @@ class FSegnalazione extends FDataBase {
 
                 $istanza = new ESegnalazione(
                     $result[$i]['id'], $result[$i]['tipoOggetto'], $result[$i]['motivo'], 
-                    $result[$i]['nota'], $statoOggetto, $result[$i]['data']
+                    $result[$i]['nota'], $statoOggetto, new DateTimeImmutable($result[$i]['data'])
                 );
                 $segnalazione[] = $istanza;
             }

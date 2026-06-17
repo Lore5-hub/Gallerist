@@ -16,7 +16,7 @@ class FCommento extends FDataBase {
         $stmt->bindValue(':id', NULL, PDO::PARAM_INT);
         $stmt->bindValue(':testo', $commento->getTesto(), PDO::PARAM_STR);
         $stmt->bindValue(':valutazione', $commento->getValutazione(), PDO::PARAM_INT);
-        $stmt->bindValue(':data', $commento->getData(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', $commento->getData()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
         // Estraiamo gli ID dagli oggetti associati
         $stmt->bindValue(':idAutore', $commento->getAutore()->getId(), PDO::PARAM_INT);
         $stmt->bindValue(':idOpera', $commento->getOpera()->getId(), PDO::PARAM_INT);
@@ -49,7 +49,7 @@ class FCommento extends FDataBase {
 
             $commento = new ECommento(
                 $result['id'], $result['testo'], $result['valutazione'], 
-                $result['data'], $autore, $opera
+                new DateTimeImmutable($result['data']), $autore, $opera
             );
         } 
         else if (($result != null) && ($rows_number > 1)) {
@@ -60,7 +60,7 @@ class FCommento extends FDataBase {
 
                 $istanza = new ECommento(
                     $result[$i]['id'], $result[$i]['testo'], $result[$i]['valutazione'], 
-                    $result[$i]['data'], $autore, $opera
+                    new DateTimeImmutable($result[$i]['data']), $autore, $opera
                 );
                 $commento[] = $istanza;
             }

@@ -15,8 +15,8 @@ class FProvvedimento extends FDataBase {
     public static function bind($stmt, EProvvedimento $provvedimento) {
         $stmt->bindValue(':id', NULL, PDO::PARAM_INT);
         $stmt->bindValue(':tipoBan', $provvedimento->getTipoBan(), PDO::PARAM_STR);
-        $stmt->bindValue(':dataInizio', $provvedimento->getDataInizio(), PDO::PARAM_STR);
-        $stmt->bindValue(':dataFine', $provvedimento->getDataFine(), PDO::PARAM_STR);
+        $stmt->bindValue(':dataInizio', $provvedimento->getDataInizio()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindValue(':dataFine', $provvedimento->getDataFine()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
         $stmt->bindValue(':motivo', $provvedimento->getMotivo(), PDO::PARAM_STR);
         $stmt->bindValue(':idUtenteSanzionato', $provvedimento->getUtenteSanzionato()->getId(), PDO::PARAM_INT);
     }
@@ -43,8 +43,8 @@ class FProvvedimento extends FDataBase {
         if (($result != null) && ($rows_number == 1)) {
             $utente = FUtente::loadByField("id", $result["idUtenteSanzionato"]);
             $provvedimento = new EProvvedimento(
-                $result['id'], $result['tipoBan'], $result['dataInizio'], 
-                $result['dataFine'], $result['motivo'], $utente
+                $result['id'], $result['tipoBan'], new DateTimeImmutable($result['dataInizio']), 
+                new DateTimeImmutable($result['dataFine']), $result['motivo'], $utente
             );
         } 
         else if (($result != null) && ($rows_number > 1)) {
@@ -52,8 +52,8 @@ class FProvvedimento extends FDataBase {
             for ($i = 0; $i < count($result); $i++) {
                 $utente = FUtente::loadByField("id", $result[$i]["idUtenteSanzionato"]);
                 $istanza = new EProvvedimento(
-                    $result[$i]['id'], $result[$i]['tipoBan'], $result[$i]['dataInizio'], 
-                    $result[$i]['dataFine'], $result[$i]['motivo'], $utente
+                    $result[$i]['id'], $result[$i]['tipoBan'], new DateTimeImmutable($result[$i]['dataInizio']), 
+                    new DateTimeImmutable($result[$i]['dataFine']), $result[$i]['motivo'], $utente
                 );
                 $provvedimento[] = $istanza;
             }
