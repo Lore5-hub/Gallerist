@@ -15,8 +15,8 @@ class FProvvedimento {
     public static function bind($stmt, EProvvedimento $provvedimento) {
         $stmt->bindValue(':id', NULL, PDO::PARAM_INT);
         $stmt->bindValue(':tipoBan', $provvedimento->getTipoBan(), PDO::PARAM_STR);
-        $stmt->bindValue(':dataInizio', $provvedimento->getDataInizio(), PDO::PARAM_STR);
-        $stmt->bindValue(':dataFine', $provvedimento->getDataFine(), PDO::PARAM_STR);
+        $stmt->bindValue(':dataInizio', $provvedimento->getDataInizio()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindValue(':dataFine', $provvedimento->getDataFine()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
         $stmt->bindValue(':motivo', $provvedimento->getMotivo(), PDO::PARAM_STR);
         $stmt->bindValue(':idUtenteSanzionato', $provvedimento->getUtenteSanzionato()->getId(), PDO::PARAM_INT);
     }

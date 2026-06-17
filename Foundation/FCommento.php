@@ -16,7 +16,7 @@ class FCommento {
         $stmt->bindValue(':id', NULL, PDO::PARAM_INT);
         $stmt->bindValue(':testo', $commento->getTesto(), PDO::PARAM_STR);
         $stmt->bindValue(':valutazione', $commento->getValutazione(), PDO::PARAM_INT);
-        $stmt->bindValue(':data', $commento->getData(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', $commento->getData()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
         // Estraiamo gli ID dagli oggetti associati
         $stmt->bindValue(':idAutore', $commento->getAutore()->getId(), PDO::PARAM_INT);
         $stmt->bindValue(':idOpera', $commento->getOpera()->getId(), PDO::PARAM_INT);

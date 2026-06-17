@@ -1,7 +1,7 @@
 <?php
 require_once 'EUtente.php';
 require_once 'EOpera.php';
-
+require_once 'EPrezzo.php'; /* Include la classe associata per il prezzo */
 //da ricontrollare il tipo di dato della data ordine    
 
 /**
@@ -10,33 +10,34 @@ require_once 'EOpera.php';
  */
 class EOrdine {
     private int $id;
-    private string $dataOrdine;
+    private DateTimeImmutable $dataOrdine;
     private string $metodoPagamento;
     private string $indirizzoSpedizione;
-    private float $costoSpedizione;
-    private float $totaleArticolo;
-    private float $totaleOrdine;
-    private float $commissionePiattaforma;
+    private EPrezzo $costoSpedizione;
+    private EPrezzo $totaleArticolo;
+    private EPrezzo $totaleOrdine;
+    private EPrezzo $commissionePiattaforma;
     
     // Associazioni come tipi di riferimento (Slide 4 del PPT 04)
     private EUtente $acquirente;
     private EOpera $opera;
 
-    private function calcolaTotaleOrdine(): float {
+    private function calcolaTotaleOrdine(): EPrezzo {
     // Il totale base è il costo dell'opera più la spedizione
-    $totale = $this->totaleArticolo + $this->costoSpedizione;
-    return $totale;
+    $totale = $this->totaleArticolo->getValore() + $this->costoSpedizione->getValore();
+    return new EPrezzo($totale);
 }
-    private function calcolaTrattenuta(): float {
+    private function calcolaTrattenuta(): EPrezzo {
         // Calcoliamo la percentuale solo sul costo dell'articolo (non sulla spedizione)
-        return ($this->totaleArticolo * self::PERCENTUALE_COMMISSIONE) / 100;
+        $trattenuta = ($this->totaleArticolo->getValore() * self::PERCENTUALE_COMMISSIONE) / 100;
+        return new EPrezzo($trattenuta);
     }
 
     public const PERCENTUALE_COMMISSIONE = 10.0;  //così da modificare facilmente le commissioni
     public function __construct(
-        int $id, string $dataOrdine, string $metodoPagamento, string $indirizzoSpedizione,
-        float $costoSpedizione, float $totaleArticolo,
-        float $commissionePiattaforma, EUtente $acquirente, EOpera $opera
+        int $id, DateTimeImmutable $dataOrdine, string $metodoPagamento, string $indirizzoSpedizione,
+        EPrezzo $costoSpedizione, EPrezzo $totaleArticolo,
+        EPrezzo $commissionePiattaforma, EUtente $acquirente, EOpera $opera
     ) {
         $this->id = $id;
         $this->dataOrdine = $dataOrdine;
@@ -60,8 +61,8 @@ class EOrdine {
     // --- GETTER & SETTER ---
     public function setId(int $id): void { $this->id = $id; }
     public function getId(): int { return $this->id; }
-    public function getDataOrdine(): string { return $this->dataOrdine; }
-    public function setDataOrdine(string $dataOrdine): void { $this->dataOrdine = $dataOrdine; }
+    public function getDataOrdine(): DateTimeImmutable { return $this->dataOrdine; }
+    public function setDataOrdine(DateTimeImmutable $dataOrdine): void { $this->dataOrdine = $dataOrdine; }
 
     public function getMetodoPagamento(): string { return $this->metodoPagamento; }
     public function setMetodoPagamento(string $metodoPagamento): void { $this->metodoPagamento = $metodoPagamento; }
@@ -69,25 +70,25 @@ class EOrdine {
     public function getIndirizzoSpedizione(): string { return $this->indirizzoSpedizione; }
     public function setIndirizzoSpedizione(string $indirizzoSpedizione): void { $this->indirizzoSpedizione = $indirizzoSpedizione; }
 
-    public function getCostoSpedizione(): float { return $this->costoSpedizione; }
-    public function setCostoSpedizione(float $costoSpedizione): void { 
+    public function getCostoSpedizione(): EPrezzo { return $this->costoSpedizione; }
+    public function setCostoSpedizione(EPrezzo $costoSpedizione): void { 
     $this->costoSpedizione = $costoSpedizione; 
     // Ricalcola il totale se cambia la spedizione
     $this->totaleOrdine = $this->calcolaTotaleOrdine();
 }
 
-    public function getTotaleArticolo(): float { return $this->totaleArticolo; }
-    public function setTotaleArticolo(float $totaleArticolo): void { 
+    public function getTotaleArticolo(): EPrezzo { return $this->totaleArticolo; }
+    public function setTotaleArticolo(EPrezzo $totaleArticolo): void { 
     $this->totaleArticolo = $totaleArticolo; 
     // Ricalcola il totale se cambia il costo dell'articolo
     $this->totaleOrdine = $this->calcolaTotaleOrdine();
 }
 
-    public function getTotaleOrdine(): float { return $this->totaleOrdine; }
-    public function setTotaleOrdine(float $totaleOrdine): void { $this->totaleOrdine = $totaleOrdine; }
+    public function getTotaleOrdine(): EPrezzo { return $this->totaleOrdine; }
+    public function setTotaleOrdine(EPrezzo $totaleOrdine): void { $this->totaleOrdine = $totaleOrdine; }
 
-    public function getCommissionePiattaforma(): float { return $this->commissionePiattaforma; }
-    public function setCommissionePiattaforma(float $commissionePiattaforma): void { $this->commissionePiattaforma = $commissionePiattaforma; }
+    public function getCommissionePiattaforma(): EPrezzo { return $this->commissionePiattaforma; }
+    public function setCommissionePiattaforma(EPrezzo $commissionePiattaforma): void { $this->commissionePiattaforma = $commissionePiattaforma; }
 
     public function getAcquirente(): EUtente { return $this->acquirente; }
     public function setAcquirente(EUtente $acquirente): void { $this->acquirente = $acquirente; }

@@ -20,7 +20,7 @@ class FSegnalazione {
         
         // Salviamo sul database il nome testuale della classe dello Stato (State Pattern)
         $stmt->bindValue(':stato', get_class($segnalazione->getStato()), PDO::PARAM_STR);
-        $stmt->bindValue(':data', $segnalazione->getDataSegnalazione(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', $segnalazione->getDataSegnalazione()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
     }
 
     public static function getClass() { return static::$class; }

@@ -18,7 +18,7 @@ class FOrdine {
 
     public static function bind($stmt, EOrdine $ordine) {
         $stmt->bindValue(':id', NULL, PDO::PARAM_INT);
-        $stmt->bindValue(':dataOrdine', $ordine->getDataOrdine(), PDO::PARAM_STR); // Stringa Y-m-d
+        $stmt->bindValue(':dataOrdine', $ordine->getDataOrdine()->format('Y-m-d H:i:s'), PDO::PARAM_STR); // Stringa Y-m-d
         $stmt->bindValue(':prezzoVendita', $ordine->getPrezzoVendita(), PDO::PARAM_STR);
         $stmt->bindValue(':idOpera', $ordine->getOpera()->getId(), PDO::PARAM_INT);
         $stmt->bindValue(':idAcquirente', $ordine->getAcquirente()->getId(), PDO::PARAM_INT);
@@ -81,7 +81,7 @@ public static function loadByField($field, $id) {
             $acq = FUtente::loadByField("id", $result["idAcquirente"]);
             $art = FUtente::loadByField("id", $result["idArtista"]);
             
-            $ordine = new EOrdine($result['dataOrdine'], $result['prezzoVendita'], $ope, $acq, $art);
+            $ordine = new EOrdine(new DateTimeImmutable($result['dataOrdine']), $result['prezzoVendita'], $ope, $acq, $art);
             $ordine->setId($result['id']);
         } 
         else {
@@ -92,7 +92,7 @@ public static function loadByField($field, $id) {
                     $acq = FUtente::loadByField("id", $result[$i]["idAcquirente"]);
                     $art = FUtente::loadByField("id", $result[$i]["idArtista"]);
                     
-                    $istanza = new EOrdine($result[$i]['dataOrdine'], $result[$i]['prezzoVendita'], $ope, $acq, $art);
+                    $istanza = new EOrdine(new DateTimeImmutable($result[$i]['dataOrdine']), $result[$i]['prezzoVendita'], $ope, $acq, $art);
                     $istanza->setId($result[$i]['id']);
                     $ordine[] = $istanza;
                 }
