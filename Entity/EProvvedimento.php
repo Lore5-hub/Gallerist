@@ -10,8 +10,8 @@ class EProvvedimento {
     
     private int $id;
     private string $tipoBan;      // Es. "Temporaneo", "Permanente"
-    private string $dataInizio;   // Formato 'Y-m-d'
-    private string $dataFine;     // Formato 'Y-m-d'
+    private DateTimeImmutable $dataInizio;   // Formato 'Y-m-d'
+    private DateTimeImmutable $dataFine;     // Formato 'Y-m-d'
     private string $motivo;
 
     // Associazione diretta verso l'utente sanzionato (Slide 13 del PPT 10)
@@ -22,13 +22,13 @@ class EProvvedimento {
      * Prevede la tipizzazione forte dei parametri e l'inizializzazione dello stato temporale.
      */
     public function __construct(
-        int $id, string $tipoBan, string $dataInizio = null, 
-        string $dataFine, string $motivo, EUtente $utenteSanzionato
+        int $id, string $tipoBan, DateTimeImmutable $dataInizio = null, 
+        DateTimeImmutable $dataFine, string $motivo, EUtente $utenteSanzionato
     ) {
         $this->id = $id;
         $this->tipoBan = $tipoBan;
         // Se la data di inizio non viene passata, viene impostata automaticamente su quella odierna
-        $this->dataInizio = $dataInizio ?? date('Y-m-d');
+        $this->dataInizio = $dataInizio ?? new DateTimeImmutable();
         $this->dataFine = $dataFine;
         $this->motivo = $motivo;
         $this->utenteSanzionato = $utenteSanzionato;
@@ -40,7 +40,7 @@ class EProvvedimento {
      * @return bool True se il ban è attivo, False altrimenti
      */
     public function isAttivo(): bool {
-        $oggi = date('Y-m-d');
+        $oggi = new DateTimeImmutable();
         if ($this->tipoBan === "Permanente") {
             return $oggi >= $this->dataInizio;
         }
@@ -55,11 +55,11 @@ class EProvvedimento {
     public function getTipoBan(): string { return $this->tipoBan; }
     public function setTipoBan(string $tipoBan): void { $this->tipoBan = $tipoBan; }
 
-    public function getDataInizio(): string { return $this->dataInizio; }
-    public function setDataInizio(string $dataInizio): void { $this->dataInizio = $dataInizio; }
+    public function getDataInizio(): DateTimeImmutable { return $this->dataInizio; }
+    public function setDataInizio(DateTimeImmutable $dataInizio): void { $this->dataInizio = $dataInizio; }
 
-    public function getDataFine(): string { return $this->dataFine; }
-    public function setDataFine(string $dataFine): void { $this->dataFine = $dataFine; }
+    public function getDataFine(): DateTimeImmutable { return $this->dataFine; }
+    public function setDataFine(DateTimeImmutable $dataFine): void { $this->dataFine = $dataFine; }
 
     public function getMotivo(): string { return $this->motivo; }
     public function setMotivo(string $motivo): void { $this->motivo = $motivo; }

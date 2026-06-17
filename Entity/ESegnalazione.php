@@ -9,14 +9,14 @@ class ESegnalazione {
     private int $id;
     private string $motivo;
     private string $notaOpzionale;
-    private string $dataSegnalazione;
+    private DateTimeImmutable $dataSegnalazione;
     private string $tipoTarget; // 'opera', 'utente', 'commento'
     private int $idTarget; // L'ID effettivo dell'oggetto segnalato
     private int $idSegnalatore; // L'utente che ha inviato la segnalazione
     private EStatoSegnalazione $stato; // Gestito tramite State Pattern come richiesto dal prof
 
     public function __construct(
-        int $id, string $motivo, string $notaOpzionale, string $dataSegnalazione, 
+        int $id, string $motivo, string $notaOpzionale, DateTimeImmutable $dataSegnalazione, 
         string $tipoTarget, int $idTarget, int $idSegnalatore
     ) {
         $this->id = $id;
@@ -33,7 +33,7 @@ class ESegnalazione {
     public function getId(): int { return $this->id; }
     public function getMotivo(): string { return $this->motivo; }
     public function getNotaOpzionale(): string { return $this->notaOpzionale; }
-    public function getDataSegnalazione(): string { return $this->dataSegnalazione; }
+    public function getDataSegnalazione(): DateTimeImmutable { return $this->dataSegnalazione; }
     public function getTipoTarget(): string { return $this->tipoTarget; }
     public function getIdTarget(): int { return $this->idTarget; }
     public function getIdSegnalatore(): int { return $this->idSegnalatore; }

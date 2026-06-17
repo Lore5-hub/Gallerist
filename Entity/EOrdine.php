@@ -10,7 +10,7 @@ require_once 'EPrezzo.php'; /* Include la classe associata per il prezzo */
  */
 class EOrdine {
     private int $id;
-    private string $dataOrdine;
+    private DateTimeImmutable $dataOrdine;
     private string $metodoPagamento;
     private string $indirizzoSpedizione;
     private EPrezzo $costoSpedizione;
@@ -35,7 +35,7 @@ class EOrdine {
 
     public const PERCENTUALE_COMMISSIONE = 10.0;  //così da modificare facilmente le commissioni
     public function __construct(
-        int $id, string $dataOrdine, string $metodoPagamento, string $indirizzoSpedizione,
+        int $id, DateTimeImmutable $dataOrdine, string $metodoPagamento, string $indirizzoSpedizione,
         EPrezzo $costoSpedizione, EPrezzo $totaleArticolo,
         EPrezzo $commissionePiattaforma, EUtente $acquirente, EOpera $opera
     ) {
@@ -60,8 +60,8 @@ class EOrdine {
 
     // --- GETTER & SETTER ---
     public function getId(): int { return $this->id; }
-    public function getDataOrdine(): string { return $this->dataOrdine; }
-    public function setDataOrdine(string $dataOrdine): void { $this->dataOrdine = $dataOrdine; }
+    public function getDataOrdine(): DateTimeImmutable { return $this->dataOrdine; }
+    public function setDataOrdine(DateTimeImmutable $dataOrdine): void { $this->dataOrdine = $dataOrdine; }
 
     public function getMetodoPagamento(): string { return $this->metodoPagamento; }
     public function setMetodoPagamento(string $metodoPagamento): void { $this->metodoPagamento = $metodoPagamento; }

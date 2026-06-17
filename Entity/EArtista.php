@@ -20,7 +20,7 @@ class EArtista extends EUtente {
      * Costruttore della classe. Chiama il costruttore della superclasse, per inizializzare gli attributi ereditati.
      */
     public function __construct(
-        int $id, string $nome, string $cognome, string $dataDiNascita, 
+        int $id, string $nome, string $cognome, DateTimeImmutable $dataDiNascita, 
         string $indirizzo, string $nickname, string $telefono, string $email, 
         string $password, string $immagineProfilo,
         string $biografia, string $stileArtistico, string $cartaIdentita, string $statoValidazione = self::STATO_IN_ATTESA

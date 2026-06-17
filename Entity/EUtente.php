@@ -8,7 +8,7 @@ class EUtente {
     private int $id;
     private string $nome;
     private string $cognome;
-    private string $dataDiNascita;  /*da modificare il tipo di dato creando la classe per la data in una cartella tipo utility/ */
+    private DateTimeImmutable $dataDiNascita;  /*da modificare il tipo di dato creando la classe per la data in una cartella tipo utility/ */
     private string $indirizzo;
     private string $nickname;
     private string $telefono;
@@ -24,7 +24,7 @@ class EUtente {
      * Costruttore della classe.
      */
     public function __construct(
-        int $id, string $nome, string $cognome, string $dataDiNascita, 
+        int $id, string $nome, string $cognome, DateTimeImmutable $dataDiNascita, 
         string $indirizzo, string $nickname, string $telefono, string $email, 
         string $password, ?string $immagineProfilo = null, string $statoAccount = self::STATO_ATTIVO
     ) {
@@ -51,8 +51,8 @@ class EUtente {
     public function getCognome(): string { return $this->cognome; }
     public function setCognome(string $cognome): void { $this->cognome = $cognome; }
 
-    public function getDataDiNascita(): string { return $this->dataDiNascita; }
-    public function setDataDiNascita(string $dataDiNascita): void { $this->dataDiNascita = $dataDiNascita; }
+    public function getDataDiNascita(): DateTimeImmutable { return $this->dataDiNascita; }
+    public function setDataDiNascita(DateTimeImmutable $dataDiNascita): void { $this->dataDiNascita = $dataDiNascita; }
 
     public function getIndirizzo(): string { return $this->indirizzo; }
     public function setIndirizzo(string $indirizzo): void { $this->indirizzo = $indirizzo; }
