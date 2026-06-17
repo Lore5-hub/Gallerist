@@ -1,4 +1,13 @@
 <?php
+require_once __DIR__ . '/../Foundation/FUtente.php';
+require_once __DIR__ . '/../Foundation/FArtista.php';
+require_once __DIR__ . '/../Entity/EUtente.php';
+require_once __DIR__ . '/../Entity/EArtista.php';
+// require_once __DIR__ . '/../Utility/USession.php';
+// require_once __DIR__ . '/../Utility/UEmail.php';
+// require_once __DIR__ . '/../View/VRegistrazione.php';
+// require_once __DIR__ . '/../View/VHome.php';
+
 /**
  * Classe di controllo per il Caso d'Uso: Registrazione account.
  * @package Control
@@ -6,79 +15,137 @@
 class CRegistrazione {
 
     /**
-     * Operazione di sistema (Step 1a/1b): L'utente chiede di registrarsi.
+     * Operazione di sistema (Step 1): L'utente chiede di registrarsi.
      * Il sistema mostra il form di registrazione.
      */
     public function avviaRegistrazione(): void {
-        // TODO: Includere e instanziare la View VRegistrazione dalla cartella /View
-        // TODO: Chiamare il metodo $VRegistrazione->mostraModuloRegistrazione()
+        // TODO: Instanziare VRegistrazione e chiamare $view->mostraModuloRegistrazione()
     }
 
     /**
-     * Operazione di sistema (Step 2a/2b): Registrazione di un Utente standard.
+     * Operazione di sistema (Step 2): Registrazione di un Utente standard.
      * @param array $dati Array associativo proveniente dal form (es. $_POST)
      */
     public function registraUtente(array $dati): void {
-        // 1. Validazione base dei dati (es. email già esistente)
-        // TODO: Instanziare FUtente dalla cartella /Foundation e usare un metodo come FUtente::esisteEmail($dati['email'])
-        
-        // 2. Creazione dell'oggetto Entity
+        // 1. Validazione dei dati in ingresso
+        $campiObbligatori = ['nome', 'cognome', 'dataNascita', 'indirizzo', 'nickname', 'telefono', 'email', 'password'];
+        foreach ($campiObbligatori as $campo) {
+            if (empty($dati[$campo])) {
+                // TODO: Instanziare VRegistrazione e chiamare $view->mostraErrore("Il campo '$campo' è obbligatorio.")
+                return;
+            }
+        }
+
+        if (!filter_var($dati['email'], FILTER_VALIDATE_EMAIL)) {
+            // TODO: Instanziare VRegistrazione e chiamare $view->mostraErrore("Formato email non valido.")
+            return;
+        }
+
+        // Controllo email duplicata tramite Foundation
+        if (FUtente::esisteEmail($dati['email'])) {
+            // TODO: Instanziare VRegistrazione e chiamare $view->mostraErrore("Email già registrata.")
+            return;
+        }
+
+        // 2. Hash della password (nel Control, prima di passarla all'Entity)
+        $passwordHash = password_hash($dati['password'], PASSWORD_BCRYPT);
+
+        // 3. Creazione dell'oggetto Entity
+        // id=0 → AUTO_INCREMENT sul DB; stato_account=STATO_ATTIVO di default
         $nuovoUtente = new EUtente(
+            0,
             $dati['nome'],
             $dati['cognome'],
             $dati['dataNascita'],
             $dati['indirizzo'],
             $dati['nickname'],
+            $dati['telefono'],
             $dati['email'],
-            $dati['password'] // TODO: Qui si dovrebbe chiamare una funzione hash prima dell'inserimento
+            $passwordHash,
+            $dati['immagineProfilo'] ?? null,
+            EUtente::STATO_ATTIVO
         );
 
-        // 3. Persistenza dei dati
-        // TODO: Chiamare il PersistentManager o FUtente::store($nuovoUtente) nel package /Foundation
-        
-        // 4. Login automatico 
-        // TODO: Includere la classe USession dal package Utility (o Foundation)
-        // TODO: Chiamare USession::getInstance()->imposta_valore('utente_loggato', $nuovoUtente->getEmail())
-        
-        // 5. Invio email di avvenuta registrazione
-        // TODO: Includere UEmail dal package Utility
-        // TODO: Chiamare UEmail::invia_email($nuovoUtente->getEmail(), "Benvenuto!", "Registrazione completata.")
+        // 4. Persistenza dei dati tramite Foundation
+        $id = FUtente::store($nuovoUtente);
+        if ($id === null) {
+            error_log("CRegistrazione::registraUtente - store fallito per email: " . $dati['email']);
+            // TODO: Instanziare VRegistrazione e chiamare $view->mostraErrore("Errore durante la registrazione.")
+            return;
+        }
 
-        // 6. Output visivo
-        // TODO: Instanziare VHome dalla cartella /View per il reindirizzamento
-        // TODO: Chiamare $VHome->mostraHomeConMessaggio("Registrazione effettuata con successo.")
+        // 5. Login automatico post-registrazione
+        // TODO: USession::getInstance()->impostaValore('utente_loggato', $nuovoUtente->getEmail())
+        // TODO: USession::getInstance()->impostaValore('ruolo', 'utente')
+
+        // 6. Invio email di benvenuto
+        // TODO: UEmail::inviaEmail($nuovoUtente->getEmail(), "Benvenuto!", "Registrazione completata.")
+
+        // 7. Redirect alla home con messaggio di successo
+        // TODO: Instanziare VHome e chiamare $view->mostraHomeConMessaggio("Registrazione effettuata con successo.")
     }
 
     /**
-     * Operazione di sistema (Step 3a/3b): Registrazione come Artista (Flusso Alternativo).
+     * Operazione di sistema (Step 3 - Flusso Alternativo): Registrazione come Artista.
      * @param array $dati Array associativo proveniente dal form
      */
     public function registraArtista(array $dati): void {
-        // 1. Creazione dell'oggetto Entity Artista
-        // Il costruttore imposta in automatico lo stato "In attesa di validazione"
+        // 1. Validazione dei dati in ingresso
+        $campiObbligatori = ['nome', 'cognome', 'dataNascita', 'indirizzo', 'nickname', 'telefono', 'email', 'password', 'biografia', 'stileArtistico', 'cartaIdentita'];
+        foreach ($campiObbligatori as $campo) {
+            if (empty($dati[$campo])) {
+                // TODO: Instanziare VRegistrazione e chiamare $view->mostraErrore("Il campo '$campo' è obbligatorio.")
+                return;
+            }
+        }
+
+        if (!filter_var($dati['email'], FILTER_VALIDATE_EMAIL)) {
+            // TODO: Instanziare VRegistrazione e chiamare $view->mostraErrore("Formato email non valido.")
+            return;
+        }
+
+        // Controllo email duplicata tramite Foundation
+        if (FUtente::esisteEmail($dati['email'])) {
+            // TODO: Instanziare VRegistrazione e chiamare $view->mostraErrore("Email già registrata.")
+            return;
+        }
+
+        // 2. Hash della password (nel Control, prima di passarla all'Entity)
+        $passwordHash = password_hash($dati['password'], PASSWORD_BCRYPT);
+
+        // 3. Creazione dell'oggetto Entity
+        // id=0 → AUTO_INCREMENT sul DB; stato_validazione=STATO_IN_ATTESA di default
         $nuovoArtista = new EArtista(
+            0,
             $dati['nome'],
             $dati['cognome'],
             $dati['dataNascita'],
             $dati['indirizzo'],
             $dati['nickname'],
+            $dati['telefono'],
             $dati['email'],
-            $dati['password'],
-            $dati['immagineProfilo'] ?? "",
+            $passwordHash,
+            $dati['immagineProfilo'] ?? null,
+            EUtente::STATO_ATTIVO,
             $dati['biografia'],
             $dati['stileArtistico'],
-            $dati['cartaIdentita']
+            $dati['cartaIdentita'],
+            EArtista::STATO_IN_ATTESA
         );
 
-        // 2. Persistenza dei dati
-        // TODO: Chiamare il PersistentManager o FArtista::store($nuovoArtista) nel package /Foundation
-        
-        // 3. Notifica al sistema di amministrazione
-        // TODO: Questa logica potrebbe prevedere l'inserimento di un record in una tabella di notifiche tramite FNotifica
-        
-        // 4. Output visivo
-        // TODO: Instanziare VRegistrazione dalla cartella /View
-        // TODO: Chiamare $VRegistrazione->mostraMessaggio("Account creato. In attesa di validazione da parte dell'amministratore.")
+        // 4. Persistenza dei dati (UTENTE + ARTISTA in sequenza) tramite Foundation
+        $id = FArtista::store($nuovoArtista);
+        if ($id === null) {
+            error_log("CRegistrazione::registraArtista - store fallito per email: " . $dati['email']);
+            // TODO: Instanziare VRegistrazione e chiamare $view->mostraErrore("Errore durante la registrazione.")
+            return;
+        }
+
+        // 5. Notifica all'amministratore
+        // TODO: FNotifica::store(...) oppure UEmail::inviaEmail(ADMIN_EMAIL, ...)
+
+        // 6. Output visivo (l'artista non viene loggato: deve attendere validazione admin)
+        // TODO: Instanziare VRegistrazione e chiamare $view->mostraMessaggio("Account creato. In attesa di validazione.")
     }
 }
 ?>

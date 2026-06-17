@@ -4,7 +4,7 @@
  * La classe FRecensione fornisce query per gli oggetti ERecensione (UC4)
  * @package Foundation
  */
-class FRecensione extends FDataBase {
+class FRecensione {
     
     private static $class = "FRecensione";
     private static $table = "recensione";
@@ -47,34 +47,33 @@ class FRecensione extends FDataBase {
     }
 
     public static function loadByField($field, $id) {
-        $recensione = null;
-        $db = FDatabase::getInstance();
-        $result = $db->loadDB(static::getClass(), $field, $id);
-        $rows_number = $db->interestedRows(static::getClass(), $field, $id);
+    $db     = FDatabase::getInstance();
+    $result = $db->loadDB(static::getClass(), $field, $id);
 
-        if (($result != null) && ($rows_number == 1)) {
-            // Carica gli oggetti interi partendo dalle chiavi esterne salvate nel DB
-            $ute = FUtente::loadByField("id", $result["idUtente"]);
-            $ope = FOpera::loadByField("id", $result["idOpera"]);
-            
-            $recensione = new ERecensione($result['testo'], $result['voto'], $ute, $ope);
-            $recensione->setId($result['id']);
-        } 
-        else {
-            if (($result != null) && ($rows_number > 1)) {
-                $recensione = array();
-                for ($i = 0; $i < count($result); $i++) {
-                    $ute = FUtente::loadByField("id", $result[$i]["idUtente"]);
-                    $ope = FOpera::loadByField("id", $result[$i]["idOpera"]);
-                    
-                    $istanza = new ERecensione($result[$i]['testo'], $result[$i]['voto'], $ute, $ope);
-                    $istanza->setId($result[$i]['id']);
-                    $recensione[] = $istanza;
-                }
-            }
-        }
+    if ($result === null) {
+        return null;
+    }
+
+    if (!is_array($result[0])) {
+        // Singolo record
+        $ute = FUtente::loadByField("id", $result["idUtente"]);
+        $ope = FOpera::loadByField("id", $result["idOpera"]);
+        $recensione = new ERecensione($result['testo'], $result['voto'], $ute, $ope);
+        $recensione->setId($result['id']);
         return $recensione;
     }
+
+    // Record multipli
+    $recensioni = [];
+    foreach ($result as $row) {
+        $ute = FUtente::loadByField("id", $row["idUtente"]);
+        $ope = FOpera::loadByField("id", $row["idOpera"]);
+        $istanza = new ERecensione($row['testo'], $row['voto'], $ute, $ope);
+        $istanza->setId($row['id']);
+        $recensioni[] = $istanza;
+    }
+    return $recensioni;
+}
 
     public static function exist($field, $id) {
         $db = FDatabase::getInstance();

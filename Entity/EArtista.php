@@ -22,7 +22,7 @@ class EArtista extends EUtente {
     public function __construct(
         int $id, string $nome, string $cognome, string $dataDiNascita, 
         string $indirizzo, string $nickname, string $telefono, string $email, 
-        string $password, string $immagineProfilo,
+        string $password, ?string $immagineProfilo,
         string $biografia, string $stileArtistico, string $cartaIdentita, string $statoValidazione = self::STATO_IN_ATTESA
     ) {
         parent::__construct($id, $nome, $cognome, $dataDiNascita, $indirizzo, $nickname, $telefono, $email, $password, $immagineProfilo);
@@ -45,7 +45,7 @@ class EArtista extends EUtente {
 
     public function getStatoValidazione(): string { return $this->statoValidazione; }
     public function setStatoValidazione(string $stato): void {
-        $statiValidi = [self::STATO_IN_ATTESA, self::STATO_ATTIVO, self::STATO_BANNATO];
+        $statiValidi = [self::STATO_IN_ATTESA, parent::STATO_ATTIVO, parent::STATO_BANNATO];
         if (!in_array($stato, $statiValidi)) {
             throw new \InvalidArgumentException("Stato non valido: $stato");
         }

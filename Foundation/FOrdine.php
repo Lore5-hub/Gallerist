@@ -1,10 +1,14 @@
 <?php
+require_once __DIR__ . '/FDataBase.php';
+require_once __DIR__ . '/FOpera.php';
+require_once __DIR__ . '/FUtente.php';
+require_once __DIR__ . '/../Entity/EOrdine.php';
 
 /**
  * La classe FOrdine fornisce query per gli oggetti EOrdine (UC6)
  * @package Foundation
  */
-class FOrdine extends FDataBase {
+class FOrdine {
 
     private static $class = "FOrdine";
     private static $table = "ordine";
@@ -30,36 +34,36 @@ class FOrdine extends FDataBase {
         return $db->storeDB(static::getClass(), $ordine);
     }
 
-    public static function loadByField($field, $id) {
-        $ordine = null;
-        $db = FDatabase::getInstance();
-        $result = $db->loadDB(static::getClass(), $field, $id);
-        $rows_number = $db->interestedRows(static::getClass(), $field, $id);
+public static function loadByField($field, $id) {
+    $db     = FDatabase::getInstance();
+    $result = $db->loadDB(static::getClass(), $field, $id);
 
-        if (($result != null) && ($rows_number == 1)) {
-            $ope = FOpera::loadByField("id", $result["idOpera"]);
-            $acq = FUtente::loadByField("id", $result["idAcquirente"]);
-            $art = FUtente::loadByField("id", $result["idArtista"]);
-            
-            $ordine = new EOrdine($result['dataOrdine'], $result['prezzoVendita'], $ope, $acq, $art);
-            $ordine->setId($result['id']);
-        } 
-        else {
-            if (($result != null) && ($rows_number > 1)) {
-                $ordine = array();
-                for ($i = 0; $i < count($result); $i++) {
-                    $ope = FOpera::loadByField("id", $result[$i]["idOpera"]);
-                    $acq = FUtente::loadByField("id", $result[$i]["idAcquirente"]);
-                    $art = FUtente::loadByField("id", $result[$i]["idArtista"]);
-                    
-                    $istanza = new EOrdine($result[$i]['dataOrdine'], $result[$i]['prezzoVendita'], $ope, $acq, $art);
-                    $istanza->setId($result[$i]['id']);
-                    $ordine[] = $istanza;
-                }
-            }
-        }
+    if ($result === null) {
+        return null;
+    }
+
+    if (!is_array($result[0])) {
+        // Singolo record
+        $ope = FOpera::loadByField("id", $result["idOpera"]);
+        $acq = FUtente::loadByField("id", $result["idAcquirente"]);
+        $art = FUtente::loadByField("id", $result["idArtista"]);
+        $ordine = new EOrdine($result['dataOrdine'], $result['prezzoVendita'], $ope, $acq, $art);
+        $ordine->setId($result['id']);
         return $ordine;
     }
+
+    // Record multipli
+    $ordini = [];
+    foreach ($result as $row) {
+        $ope = FOpera::loadByField("id", $row["idOpera"]);
+        $acq = FUtente::loadByField("id", $row["idAcquirente"]);
+        $art = FUtente::loadByField("id", $row["idArtista"]);
+        $istanza = new EOrdine($row['dataOrdine'], $row['prezzoVendita'], $ope, $acq, $art);
+        $istanza->setId($row['id']);
+        $ordini[] = $istanza;
+    }
+    return $ordini;
+}
 
     /**
      * Metodo personalizzato per l'UC6 modellato sulla logica di 'loadByForm' del file di esempio.

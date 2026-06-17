@@ -244,6 +244,19 @@ class FDataBase
 		}
 	}
 
+	//Metodo per query JOIN personalizzate
+	public function queryDB(string $sql, array $params = []): array|null {
+		try {
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute($params);
+			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return empty($result) ? null : $result;
+		} catch (PDOException $e) {
+			error_log("Errore in queryDB: " . $e->getMessage());
+			return null;
+		}
+	}
+
 	/**
 	 * Metodo che chiude la connessione con il DB azzerando l'istanza statica.
 	 */

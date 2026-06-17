@@ -4,7 +4,7 @@
  * La classe FSegnalazione fornisce query per gli oggetti ESegnalazione
  * @package Foundation
  */
-class FSegnalazione extends FDataBase {
+class FSegnalazione {
 
     private static $class = "FSegnalazione";
     private static $table = "segnalazione";
@@ -32,37 +32,36 @@ class FSegnalazione extends FDataBase {
         return $db->storeDB(static::getClass(), $segnalazione);
     }
 
-    public static function loadByField($field, $id) {
-        $segnalazione = null;
-        $db = FDatabase::getInstance();
-        $result = $db->loadDB(static::getClass(), $field, $id);
-        $rows_number = $db->interestedRows(static::getClass(), $field, $id);
+public static function loadByField($field, $id) {
+    $db     = FDatabase::getInstance();
+    $result = $db->loadDB(static::getClass(), $field, $id);
 
-        if (($result != null) && ($rows_number == 1)) {
-            // Ricostruiamo la classe dello stato corretta (State Pattern) leggendola dal DB
-            $classeStato = $result['stato']; // es. "EStatoNuova"
-            $statoOggetto = new $classeStato();
-
-            $segnalazione = new ESegnalazione(
-                $result['id'], $result['tipoOggetto'], $result['motivo'], 
-                $result['nota'], $statoOggetto, $result['data']
-            );
-        } 
-        else if (($result != null) && ($rows_number > 1)) {
-            $segnalazione = array();
-            for ($i = 0; $i < count($result); $i++) {
-                $classeStato = $result[$i]['stato'];
-                $statoOggetto = new $classeStato();
-
-                $istanza = new ESegnalazione(
-                    $result[$i]['id'], $result[$i]['tipoOggetto'], $result[$i]['motivo'], 
-                    $result[$i]['nota'], $statoOggetto, $result[$i]['data']
-                );
-                $segnalazione[] = $istanza;
-            }
-        }
-        return $segnalazione;
+    if ($result === null) {
+        return null;
     }
+
+    if (!is_array($result[0])) {
+        // Singolo record
+        $classeStato  = $result['stato']; // es. "EStatoNuova"
+        $statoOggetto = new $classeStato();
+        return new ESegnalazione(
+            $result['id'], $result['tipoOggetto'], $result['motivo'],
+            $result['nota'], $statoOggetto, $result['data']
+        );
+    }
+
+    // Record multipli
+    $segnalazioni = [];
+    foreach ($result as $row) {
+        $classeStato  = $row['stato'];
+        $statoOggetto = new $classeStato();
+        $segnalazioni[] = new ESegnalazione(
+            $row['id'], $row['tipoOggetto'], $row['motivo'],
+            $row['nota'], $statoOggetto, $row['data']
+        );
+    }
+    return $segnalazioni;
+}
 
     public static function exist($field, $id) {
         $db = FDatabase::getInstance();

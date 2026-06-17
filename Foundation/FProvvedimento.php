@@ -4,7 +4,7 @@
  * La classe FProvvedimento fornisce query per gli oggetti EProvvedimento
  * @package Foundation
  */
-class FProvvedimento extends FDataBase {
+class FProvvedimento {
 
     private static $class = "FProvvedimento";
     private static $table = "provvedimento";
@@ -34,32 +34,34 @@ class FProvvedimento extends FDataBase {
         return false;
     }
 
-    public static function loadByField($field, $id) {
-        $provvedimento = null;
-        $db = FDatabase::getInstance();
-        $result = $db->loadDB(static::getClass(), $field, $id);
-        $rows_number = $db->interestedRows(static::getClass(), $field, $id);
+public static function loadByField($field, $id) {
+    $db     = FDatabase::getInstance();
+    $result = $db->loadDB(static::getClass(), $field, $id);
 
-        if (($result != null) && ($rows_number == 1)) {
-            $utente = FUtente::loadByField("id", $result["idUtenteSanzionato"]);
-            $provvedimento = new EProvvedimento(
-                $result['id'], $result['tipoBan'], $result['dataInizio'], 
-                $result['dataFine'], $result['motivo'], $utente
-            );
-        } 
-        else if (($result != null) && ($rows_number > 1)) {
-            $provvedimento = array();
-            for ($i = 0; $i < count($result); $i++) {
-                $utente = FUtente::loadByField("id", $result[$i]["idUtenteSanzionato"]);
-                $istanza = new EProvvedimento(
-                    $result[$i]['id'], $result[$i]['tipoBan'], $result[$i]['dataInizio'], 
-                    $result[$i]['dataFine'], $result[$i]['motivo'], $utente
-                );
-                $provvedimento[] = $istanza;
-            }
-        }
-        return $provvedimento;
+    if ($result === null) {
+        return null;
     }
+
+    if (!is_array($result[0])) {
+        // Singolo record
+        $utente = FUtente::loadByField("id", $result["idUtenteSanzionato"]);
+        return new EProvvedimento(
+            $result['id'], $result['tipoBan'], $result['dataInizio'],
+            $result['dataFine'], $result['motivo'], $utente
+        );
+    }
+
+    // Record multipli
+    $provvedimenti = [];
+    foreach ($result as $row) {
+        $utente = FUtente::loadByField("id", $row["idUtenteSanzionato"]);
+        $provvedimenti[] = new EProvvedimento(
+            $row['id'], $row['tipoBan'], $row['dataInizio'],
+            $row['dataFine'], $row['motivo'], $utente
+        );
+    }
+    return $provvedimenti;
+}
 
     public static function exist($field, $id) {
         $db = FDatabase::getInstance();

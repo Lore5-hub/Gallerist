@@ -5,7 +5,7 @@
  */
 class EUtente {
     // Attributi dedotti dal diagramma ER
-    private int $id;
+    private ?int $id = null; // ID univoco dell'utente, generato dal DB
     private string $nome;
     private string $cognome;
     private string $dataDiNascita;  /*da modificare il tipo di dato creando la classe per la data in una cartella tipo utility/ */

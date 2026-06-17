@@ -58,6 +58,7 @@ class EOrdine {
     }
 
     // --- GETTER & SETTER ---
+    public function setId(int $id): void { $this->id = $id; }
     public function getId(): int { return $this->id; }
     public function getDataOrdine(): string { return $this->dataOrdine; }
     public function setDataOrdine(string $dataOrdine): void { $this->dataOrdine = $dataOrdine; }

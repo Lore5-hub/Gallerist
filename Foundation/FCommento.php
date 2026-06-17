@@ -4,7 +4,7 @@
  * La classe FCommento fornisce query per gli oggetti ECommento
  * @package Foundation
  */
-class FCommento extends FDataBase {
+class FCommento {
 
     private static $class = "FCommento";
     private static $table = "commento";
@@ -36,37 +36,36 @@ class FCommento extends FDataBase {
         return false;
     }
 
-    public static function loadByField($field, $id) {
-        $commento = null;
-        $db = FDatabase::getInstance();
-        $result = $db->loadDB(static::getClass(), $field, $id);
-        $rows_number = $db->interestedRows(static::getClass(), $field, $id);
+public static function loadByField($field, $id) {
+    $db     = FDatabase::getInstance();
+    $result = $db->loadDB(static::getClass(), $field, $id);
 
-        if (($result != null) && ($rows_number == 1)) {
-            // Carichiamo l'oggetto Utente e l'oggetto Opera tramite le loro classi Foundation
-            $autore = FUtente::loadByField("id", $result["idAutore"]);
-            $opera = FOpera::loadByField("id", $result["idOpera"]);
-
-            $commento = new ECommento(
-                $result['id'], $result['testo'], $result['valutazione'], 
-                $result['data'], $autore, $opera
-            );
-        } 
-        else if (($result != null) && ($rows_number > 1)) {
-            $commento = array();
-            for ($i = 0; $i < count($result); $i++) {
-                $autore = FUtente::loadByField("id", $result[$i]["idAutore"]);
-                $opera = FOpera::loadByField("id", $result[$i]["idOpera"]);
-
-                $istanza = new ECommento(
-                    $result[$i]['id'], $result[$i]['testo'], $result[$i]['valutazione'], 
-                    $result[$i]['data'], $autore, $opera
-                );
-                $commento[] = $istanza;
-            }
-        }
-        return $commento;
+    if ($result === null) {
+        return null;
     }
+
+    if (!is_array($result[0])) {
+        // Singolo record
+        $autore = FUtente::loadByField("id", $result["idAutore"]);
+        $opera  = FOpera::loadByField("id", $result["idOpera"]);
+        return new ECommento(
+            $result['id'], $result['testo'], $result['valutazione'],
+            $result['data'], $autore, $opera
+        );
+    }
+
+    // Record multipli
+    $commenti = [];
+    foreach ($result as $row) {
+        $autore = FUtente::loadByField("id", $row["idAutore"]);
+        $opera  = FOpera::loadByField("id", $row["idOpera"]);
+        $commenti[] = new ECommento(
+            $row['id'], $row['testo'], $row['valutazione'],
+            $row['data'], $autore, $opera
+        );
+    }
+    return $commenti;
+}
 
     public static function exist($field, $id) {
         $db = FDatabase::getInstance();

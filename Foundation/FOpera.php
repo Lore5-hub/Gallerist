@@ -4,7 +4,7 @@
  * La classe FOpera fornisce query per gli oggetti EOpera (UC5)
  * @package Foundation
  */
-class FOpera extends FDataBase {
+class FOpera {
 
     private static $class = "FOpera";
     private static $table = "opera";
@@ -41,40 +41,42 @@ class FOpera extends FDataBase {
         return false;
     }
 
-    public static function loadByField($field, $id) {
-        $opera = null;
-        $db = FDatabase::getInstance();
-        $result = $db->loadDB(static::getClass(), $field, $id);
-        $rows_number = $db->interestedRows(static::getClass(), $field, $id);
+public static function loadByField($field, $id) {
+    $db     = FDatabase::getInstance();
+    $result = $db->loadDB(static::getClass(), $field, $id);
 
-        if (($result != null) && ($rows_number == 1)) {
-            $artista = FUtente::loadByField("id", $result["idArtista"]);
-            $opera = new EOpera(
-                $result['titolo'], $result['anno'], $result['tecnica'], 
-                $result['larghezza'], $result['altezza'], $result['profondita'], 
-                $result['unitaMisura'], $result['descrizione'], $result['categoria'], 
-                $result['prezzo'], $result['stato'], $artista
-            );
-            $opera->setId($result['id']);
-        } 
-        else {
-            if (($result != null) && ($rows_number > 1)) {
-                $opera = array();
-                for ($i = 0; $i < count($result); $i++) {
-                    $artista = FUtente::loadByField("id", $result[$i]["idArtista"]);
-                    $istanza = new EOpera(
-                        $result[$i]['titolo'], $result[$i]['anno'], $result[$i]['tecnica'], 
-                        $result[$i]['larghezza'], $result[$i]['altezza'], $result[$i]['profondita'], 
-                        $result[$i]['unitaMisura'], $result[$i]['descrizione'], $result[$i]['categoria'], 
-                        $result[$i]['prezzo'], $result[$i]['stato'], $artista
-                    );
-                    $istanza->setId($result[$i]['id']);
-                    $opera[] = $istanza;
-                }
-            }
-        }
+    if ($result === null) {
+        return null;
+    }
+
+    if (!is_array($result[0])) {
+        // Singolo record
+        $artista = FUtente::loadByField("id", $result["idArtista"]);
+        $opera = new EOpera(
+            $result['titolo'], $result['anno'], $result['tecnica'],
+            $result['larghezza'], $result['altezza'], $result['profondita'],
+            $result['unitaMisura'], $result['descrizione'], $result['categoria'],
+            $result['prezzo'], $result['stato'], $artista
+        );
+        $opera->setId($result['id']);
         return $opera;
     }
+
+    // Record multipli
+    $opere = [];
+    foreach ($result as $row) {
+        $artista = FUtente::loadByField("id", $row["idArtista"]);
+        $istanza = new EOpera(
+            $row['titolo'], $row['anno'], $row['tecnica'],
+            $row['larghezza'], $row['altezza'], $row['profondita'],
+            $row['unitaMisura'], $row['descrizione'], $row['categoria'],
+            $row['prezzo'], $row['stato'], $artista
+        );
+        $istanza->setId($row['id']);
+        $opere[] = $istanza;
+    }
+    return $opere;
+}
 
     public static function exist($field, $id) {
         $db = FDatabase::getInstance();
