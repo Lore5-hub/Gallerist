@@ -1,96 +1,354 @@
 <?php
+require_once __DIR__ . '/FDataBase.php';
+require_once __DIR__ . '/FCategoria.php';
+require_once __DIR__ . '/../Entity/EOpera.php';
+require_once __DIR__ . '/../Entity/EArtista.php';
+require_once __DIR__ . '/../Entity/EUtente.php';
 
 /**
- * La classe FOpera fornisce query per gli oggetti EOpera (UC5)
+ * Classe Foundation per la gestione della persistenza dell'entità Opera.
  * @package Foundation
  */
 class FOpera {
 
-    private static $class = "FOpera";
-    private static $table = "opera";
-    private static $values = "(:id, :titolo, :anno, :tecnica, :larghezza, :altezza, :profondita, :unitaMisura, :descrizione, :categoria, :prezzo, :stato, :idArtista)";
+    private static string $class  = "FOpera";
+    private static string $table  = "opera";
+    private static string $values = "(:id, :titolo, :anno, :tecnica, :larghezza, :altezza, :profondita, :unitaMisura, :descrizione, :categoria, :prezzo, :stato, :idArtista)";
 
     public function __construct() {}
 
-    public static function bind($stmt, EOpera $opera) {
-        $stmt->bindValue(':id', NULL, PDO::PARAM_INT);
-        $stmt->bindValue(':titolo', $opera->getTitolo(), PDO::PARAM_STR);
-        $stmt->bindValue(':anno', $opera->getAnno(), PDO::PARAM_INT);
-        $stmt->bindValue(':tecnica', $opera->getTecnica(), PDO::PARAM_STR);
-        $stmt->bindValue(':larghezza', $opera->getLarghezza(), PDO::PARAM_STR);
-        $stmt->bindValue(':altezza', $opera->getAltezza(), PDO::PARAM_STR);
-        $stmt->bindValue(':profondita', $opera->getProfondita(), PDO::PARAM_STR);
-        $stmt->bindValue(':unitaMisura', $opera->getUnitaMisura(), PDO::PARAM_STR);
-        $stmt->bindValue(':descrizione', $opera->getDescrizione(), PDO::PARAM_STR);
-        $stmt->bindValue(':categoria', $opera->getCategoria(), PDO::PARAM_STR);
-        $stmt->bindValue(':prezzo', $opera->getPrezzo(), PDO::PARAM_STR);
-        $stmt->bindValue(':stato', $opera->getStato(), PDO::PARAM_STR);
-        $stmt->bindValue(':idArtista', $opera->getArtista()->getId(), PDO::PARAM_INT);
+    /**
+     * Lega i valori di EOpera ai parametri dello statement PDO.
+     * Chiamato internamente da FDataBase::storeDB().
+     *
+     * FIX: :id non più hardcoded a NULL — supporta AUTO_INCREMENT (id=0)
+     * e id esplicito (es. ripristino dati), coerente con FUtente e FArtista.
+     */
+    public static function bind($stmt, EOpera $opera): void {
+        $id = $opera->getId();
+        $stmt->bindValue(':id',          $id === 0 ? null : $id,         $id === 0 ? PDO::PARAM_NULL : PDO::PARAM_INT);
+        $stmt->bindValue(':titolo',      $opera->getTitolo(),             PDO::PARAM_STR);
+        $stmt->bindValue(':anno',        $opera->getAnno(),               PDO::PARAM_INT);
+        $stmt->bindValue(':tecnica',     $opera->getTecnica(),            PDO::PARAM_STR);
+        $stmt->bindValue(':larghezza',   $opera->getLarghezza(),          PDO::PARAM_STR);
+        $stmt->bindValue(':altezza',     $opera->getAltezza(),            PDO::PARAM_STR);
+        $stmt->bindValue(':profondita',  $opera->getProfondita(),         PDO::PARAM_STR);
+        $stmt->bindValue(':unitaMisura', $opera->getUnitaMisura(),        PDO::PARAM_STR);
+        $stmt->bindValue(':descrizione', $opera->getDescrizione(),        PDO::PARAM_STR);
+        $stmt->bindValue(':categoria',   $opera->getCategoria(),          PDO::PARAM_STR);
+        $stmt->bindValue(':prezzo',      $opera->getPrezzo(),             PDO::PARAM_STR);
+        $stmt->bindValue(':stato',       $opera->getStato(),              PDO::PARAM_STR);
+        $stmt->bindValue(':idArtista',   $opera->getArtista()->getId(),   PDO::PARAM_INT);
     }
 
-    public static function getClass() { return static::$class; }
-    public static function getTable() { return static::$table; }
-    public static function getValues() { return static::$values; }
+    public static function getClass(): string  { return static::$class; }
+    public static function getTable(): string  { return static::$table; }
+    public static function getValues(): string { return static::$values; }
 
-    public static function store(EOpera $opera) {
-        $db = FDatabase::getInstance();
-        $artistaEsiste = FUtente::exist("id", $opera->getArtista()->getId());
-        if ($artistaEsiste) {
-            return $db->storeDB(static::getClass(), $opera);
+    /**
+     * Salva una nuova Opera nel database, dopo aver verificato che l'artista esista.
+     *
+     * FIX: usato FArtista::exist() invece di FUtente::exist() — un'opera
+     * appartiene a un artista, non a un utente generico.
+     *
+     * @return string|null L'ID generato dal DB oppure null in caso di errore.
+     */
+    public static function store(EOpera $opera): ?string {
+        $db = FDataBase::getInstance();
+        if (!FArtista::exist('email_utente', $opera->getArtista()->getEmail())) {
+            error_log("FOpera::store - Artista non esistente per email: " . $opera->getArtista()->getEmail());
+            return null;
         }
-        return false;
+        return $db->storeDB(static::$class, $opera);
     }
 
-public static function loadByField($field, $id) {
-    $db     = FDatabase::getInstance();
-    $result = $db->loadDB(static::getClass(), $field, $id);
+    /**
+     * Carica una o più Opere dal database in base a un campo e valore.
+     * Usa queryDB() con JOIN su UTENTE per evitare il problema N+1.
+     *
+     * FIX: la versione originale chiamava FUtente::loadByField() dentro il loop
+     * (una query per ogni opera → problema N+1). Ora è una sola query con JOIN.
+     * FIX: controllo singolo/multiplo robusto con isset() + is_array() rimosso,
+     * ora fetchAll() via queryDB() garantisce sempre array di array.
+     *
+     * @return EOpera|EOpera[]|null
+     */
+    public static function loadByField(string $field, mixed $id): mixed {
+        $query = "SELECT o.*,
+                         u.nome     AS artista_nome,
+                         u.cognome  AS artista_cognome,
+                         u.email    AS artista_email,
+                         u.nickname AS artista_nickname
+                  FROM " . static::$table . " o
+                  INNER JOIN UTENTE u ON o.idArtista = u.id
+                  WHERE o." . $field . " = :id";
 
-    if ($result === null) {
-        return null;
+        $db     = FDataBase::getInstance();
+        $result = $db->queryDB($query, [':id' => $id]);
+
+        if ($result === null) {
+            return null;
+        }
+
+        if (count($result) === 1) {
+            return self::creaOperaDaArray($result[0]);
+        }
+
+        $opere = [];
+        foreach ($result as $row) {
+            $opere[] = self::creaOperaDaArray($row);
+        }
+        return $opere;
     }
 
-    if (!is_array($result[0])) {
-        // Singolo record
-        $artista = FUtente::loadByField("id", $result["idArtista"]);
+    /**
+     * Carica tutte le EOpera appartenenti a una categoria tramite JOIN.
+     *
+     * Spostato da FCategoria a FOpera (principio SRP): questo metodo
+     * restituisce EOpera, quindi è responsabilità di FOpera costruirli.
+     *
+     * La JOIN con CATEGORIA (non solo WHERE o.categoria = :nome) è
+     * intenzionale: garantisce che vengano restituite solo opere con
+     * categorie effettivamente esistenti nella tabella CATEGORIA,
+     * agendo come guardia implicita sull'integrità referenziale.
+     *
+     * NOTA: EArtista viene costruito con i soli campi disponibili dalla JOIN.
+     * Se nella view servissero anche biografia/stile_artistico, aggiungere
+     * un ulteriore INNER JOIN con la tabella ARTISTA.
+     *
+     * @param string $nomeCategoria Il nome della categoria da cercare
+     * @return EOpera[]|null Array di opere oppure null se nessuna trovata
+     */
+    public static function loadByCategoria(string $nomeCategoria): ?array {
+        $query = "SELECT o.*,
+                         u.nome     AS artista_nome,
+                         u.cognome  AS artista_cognome,
+                         u.email    AS artista_email,
+                         u.nickname AS artista_nickname
+                  FROM " . static::$table . " o
+                  INNER JOIN " . FCategoria::getTable() . " c ON o.categoria = c.nome
+                  INNER JOIN UTENTE u ON o.idArtista = u.id
+                  WHERE c.nome = :nome";
+
+        $db     = FDataBase::getInstance();
+        $result = $db->queryDB($query, [':nome' => $nomeCategoria]);
+
+        if ($result === null) {
+            return null;
+        }
+
+        $opere = [];
+        foreach ($result as $row) {
+            $opere[] = self::creaOperaDaArray($row);
+        }
+        return $opere;
+    }
+
+    /**
+     * Verifica l'esistenza di un'opera tramite un campo arbitrario.
+     */
+    public static function exist(string $field, mixed $id): bool {
+        $db = FDataBase::getInstance();
+        return ($db->existDB(static::$class, $field, $id) !== null);
+    }
+
+    /**
+     * Aggiorna un singolo attributo dell'opera nel database.
+     */
+    public static function update(string $field, mixed $newvalue, string $pk, mixed $id): bool {
+        $db = FDataBase::getInstance();
+        return $db->updateDB(static::$class, $field, $newvalue, $pk, $id);
+    }
+
+    /**
+     * Elimina un'opera dal database tramite un campo e valore.
+     */
+    public static function delete(string $field, mixed $id): ?bool {
+        $db = FDataBase::getInstance();
+        return $db->deleteDB(static::$class, $field, $id);
+    }
+
+    /**
+     * Carica le opere pubblicate più recentemente (per id DESC).
+     * Usato da CCatalogo::esploraCatalogo() per la griglia iniziale del catalogo.
+     *
+     * @param int $limite Numero massimo di opere da restituire (default 20)
+     * @return EOpera[]|null
+     */
+    public static function loadRecenti(int $limite = 20): ?array {
+        $query = "SELECT o.*,
+                         u.nome     AS artista_nome,
+                         u.cognome  AS artista_cognome,
+                         u.email    AS artista_email,
+                         u.nickname AS artista_nickname
+                  FROM " . static::$table . " o
+                  INNER JOIN UTENTE u ON o.idArtista = u.id
+                  WHERE o.stato = 'pubblicata'
+                  ORDER BY o.id DESC
+                  LIMIT " . (int) $limite;
+
+        $db     = FDataBase::getInstance();
+        $result = $db->queryDB($query, []);
+
+        if ($result === null) {
+            return null;
+        }
+
+        $opere = [];
+        foreach ($result as $row) {
+            $opere[] = self::creaOperaDaArray($row);
+        }
+        return $opere;
+    }
+
+    /**
+     * Carica tutte le opere di un artista esclusa una specifica (es. l'opera corrente).
+     * Usato da CCatalogo::visualizzaDettagliOpera() per la sezione "Altre opere dell'artista".
+     *
+     * @param int $idArtista    L'id dell'artista di cui caricare le opere
+     * @param int $idEscluso    L'id dell'opera da escludere dai risultati
+     * @return EOpera[]|null
+     */
+    public static function loadByArtista(int $idArtista, int $idEscluso): ?array {
+        $query = "SELECT o.*,
+                         u.nome     AS artista_nome,
+                         u.cognome  AS artista_cognome,
+                         u.email    AS artista_email,
+                         u.nickname AS artista_nickname
+                  FROM " . static::$table . " o
+                  INNER JOIN UTENTE u ON o.idArtista = u.id
+                  WHERE o.idArtista = :idArtista
+                    AND o.id        != :idEscluso
+                    AND o.stato     = 'pubblicata'
+                  ORDER BY o.id DESC";
+
+        $db     = FDataBase::getInstance();
+        $result = $db->queryDB($query, [
+            ':idArtista' => $idArtista,
+            ':idEscluso' => $idEscluso,
+        ]);
+
+        if ($result === null) {
+            return null;
+        }
+
+        $opere = [];
+        foreach ($result as $row) {
+            $opere[] = self::creaOperaDaArray($row);
+        }
+        return $opere;
+    }
+
+    /**
+     * Esegue una ricerca filtrata sul catalogo in base a parola chiave,
+     * categoria e criterio di ordinamento.
+     *
+     * Usato da CCatalogo::filtraCatalogo().
+     * Tutti i parametri sono opzionali: se assenti il filtro relativo viene ignorato.
+     *
+     * @param array $parametri Chiavi supportate:
+     *   'parola_chiave' (string) — ricerca su titolo e descrizione (LIKE)
+     *   'categoria'     (string) — filtro sulla categoria dell'opera
+     *   'ordinamento'   (string) — 'prezzo_asc', 'prezzo_desc', 'recenti' (default)
+     * @return EOpera[]|null
+     */
+    public static function ricercaFiltrata(array $parametri): ?array {
+        $params = [];
+
+        // Base della query — solo opere pubblicate
+        $query = "SELECT o.*,
+                         u.nome     AS artista_nome,
+                         u.cognome  AS artista_cognome,
+                         u.email    AS artista_email,
+                         u.nickname AS artista_nickname
+                  FROM " . static::$table . " o
+                  INNER JOIN UTENTE u ON o.idArtista = u.id
+                  WHERE o.stato = 'pubblicata'";
+
+        // Filtro per parola chiave su titolo e descrizione
+        if (!empty($parametri['parola_chiave'])) {
+            $query           .= " AND (o.titolo LIKE :kw OR o.descrizione LIKE :kw)";
+            $params[':kw']    = '%' . $parametri['parola_chiave'] . '%';
+        }
+
+        // Filtro per categoria
+        if (!empty($parametri['categoria'])) {
+            $query              .= " AND o.categoria = :categoria";
+            $params[':categoria'] = $parametri['categoria'];
+        }
+
+        // Ordinamento
+        $ordinamento = $parametri['ordinamento'] ?? 'recenti';
+        $query .= match ($ordinamento) {
+            'prezzo_asc'  => " ORDER BY o.prezzo ASC",
+            'prezzo_desc' => " ORDER BY o.prezzo DESC",
+            default       => " ORDER BY o.id DESC",   // 'recenti' o non specificato
+        };
+
+        $db     = FDataBase::getInstance();
+        $result = $db->queryDB($query, $params);
+
+        if ($result === null) {
+            return null;
+        }
+
+        $opere = [];
+        foreach ($result as $row) {
+            $opere[] = self::creaOperaDaArray($row);
+        }
+        return $opere;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Metodo privato di supporto
+    // ---------------------------------------------------------------------------
+
+    /**
+     * Costruisce un'istanza di EOpera (con EArtista annidato) a partire
+     * da un array prodotto dalle query JOIN di questo Foundation.
+     *
+     * I campi dell'artista sono aliasati (artista_nome, artista_cognome…)
+     * per evitare conflitti con le colonne omonime di OPERA.
+     *
+     * ATTENZIONE: EArtista è costruito con i soli campi disponibili dalla JOIN.
+     * Non chiamare getArtista()->getBiografia() o ->getCartaIdentita() su oggetti
+     * restituiti da questo metodo: i campi non estratti dalla query saranno vuoti.
+     */
+    private static function creaOperaDaArray(array $row): EOpera {
+        $artista = new EArtista(
+            (int) $row['idArtista'],
+            $row['artista_nome'],
+            $row['artista_cognome'],
+            '',             // data_nascita: non estratta in questa query
+            '',             // indirizzo: non estratto in questa query
+            $row['artista_nickname'],
+            '',             // telefono: non estratto in questa query
+            $row['artista_email'],
+            '',             // password: mai esposta nelle query di lettura
+            null,           // immagine_profilo
+            EUtente::STATO_ATTIVO,
+            '',             // biografia: non estratta in questa query
+            '',             // stile_artistico: non estratto in questa query
+            '',             // carta_identita: non estratta in questa query
+            EArtista::STATO_IN_ATTESA
+        );
+
         $opera = new EOpera(
-            $result['titolo'], $result['anno'], $result['tecnica'],
-            $result['larghezza'], $result['altezza'], $result['profondita'],
-            $result['unitaMisura'], $result['descrizione'], $result['categoria'],
-            $result['prezzo'], $result['stato'], $artista
+            $row['titolo'],
+            (int)   $row['anno'],
+            $row['tecnica'],
+            (float) $row['larghezza'],
+            (float) $row['altezza'],
+            (float) $row['profondita'],
+            $row['unitaMisura'],
+            $row['descrizione'],
+            $row['categoria'],
+            (float) $row['prezzo'],
+            $row['stato'],
+            $artista
         );
-        $opera->setId($result['id']);
+        $opera->setId((int) $row['id']);
         return $opera;
-    }
-
-    // Record multipli
-    $opere = [];
-    foreach ($result as $row) {
-        $artista = FUtente::loadByField("id", $row["idArtista"]);
-        $istanza = new EOpera(
-            $row['titolo'], $row['anno'], $row['tecnica'],
-            $row['larghezza'], $row['altezza'], $row['profondita'],
-            $row['unitaMisura'], $row['descrizione'], $row['categoria'],
-            $row['prezzo'], $row['stato'], $artista
-        );
-        $istanza->setId($row['id']);
-        $opere[] = $istanza;
-    }
-    return $opere;
-}
-
-    public static function exist($field, $id) {
-        $db = FDatabase::getInstance();
-        return ($db->existDB(static::getClass(), $field, $id) != null);
-    }
-
-    public static function update($field, $newvalue, $pk, $id) {
-        $db = FDatabase::getInstance();
-        return $db->updateDB(static::getClass(), $field, $newvalue, $pk, $id);
-    }
-
-    public static function delete($field, $id) {
-        $db = FDatabase::getInstance();
-        return $db->deleteDB(static::getClass(), $field, $id);
     }
 }
 ?>
