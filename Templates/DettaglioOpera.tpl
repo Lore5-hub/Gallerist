@@ -9,6 +9,15 @@
   This text is within a <strong>block</strong>.
 </div>
 <button class="button is-black is-large is-fullwidth">Button</button>
+<button class="button is-white is-large is-fullwidth">Button</button>
+<div class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <!-- Any other Bulma elements you want --><input class="input" type="text" placeholder="Text input" />
+     <textarea class="textarea" placeholder="e.g. Hello world"></textarea>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
 <button class="button" title="Disabled button" disabled>Disabled</button>
 <div class="notification is-success">
   <button class="delete"></button>
