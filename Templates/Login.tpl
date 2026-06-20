@@ -1,52 +1,65 @@
 <section class="hero is-info is-fullheight">
   <div class="hero-body">
-    <div class="">
-      <p class="title">Fullheight hero</p>
-      <p class="subtitle">Fullheight subtitle</p>
+    <div class="container">
       <div class="columns is-centered">
-  <div class="column is-half">
-    <p class="bd-notification is-primary">
-      <code class="html">is-half</code><br />
-      <div class="container is-max-desktop">
-  <div class="notification is-primary">
-    This container has a <code>max-width</code> of
-    <code>$desktop - $container-offset</code> on widescreen and fullhd.
-  </div>
-</div>
-    </p>
-  </div>
-</div>
+        
+        <div class="column is-4-desktop is-6-tablet">
+          
+          {if isset($errore_login)}
+          <div class="notification is-danger is-light">
+            <button class="delete" onclick="this.parentElement.remove()"></button>
+            <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+            {$errore_login}
+          </div>
+          {/if}
+
+          <div class="box p-6">
+            
+            <div class="has-text-centered mb-5">
+              <h1 class="title has-text-dark">Bentornato!</h1>
+              <p class="subtitle is-6 has-text-grey">Inserisci le tue credenziali per accedere</p>
+            </div>
+
+            <form method="POST" action="processa_login.php">
+              
+              <div class="field">
+                <label class="label">Email</label>
+                <div class="control has-icons-left">
+                  <input class="input is-medium {if isset($errore_login)}is-danger{/if}" type="email" name="email" value="{if isset($email_inserita)}{$email_inserita}{/if}" placeholder="tua@email.com" required />
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-envelope"></i>
+                  </span>
+                </div>
+              </div>
+
+              <div class="field mt-4">
+                <label class="label">Password</label>
+                <div class="control has-icons-left">
+                  <input class="input is-medium {if isset($errore_login)}is-danger{/if}" type="password" name="password" placeholder="********" required />
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                </div>
+              </div>
+
+              <div class="field mt-5">
+                <button type="submit" class="button is-primary is-medium is-fullwidth has-text-weight-bold">
+                  Accedi
+                </button>
+              </div>
+              
+            </form>
+
+            <hr class="mt-5 mb-4">
+            
+            <div class="has-text-centered">
+              <p class="is-size-6">
+                Sei nuovo qui? 
+                <a href="registrazione.php" class="has-text-info has-text-weight-bold">Registrati ora</a>
+              </p>
+            </div>
+
+          </div> </div> </div>
     </div>
   </div>
 </section>
-<div class="box">I'm in a box.
-<h1 class="title has-text-centered">Title</h1>
-</div>
-<div class="field">
-  <p class="control has-icons-left has-icons-right">
-    <input class="input" type="email" placeholder="Email" />
-    <span class="icon is-small is-left">
-      <i class="fas fa-envelope"></i>
-    </span>
-    <span class="icon is-small is-right">
-      <i class="fas fa-check"></i>
-    </span>
-  </p>
-</div>
-<div class="field">
-  <p class="control has-icons-left">
-    <input class="input" type="password" placeholder="Password" />
-    <span class="icon is-small is-left">
-      <i class="fas fa-lock"></i>
-    </span>
-  </p>
-</div>
-<button class="button is-primary is-fullwidth">Button</button>
-<div class="notification is-danger">
-  <button class="delete"></button>
-  Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum
-  dolor. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta
-  nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus
-  diam, et dictum <a>felis venenatis</a> efficitur.
-</div>
-<div class="box">I'm in a box.</div>
