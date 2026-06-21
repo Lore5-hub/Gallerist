@@ -1,178 +1,148 @@
-<section class="section">
-  <h1 class="title">Section</h1>
-  <h2 class="subtitle">
-    A simple container to divide your page into <strong>sections</strong>, like
-    the one you're currently reading.
-  </h2>
+<section class="section has-background-white-bis">
+  <div class="container">
+
+    <div class="is-flex is-justify-content-space-between is-align-items-center mb-6">
+      
+      <h1 class="title is-3 mb-0">Storico Vendite e Guadagni</h1>
+      
+      <div class="field mb-0">
+        <div class="control has-icons-left">
+          <div class="select is-info">
+            <select name="periodo" onchange="this.form.submit()">
+              <option value="30">Ultimi 30 giorni</option>
+              <option value="90">Ultimi 3 mesi</option>
+              <option value="180">Ultimi 6 mesi</option>
+              <option value="365">Ultimo anno</option>
+              <option value="all" selected>Sempre</option>
+            </select>
+          </div>
+          <span class="icon is-small is-left has-text-info">
+            <i class="fas fa-calendar-alt"></i>
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="columns is-multiline is-mobile mb-6">
+      
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4" style="height: 100%;">
+          <span class="icon is-medium has-text-success mb-2"><i class="fas fa-money-bill-wave fa-lg"></i></span>
+          <p class="heading">Entrate Totali</p>
+          <p class="title is-4">€ {$statistiche.entrate_lorde|number_format:2:',':'.'}</p>
+        </div>
+      </div>
+
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4" style="height: 100%;">
+          <span class="icon is-medium has-text-info mb-2"><i class="fas fa-shopping-cart fa-lg"></i></span>
+          <p class="heading">Vendite Totali</p>
+          <p class="title is-4">{$statistiche.numero_vendite}</p>
+        </div>
+      </div>
+
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4" style="height: 100%;">
+          <span class="icon is-medium has-text-warning mb-2"><i class="fas fa-star fa-lg"></i></span>
+          <p class="heading">Valutazione Media</p>
+          <p class="title is-4">{$statistiche.voto_medio|number_format:1:',':'.'}</p>
+        </div>
+      </div>
+
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4" style="height: 100%;">
+          <span class="icon is-medium has-text-primary mb-2"><i class="fas fa-wallet fa-lg"></i></span>
+          <p class="heading">Ricavo Netto</p>
+          <p class="title is-4">€ {$statistiche.ricavo_netto|number_format:2:',':'.'}</p>
+        </div>
+      </div>
+
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4 has-background-danger-light" style="height: 100%;">
+          <span class="icon is-medium has-text-danger mb-2"><i class="fas fa-percent fa-lg"></i></span>
+          <p class="heading">Commissioni Piattaforma</p>
+          <p class="title is-4 has-text-danger">- € {$statistiche.commissioni|number_format:2:',':'.'}</p>
+          <p class="is-size-7 has-text-grey">(15% trattenuto)</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="columns is-multiline mb-5">
+      
+      <div class="column is-8-desktop">
+        <div class="box" style="height: 100%;">
+          <h2 class="title is-5 mb-4">Andamento Entrate</h2>
+          <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="graficoAndamento"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="column is-4-desktop">
+        <div class="box" style="height: 100%;">
+          <h2 class="title is-5 mb-4">Entrate per Categoria</h2>
+          <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="graficoTorta"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="columns is-multiline">
+      
+      <div class="column is-8-desktop">
+        <div class="box" style="height: 100%;">
+          <h2 class="title is-5 mb-4">Dettaglio Vendite</h2>
+          
+          <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Opera</th>
+                  <th>Tecnica</th>
+                  <th class="has-text-right">Prezzo Finale</th>
+                  <th class="has-text-right">Commissioni (15%)</th>
+                  <th class="has-text-right">Ricavo Netto</th>
+                </tr>
+              </thead>
+              <tbody>
+                {foreach from=$storico_vendite item=vendita}
+                  <tr>
+                    <td>{$vendita.data|date_format:"%d/%m/%Y"}</td>
+                    <td><strong>{$vendita.titolo_opera}</strong></td>
+                    <td>{$vendita.categoria}</td>
+                    <td class="has-text-right">€ {$vendita.prezzo|number_format:2:',':'.'}</td>
+                    <td class="has-text-right has-text-danger">- € {$vendita.commissione|number_format:2:',':'.'}</td>
+                    <td class="has-text-right has-text-success has-text-weight-bold">€ {$vendita.netto|number_format:2:',':'.'}</td>
+                  </tr>
+                {foreachelse}
+                  <tr>
+                    <td colspan="6" class="has-text-centered has-text-grey">Nessuna vendita registrata in questo periodo.</td>
+                  </tr>
+                {/foreach}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="column is-4-desktop">
+        <div class="box" style="height: 100%;">
+          <h2 class="title is-5 mb-4">Modalità di Vendita</h2>
+          <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="graficoBarre"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
 </section>
 
-<div class="box">I'm in a box.</div>
-
-<nav class="level">
-  <div class="level-item has-text-centered">
-      <div class="box">I'm in a box.
-      <p class="heading">Tweets</p>
-      <p class="title">3,456</p>
-    </div>
-  </div>
-  <div class="level-item has-text-centered">
-    <div class="box">I'm in a box.
-      <p class="heading">Following</p>
-      <p class="title">123</p>
-    </div>
-  </div>
-  <div class="level-item has-text-centered">
-      <div class="box">I'm in a box.
-      <p class="heading">Followers</p>
-      <p class="title">456K</p>
-    </div>
-  </div>
-  <div class="level-item has-text-centered">
-      <div class="box">I'm in a box.
-      <p class="heading">Likes</p>
-      <p class="title">789</p>
-    </div>
-  </div>
-</nav>
-<table class="table is-striped is-hoverable is-fullwidth">
-  <thead>
-    <tr>
-      <th><abbr title="Position">Pos</abbr></th>
-      <th>Team</th>
-      <th><abbr title="Played">Pld</abbr></th>
-      <th><abbr title="Won">W</abbr></th>
-      <th><abbr title="Drawn">D</abbr></th>
-      <th><abbr title="Lost">L</abbr></th>
-      <th><abbr title="Goals for">GF</abbr></th>
-      <th><abbr title="Goals against">GA</abbr></th>
-      <th><abbr title="Goal difference">GD</abbr></th>
-      <th><abbr title="Points">Pts</abbr></th>
-      <th>Qualification or relegation</th>
-    </tr>
-  </thead>
-  <tfoot>
-    <tr>
-      <th><abbr title="Position">Pos</abbr></th>
-      <th>Team</th>
-      <th><abbr title="Played">Pld</abbr></th>
-      <th><abbr title="Won">W</abbr></th>
-      <th><abbr title="Drawn">D</abbr></th>
-      <th><abbr title="Lost">L</abbr></th>
-      <th><abbr title="Goals for">GF</abbr></th>
-      <th><abbr title="Goals against">GA</abbr></th>
-      <th><abbr title="Goal difference">GD</abbr></th>
-      <th><abbr title="Points">Pts</abbr></th>
-      <th>Qualification or relegation</th>
-    </tr>
-  </tfoot>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>
-        <a
-          href="https://en.wikipedia.org/wiki/Leicester_City_F.C."
-          title="Leicester City F.C."
-          >Leicester City</a
-        >
-        <strong>(C)</strong>
-      </td>
-      <td>38</td>
-      <td>23</td>
-      <td>12</td>
-      <td>3</td>
-      <td>68</td>
-      <td>36</td>
-      <td>+32</td>
-      <td>81</td>
-      <td>
-        Qualification for the
-        <a
-          href="https://en.wikipedia.org/wiki/2016%E2%80%9317_UEFA_Champions_League#Group_stage"
-          title="2016–17 UEFA Champions League"
-          >Champions League group stage</a
-        >
-      </td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>
-        <a
-          href="https://en.wikipedia.org/wiki/Arsenal_F.C."
-          title="Arsenal F.C."
-          >Arsenal</a
-        >
-      </td>
-      <td>38</td>
-      <td>20</td>
-      <td>11</td>
-      <td>7</td>
-      <td>65</td>
-      <td>36</td>
-      <td>+29</td>
-      <td>71</td>
-      <td>
-        Qualification for the
-        <a
-          href="https://en.wikipedia.org/wiki/2016%E2%80%9317_UEFA_Champions_League#Group_stage"
-          title="2016–17 UEFA Champions League"
-          >Champions League group stage</a
-        >
-      </td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>
-        <a
-          href="https://en.wikipedia.org/wiki/Tottenham_Hotspur_F.C."
-          title="Tottenham Hotspur F.C."
-          >Tottenham Hotspur</a
-        >
-      </td>
-      <td>38</td>
-      <td>19</td>
-      <td>13</td>
-      <td>6</td>
-      <td>69</td>
-      <td>35</td>
-      <td>+34</td>
-      <td>70</td>
-      <td>
-        Qualification for the
-        <a
-          href="https://en.wikipedia.org/wiki/2016%E2%80%9317_UEFA_Champions_League#Group_stage"
-          title="2016–17 UEFA Champions League"
-          >Champions League group stage</a
-        >
-      </td>
-    </tr>
-    <tr class="is-selected">
-      <th>4</th>
-      <td>
-        <a
-          href="https://en.wikipedia.org/wiki/Manchester_City_F.C."
-          title="Manchester City F.C."
-          >Manchester City</a
-        >
-      </td>
-      <td>38</td>
-      <td>19</td>
-      <td>9</td>
-      <td>10</td>
-      <td>71</td>
-      <td>41</td>
-      <td>+30</td>
-      <td>66</td>
-      <td>
-        Qualification for the
-        <a
-          href="https://en.wikipedia.org/wiki/2016%E2%80%9317_UEFA_Champions_League#Play-off_round"
-          title="2016–17 UEFA Champions League"
-          >Champions League play-off round</a
-        >
-      </td>
-    </tr>
-     </tbody>
-     <span class="tag is-warning"> Tag label </span>
-     //Alla fine di ogni riga
-     <span class="tag is-success"> Tag label </span>
-</table>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
