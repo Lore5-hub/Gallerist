@@ -1,175 +1,260 @@
-<div class="columns">
-  <div class="column is-2">First column
-  <aside class="menu">
-  <p class="menu-label">General</p>
-  <ul class="menu-list">
-    <li><a>Dashboard</a></li>
-    <li><a>Customers</a></li>
-  </ul>
-  <p class="menu-label">Administration</p>
-  <ul class="menu-list">
-    <li><a>Team Settings</a></li>
-    <li>
-      <a class="is-active">Manage Your Team</a>
-      <ul>
-        <li><a>Members</a></li>
-        <li><a>Plugins</a></li>
-        <li><a>Add a member</a></li>
-      </ul>
-    </li>
-    <li><a>Invitations</a></li>
-    <li><a>Cloud Storage Environment Settings</a></li>
-    <li><a>Authentication</a></li>
-  </ul>
-  <p class="menu-label">Transactions</p>
-  <ul class="menu-list">
-    <li><a>Payments</a></li>
-    <li><a>Transfers</a></li>
-    <li><a>Balance</a></li>
-  </ul>
-</aside>
-  </div>
-  <div class="column is-10">Second column
-  <!-- Main container -->
-<nav class="level">
-  <!-- Left side -->
-  <div class="level-left">
-    <div class="level-item">
-      <p class="subtitle is-5"><strong>123</strong> posts</p>
-    </div>
-    <div class="level-item">
-      <div class="field has-addons">
-        <p class="control">
-          <input class="input" type="text" placeholder="Find a post" />
-        </p>
-        <p class="control">
-          <button class="button">Search</button>
-        </p>
-      </div>
-    </div>
-  </div>
+<section class="section has-background-white-bis">
+  <div class="container is-fluid">
 
-  <!-- Right side -->
-  <div class="level-right">
-    <p class="level-item"><strong>All</strong></p>
-    <p class="level-item"><a>Published</a></p>
-    <p class="level-item"><a>Drafts</a></p>
-    <p class="level-item"><a>Deleted</a></p>
-    <p class="level-item"><a class="button is-success">New</a></p>
+    <div class="is-flex is-justify-content-space-between is-align-items-center mb-6">
+      <div>
+        <h1 class="title is-3 mb-1">Gestione Piattaforma</h1>
+        <p class="subtitle is-6 has-text-grey">Dashboard operativa e controllo attività</p>
+      </div>
+      
+      <a href="admin_statistiche.php" class="button is-info is-medium">
+        <span class="icon"><i class="fas fa-chart-bar"></i></span>
+        <span>Visualizza Statistiche</span>
+      </a>
+    </div>
+
+    <div class="columns is-multiline is-mobile mb-6">
+      
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4" style="height: 100%;">
+          <span class="icon is-medium has-text-link mb-2"><i class="fas fa-users fa-lg"></i></span>
+          <p class="heading">Utenti Totali</p>
+          <p class="title is-4 mb-2">{$dashboard.utenti_totali}</p>
+          <p class="is-size-7 has-text-success">
+            <i class="fas fa-arrow-up"></i> {$dashboard.utenti_perc}% vs prec.
+          </p>
+        </div>
+      </div>
+
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4 has-background-warning-light" style="height: 100%;">
+          <span class="icon is-medium has-text-warning-dark mb-2"><i class="fas fa-user-clock fa-lg"></i></span>
+          <p class="heading">In Attesa Verifica</p>
+          <p class="title is-4 mb-2 has-text-warning-dark">{$dashboard.utenti_attesa}</p>
+          <p class="is-size-7 has-text-grey">Azione richiesta</p>
+        </div>
+      </div>
+
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4" style="height: 100%;">
+          <span class="icon is-medium has-text-primary mb-2"><i class="fas fa-paint-brush fa-lg"></i></span>
+          <p class="heading">Artisti Attivi</p>
+          <p class="title is-4 mb-2">{$dashboard.artisti_attivi}</p>
+          <p class="is-size-7 has-text-success">
+            <i class="fas fa-arrow-up"></i> {$dashboard.artisti_perc}% vs prec.
+          </p>
+        </div>
+      </div>
+
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4" style="height: 100%;">
+          <span class="icon is-medium has-text-danger mb-2"><i class="fas fa-flag fa-lg"></i></span>
+          <p class="heading">Segnalazioni</p>
+          <p class="title is-4 mb-2">{$dashboard.segnalazioni_aperte}</p>
+          <p class="is-size-7 has-text-danger">
+            <i class="fas fa-arrow-up"></i> {$dashboard.segnalazioni_perc}% vs prec.
+          </p>
+        </div>
+      </div>
+
+      <div class="column is-one-fifth-desktop is-half-tablet">
+        <div class="box has-text-centered p-4" style="height: 100%;">
+          <span class="icon is-medium has-text-danger mb-2"><i class="fas fa-comments fa-lg"></i></span>
+          <p class="heading">Commenti Segnalati</p>
+          <p class="title is-4 mb-2">{$dashboard.commenti_segnalati}</p>
+          <p class="is-size-7 has-text-success">
+            <i class="fas fa-arrow-down"></i> {$dashboard.commenti_perc}% vs prec.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="columns is-multiline mb-5">
+      
+      <div class="column is-8-desktop">
+        <div class="box" style="height: 100%;">
+          
+          <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+            <h2 class="title is-5 mb-0"><i class="fas fa-user-clock has-text-warning mr-2"></i> Utenti in attesa di verifica</h2>
+            <a href="admin_verifica_utenti.php" class="button is-small is-link is-outlined">Vedi tutti</a>
+          </div>
+
+          <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable is-vcentered">
+              <thead>
+                <tr>
+                  <th>Nickname</th>
+                  <th>Data Registrazione</th>
+                  <th>Stato</th>
+                  <th class="has-text-right">Azione</th>
+                </tr>
+              </thead>
+              <tbody>
+                {foreach from=$utenti_in_attesa item=utente}
+                  <tr>
+                    <td><strong>@{$utente.nickname}</strong></td>
+                    <td>{$utente.data_registrazione|date_format:"%d/%m/%Y"}</td>
+                    <td><span class="tag is-warning is-light">In attesa</span></td>
+                    <td class="has-text-right">
+                      <a href="verifica_utente.php?id={$utente.id}" class="button is-small is-success">
+                        <span class="icon"><i class="fas fa-check"></i></span>
+                        <span>Verifica</span>
+                      </a>
+                    </td>
+                  </tr>
+                {foreachelse}
+                  <tr>
+                    <td colspan="4" class="has-text-centered has-text-grey py-4">Nessun utente in attesa di verifica.</td>
+                  </tr>
+                {/foreach}
+              </tbody>
+            </table>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="column is-4-desktop">
+        <div class="box" style="height: 100%;">
+          
+          <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+            <h2 class="title is-5 mb-0"><i class="fas fa-tags has-text-info mr-2"></i> Categorie Artisti</h2>
+            <button class="button is-small is-success" title="Aggiungi Categoria">
+              <span class="icon"><i class="fas fa-plus"></i></span>
+            </button>
+          </div>
+
+          <div class="table-container mb-4">
+            <table class="table is-fullwidth is-hoverable is-vcentered is-narrow">
+              <thead>
+                <tr>
+                  <th>Categoria</th>
+                  <th>Opere</th>
+                  <th class="has-text-right">Azioni</th>
+                </tr>
+              </thead>
+              <tbody>
+                {foreach from=$categorie item=categoria}
+                  <tr>
+                    <td><strong>{$categoria.nome}</strong></td>
+                    <td>{$categoria.num_opere}</td>
+                    <td class="has-text-right">
+                      <a href="#" class="button is-small is-ghost has-text-info px-1" title="Modifica">
+                        <i class="fas fa-pencil-alt"></i>
+                      </a>
+                      <a href="#" class="button is-small is-ghost has-text-danger px-1" title="Rimuovi">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </td>
+                  </tr>
+                {/foreach}
+              </tbody>
+            </table>
+          </div>
+          
+          <a href="admin_categorie.php" class="button is-small is-fullwidth is-info is-outlined">Gestisci tutte</a>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="columns is-multiline">
+      
+      <div class="column is-8-desktop">
+        <div class="box" style="height: 100%;">
+          
+          <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+            <h2 class="title is-5 mb-0"><i class="fas fa-flag has-text-danger mr-2"></i> Segnalazioni Recenti</h2>
+            <a href="admin_segnalazioni.php" class="button is-small is-link is-outlined">Vedi tutte</a>
+          </div>
+
+          <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable is-vcentered is-size-7">
+              <thead>
+                <tr>
+                  <th>Tipo / Oggetto</th>
+                  <th>Contenuto Segnalato</th>
+                  <th>Segnalato da</th>
+                  <th>Data</th>
+                  <th>Stato</th>
+                  <th class="has-text-right">Dettagli</th>
+                </tr>
+              </thead>
+              <tbody>
+                {foreach from=$segnalazioni item=segnalazione}
+                  <tr>
+                    <td><strong>{$segnalazione.tipo}</strong></td>
+                    <td><span class="is-truncated" style="max-width: 150px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{$segnalazione.contenuto}</span></td>
+                    <td>@{$segnalazione.autore_segnalazione}</td>
+                    <td>{$segnalazione.data|date_format:"%d/%m/%Y"}</td>
+                    <td>
+                      {if $segnalazione.stato == 'Aperta'}
+                        <span class="tag is-danger is-light is-small">Aperta</span>
+                      {else}
+                        <span class="tag is-success is-light is-small">Chiusa</span>
+                      {/if}
+                    </td>
+                    <td class="has-text-right">
+                      <a href="adminSegnalazioni.php?id={$segnalazione.id}" class="button is-small is-link is-light" title="Vedi Dettaglio">
+                        <span class="icon"><i class="fas fa-eye"></i></span>
+                      </a>
+                    </td>
+                  </tr>
+                {foreachelse}
+                  <tr>
+                    <td colspan="6" class="has-text-centered has-text-grey py-4">Nessuna segnalazione recente.</td>
+                  </tr>
+                {/foreach}
+              </tbody>
+            </table>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="column is-4-desktop">
+        <div class="box" style="height: 100%;">
+          
+          <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+            <h2 class="title is-5 mb-0"><i class="fas fa-ban has-text-danger mr-2"></i> Utenti Bannati</h2>
+            <a href="admin_bannati.php" class="button is-small is-link is-outlined">Vedi tutti</a>
+          </div>
+
+          <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable is-narrow is-size-7">
+              <thead>
+                <tr>
+                  <th>Utente</th>
+                  <th>Motivo</th>
+                  <th>Tipo</th>
+                  <th>Inizio</th>
+                  <th>Fine</th>
+                </tr>
+              </thead>
+              <tbody>
+                {foreach from=$bannati item=ban}
+                  <tr>
+                    <td><strong>@{$ban.utente}</strong></td>
+                    <td title="{$ban.motivo}"><span class="is-truncated" style="max-width: 80px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{$ban.motivo}</span></td>
+                    <td>{$ban.tipo}</td>
+                    <td>{$ban.inizio|date_format:"%d/%m"}</td>
+                    <td>{if $ban.fine}{$ban.fine|date_format:"%d/%m"}{else}<em>Perm.</em>{/if}</td>
+                  </tr>
+                {foreachelse}
+                  <tr>
+                    <td colspan="5" class="has-text-centered has-text-grey py-4">Nessun utente attualmente bannato.</td>
+                  </tr>
+                {/foreach}
+              </tbody>
+            </table>
+          </div>
+          
+        </div>
+      </div>
+
+    </div>
+
   </div>
-</nav> //vedi per avvisi
-<table class="table is striped is-narrow">
-  <thead>
-    <tr>
-      <th><abbr title="Position">Pos</abbr></th>
-      <th>Team</th>
-      <th><abbr title="Played">Pld</abbr></th>
-      <th><abbr title="Won">W</abbr></th>
-      <th><abbr title="Drawn">D</abbr></th>
-      <th><abbr title="Lost">L</abbr></th>
-      <th><abbr title="Goals for">GF</abbr></th>
-      <th><abbr title="Goals against">GA</abbr></th>
-      <th><abbr title="Goal difference">GD</abbr></th>
-      <th><abbr title="Points">Pts</abbr></th>
-      <th>Qualification or relegation</th>
-    </tr>
-  </thead>
-  <tfoot>
-    <tr>
-      <th><abbr title="Position">Pos</abbr></th>
-      <th>Team</th>
-      <th><abbr title="Played">Pld</abbr></th>
-      <th><abbr title="Won">W</abbr></th>
-      <th><abbr title="Drawn">D</abbr></th>
-      <th><abbr title="Lost">L</abbr></th>
-      <th><abbr title="Goals for">GF</abbr></th>
-      <th><abbr title="Goals against">GA</abbr></th>
-      <th><abbr title="Goal difference">GD</abbr></th>
-      <th><abbr title="Points">Pts</abbr></th>
-      <th>Qualification or relegation</th>
-    </tr>
-  </tfoot>
-  <tbody>
-    <tr>
-      <th>1</th>
-      <td>
-        <a
-          href="https://en.wikipedia.org/wiki/Leicester_City_F.C."
-          title="Leicester City F.C."
-          >Leicester City</a
-        >
-        <strong>(C)</strong>
-      </td>
-      <td>38</td>
-      <td>23</td>
-      <td>12</td>
-      <td>3</td>
-      <td>68</td>
-      <td>36</td>
-      <td>+32</td>
-      <td>81</td>
-      <td>
-        Qualification for the
-        <a
-          href="https://en.wikipedia.org/wiki/2016%E2%80%9317_UEFA_Champions_League#Group_stage"
-          title="2016–17 UEFA Champions League"
-          >Champions League group stage</a
-        > <button class="button is-small is-link">Button</button>
-      </td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>
-        <a
-          href="https://en.wikipedia.org/wiki/Arsenal_F.C."
-          title="Arsenal F.C."
-          >Arsenal</a
-        >
-      </td>
-      <td>38</td>
-      <td>20</td>
-      <td>11</td>
-      <td>7</td>
-      <td>65</td>
-      <td>36</td>
-      <td>+29</td>
-      <td>71</td>
-      <td>
-        Qualification for the
-        <a
-          href="https://en.wikipedia.org/wiki/2016%E2%80%9317_UEFA_Champions_League#Group_stage"
-          title="2016–17 UEFA Champions League"
-          >Champions League group stage</a
-        > <button class="button is-small is-link">Button</button>
-      </td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>
-        <a
-          href="https://en.wikipedia.org/wiki/Tottenham_Hotspur_F.C."
-          title="Tottenham Hotspur F.C."
-          >Tottenham Hotspur</a
-        >
-      </td>
-      <td>38</td>
-      <td>19</td>
-      <td>13</td>
-      <td>6</td>
-      <td>69</td>
-      <td>35</td>
-      <td>+34</td>
-      <td>70</td>
-      <td>
-        Qualification for the
-        <a
-          href="https://en.wikipedia.org/wiki/2016%E2%80%9317_UEFA_Champions_League#Group_stage"
-          title="2016–17 UEFA Champions League"
-          >Champions League group stage</a
-        > <button class="button is-small is-link">Button</button> //aggiungi simbolo occhio
-      </td>
-    </tr>
-  </tbody>
-</table>
-  </div>
-</div>
+</section>
