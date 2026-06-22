@@ -12,16 +12,24 @@ class CConsultazioneStoricoVendite {
      */
     public function visualizzaStorico(array $filtri = []): void {
         // 1. Controllo di sicurezza e identificazione dell'artista
-        // TODO: Verificare tramite Foundation\Session che l'utente loggato abbia il ruolo di "Artista"
-        // TODO: Recuperare il nickname o l'ID dell'artista dalla sessione attiva
+        // Assumiamo che FSession sia la classe Foundation che gestisce le sessioni
+        if (!FSession::isLogged() || FSession::getRuolo() !== 'Artista') {
+            // Se non è loggato o non è un artista, lo reindirizziamo al login o alla home
+            header('Location: /login');
+            exit;
+        }
+        
+        // Recupero l'ID dell'artista dalla sessione attiva
+        $idArtistaLoggato = FSession::getId(); 
         
         // 2. Recupero della cronologia delle vendite dallo strato di persistenza
-        // Lo strato Foundation filtrerà la tabella degli ordini restituendo solo quelli relativi alle opere di questo artista
-        // TODO: Chiamare FOrdine::getVenditeByArtista($idArtistaLoggato, $filtri) nella cartella /Foundation
+        // Lo strato Foundation filtrerà la tabella degli ordini
+        $arrayVendite = FOrdine::getVenditeByArtista($idArtistaLoggato, $filtri);
         
         // 3. Rendering della pagina dello storico vendite
-        // TODO: Includere e istanziare la View VStoricoArtista dalla cartella /View
-        // TODO: Chiamare $VStoricoArtista->mostraElencoVendite($arrayVendite)
+        // Grazie all'autoloader, posso istanziare direttamente la View
+        $view = new VStoricoArtista();
+        $view->mostraElencoVendite($arrayVendite);
     }
 
     /**
@@ -30,16 +38,43 @@ class CConsultazioneStoricoVendite {
      * @param array $periodo Intervallo di tempo selezionato dall'artista (contiene 'data_inizio' e 'data_fine')
      */
     public function richiediAnalisi(array $periodo): void {
-        // 1. Identificazione dell'artista tramite la sessione attiva per garantire la privacy dei dati finanziari
-        // TODO: Recuperare l'ID dell'artista loggato da Foundation\Session
+        // 1. Identificazione dell'artista e controllo accessi
+        if (!FSession::isLogged() || FSession::getRuolo() !== 'Artista') {
+            header('Location: /login');
+            exit;
+        }
+        
+        $idArtistaLoggato = FSession::getId();
+        
+        // Estraggo le date passate dalla View (con un fallback di sicurezza nel caso siano vuote)
+       $dataInizio = null;
+$dataFine = null;
+
+try {
+    // Se la stringa esiste ed è valorizzata, creiamo l'oggetto DateTimeImmutable
+    if (isset($periodo['data_inizio']) && $periodo['data_inizio'] !== '') {
+        $dataInizio = new DateTimeImmutable($periodo['data_inizio']);
+    }
+    
+    if (isset($periodo['data_fine']) && $periodo['data_fine'] !== '') {
+        $dataFine = new DateTimeImmutable($periodo['data_fine']);
+    }
+} catch (Exception $e) {
+    // Se l'utente inserisce una data in un formato assurdo o non valido, 
+    // DateTimeImmutable lancia un'eccezione. Qui la intercettiamo per evitare il crash del sito.
+    $dataInizio = null;
+    $dataFine = null;
+}
+
+
         
         // 2. Interrogazione del database per ottenere dati aggregati e statistici
-        // In questo caso, Foundation non restituisce singole Entity "Ordine", ma un set di dati già calcolati (es. array associativo)
-        // TODO: Chiamare FOrdine::getStatisticheGuadagni($idArtistaLoggato, $periodo['data_inizio'], $periodo['data_fine']) nella cartella /Foundation
+        // Passiamo l'ID e il periodo scelto tramite il calendario
+        $datiAggregati = FOrdine::getStatisticheGuadagni($idArtistaLoggato, $dataInizio, $dataFine);
         
         // 3. Passaggio dei dati alla View preposta alla generazione di grafici e report
-        // TODO: Includere e istanziare la View VAnalisiArtista dalla cartella /View
-        // TODO: Chiamare $VAnalisiArtista->mostraDashboardDati($datiAggregati)
+        $view = new VAnalisiArtista();
+        $view->mostraDashboardDati($datiAggregati);
     }
 }
 ?>
