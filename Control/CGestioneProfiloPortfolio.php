@@ -114,13 +114,13 @@ class CGestioneProfiloPortfolio {
         }
         
         // Salvataggio della replica nel DB agganciandola al commento originale
-        FCommento::salvaReplica($idCommento, $testoReplica); [cite: 71]
+        FCommento::salvaReplica($idCommento, $testoReplica); //[cite: 71]
         
         // Identifichiamo l'opera associata per ricaricare la pagina corretta con la risposta pubblicata [cite: 72]
         $idOpera = FCommento::getIdOperaByCommento($idCommento);
         
         $view = new VOpera();
-        $view->mostraSchedaDettaglio($idOpera); [cite: 72]
+        $view->mostraSchedaDettaglio($idOpera); //[cite: 72]
     }
 
     /**
@@ -139,7 +139,7 @@ class CGestioneProfiloPortfolio {
             // Eliminazione di una singola opera dal portfolio 
             $opera = FOpera::load($idOpera);
             if ($opera && $opera->getIdArtista() === $idArtistaAttivo) {
-                FOpera::delete($idOpera); [cite: 74]
+                FOpera::delete($idOpera); //[cite: 74]
             }
             // Ricarica la dashboard con il portfolio aggiornato
             $this->mostraDashboard();
@@ -170,7 +170,7 @@ class CGestioneProfiloPortfolio {
         
         // 4. Reindirizzamento dell'utente, ora anonimo, alla Homepage con messaggio di conferma [cite: 74]
         $view = new VHomepage();
-        $view->mostraHomeConMessaggio("Account eliminato con successo."); [cite: 74]
+        $view->mostraHomeConMessaggio("Account eliminato con successo."); //[cite: 74]
     }
 }
 ?>
