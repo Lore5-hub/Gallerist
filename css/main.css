@@ -1,0 +1,723 @@
+/* ==========================================================================
+   1. VARIABILI GLOBALI E CONFIGURAZIONE (Inizio del file unico)
+   ========================================================================== */
+:root {
+    --transition-smooth: all 0.3s ease;
+    --box-shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* Utility per troncare i testi lunghi nelle tabelle (Evita che la grafica sballi) */
+.text-truncate-custom {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.max-w-150 { max-width: 150px; }
+.max-w-80  { max-width: 80px; }
+
+/* Forza le box ad occupare tutta l'altezza del loro contenitore */
+.h-full {
+    height: 100%;
+}
+
+
+/* ==========================================================================
+   2. SEZIONE: DASHBOARD AMMINISTRATORE (UC7 / UC8)
+   ========================================================================== */
+.admin-dashboard {
+    /* Rende lo sfondo della sezione leggermente più morbido */
+    background-color: #f8f9fa !important;
+}
+
+/* Animazione e feedback visivo sulle tessere delle statistiche */
+.admin-dashboard .box {
+    transition: var(--transition-smooth);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.admin-dashboard .box:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--box-shadow-hover);
+}
+
+/* Allineamento verticale perfetto per le icone e i testi nelle tabelle */
+.admin-dashboard .table td, 
+.admin-dashboard .table th {
+    vertical-align: middle !important;
+}
+
+/* Effetto hover più marcato sulle righe delle tabelle di controllo */
+.admin-dashboard .table.is-hoverable tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.01) !important;
+}
+
+/* Personalizzazione delle icone statistiche per dare profondità */
+.admin-dashboard .icon.is-medium i {
+    transition: var(--transition-smooth);
+}
+
+.admin-dashboard .box:hover .icon.is-medium i {
+    transform: scale(1.15);
+}
+/* ==========================================================================
+   3. SEZIONE: DETTAGLIO SEGNALAZIONE E MODERAZIONE (UC7)
+   ========================================================================== */
+.admin-ticket {
+    background-color: #f8f9fa !important;
+}
+
+/* Riquadro per la citazione del commento segnalato */
+.admin-ticket-comment-quote {
+    border-left: 4px solid #3273dc; /* Colore blu Bulma per dare enfasi */
+}
+
+/* Gestione dell'anteprima dell'opera segnalata */
+.admin-ticket-artwork-container {
+    max-height: 110px;
+    overflow: hidden;
+    display: inline-block;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    padding: 4px;
+    background: #fff;
+}
+
+.admin-ticket-artwork-img {
+    object-fit: contain;
+    max-height: 100px;
+    width: auto;
+}
+
+/* Uniforma le foto profilo degli utenti nelle box di moderazione */
+.admin-ticket-avatar {
+    object-fit: cover;
+    height: 48px;
+    width: 48px;
+}
+
+/* Storico sanzioni: allineamento verticale */
+.admin-ticket .table td, 
+.admin-ticket .table th {
+    vertical-align: middle !important;
+}
+
+/* Trasformazione dei Radio/Checkbox di sanzione in card interattive */
+.admin-ticket .radio.box,
+.admin-ticket .checkbox.box {
+    transition: var(--transition-smooth);
+    border: 1px solid transparent;
+}
+
+/* Effetto al passaggio del mouse sulle opzioni di sanzione */
+.admin-ticket .radio.box:hover,
+.admin-ticket .checkbox.box:hover {
+    background-color: #ededed !important;
+    transform: translateX(3px); /* Piccolissimo scatto a destra per feedback visivo */
+}
+
+/* Riquadro contenitore dei parametri di Ban (tendine durata e tipo) */
+.admin-ticket-ban-panel {
+    border: 1px solid #dbdbdb;
+    background-color: #fafafa;
+    border-radius: 6px;
+}
+
+/* Evidenzia visivamente l'opzione "Banna utente" */
+.admin-ticket-ban-panel:focus-within {
+    border-color: #ff3860; /* Se l'admin ci clicca dentro, il bordo diventa rosso pericolo */
+}
+/* ==========================================================================
+   4. SEZIONE: ANALISI STATISTICHE PIATTAFORMA (UC8)
+   ========================================================================== */
+.admin-stats {
+    background-color: #f8f9fa !important;
+}
+
+/* Animazione morbida per le card dei riepiloghi numerici */
+.admin-stats .box {
+    transition: var(--transition-smooth);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.admin-stats .box:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--box-shadow-hover);
+}
+
+/* Effetto di scala sulle icone al passaggio del mouse sulle card */
+.admin-stats .icon.is-medium i {
+    transition: var(--transition-smooth);
+}
+
+.admin-stats .box:hover .icon.is-medium i {
+    transform: scale(1.15);
+}
+
+/* Wrapper per i Canvas di Chart.js.
+   Questo è FONDAMENTALE affinché Chart.js riesca a calcolare correttamente
+   le dimensioni responsive su mobile e desktop.
+*/
+.admin-stats-chart-wrapper {
+    position: relative; 
+    width: 100%;
+}
+
+.admin-stats-chart-sm { height: 300px; }
+.admin-stats-chart-lg { height: 400px; }
+
+/* Leggero abbellimento per la lista delle azioni principali sulla destra */
+.admin-stats .level.is-mobile {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem !important;
+}
+
+.admin-stats .level.is-mobile:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0 !important;
+}
+
+/* Tabella delle pagine più visitate: effetto hover */
+.admin-stats .table.is-hoverable tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.015) !important;
+}
+/* ==========================================================================
+   5. SEZIONE: VALIDAZIONE UTENTI (UC7 - admin_validazione)
+   ========================================================================== */
+.admin-validation {
+    background-color: #f8f9fa !important;
+}
+
+/* Stile per l'avatar principale grande */
+.admin-validation-avatar {
+    object-fit: cover; 
+    height: 96px; 
+    width: 96px;
+    border: 3px solid white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+}
+
+/* Divisorio orizzontale invisibile (sostituto elegante dell'HR) */
+.admin-validation-divider {
+    height: 1px; 
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.05); /* Equivalente a has-background-light */
+}
+
+/* Uniformità per l'anteprima del documento di identità */
+.admin-validation-doc-preview {
+    border-radius: 6px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    background-color: #fff;
+}
+
+/* Card interne al Portfolio di prova: micro-animazione e border */
+.admin-validation-portfolio-card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+    border: 1px solid #edf2f7;
+    transition: var(--transition-smooth);
+    height: 100%; /* Assicura che la card occupi tutto lo spazio in griglia */
+}
+
+.admin-validation-portfolio-card:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+    border-color: #dbdbdb;
+}
+
+/* Assicura che le immagini del portfolio siano quadrate/proporzionate */
+.admin-validation-portfolio-card img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+/* Disabilita il ridimensionamento orizzontale della textarea delle Note Admin */
+.admin-validation textarea[name="note_admin"] {
+    resize: vertical; /* L'admin può allungarla in giù, ma non rovina il layout sformandola a destra */
+}
+/* ==========================================================================
+   6. SEZIONE: ESPLORAZIONE CATALOGO OPERE (UC2)
+   ========================================================================== */
+/* Wrapper per la pagina del catalogo */
+.page-catalog {
+    padding-bottom: 3rem;
+}
+
+/* Rende il pannello dei filtri "appiccicoso" durante lo scroll verso il basso */
+.page-catalog .filter-sidebar {
+    position: sticky;
+    top: 2rem; 
+}
+
+/* Stile e animazioni per la card dell'opera */
+.page-catalog .artwork-card {
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    transition: var(--transition-smooth);
+    overflow: hidden; /* Fondamentale per non far sbordare l'immagine quando fa lo zoom */
+}
+
+.page-catalog .artwork-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+}
+
+/* Immagine dell'opera: riempimento perfetto ed effetto zoom */
+.page-catalog .artwork-img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+}
+
+.page-catalog .artwork-card:hover .artwork-img {
+    transform: scale(1.08); /* Effetto zoom morbido sull'opera */
+}
+
+/* Tasto 'Vedi Dettagli': feedback visivo al passaggio del mouse */
+.page-catalog .card-footer-item {
+    transition: var(--transition-smooth);
+}
+
+.page-catalog .artwork-card:hover .card-footer-item {
+    background-color: #00d1b2 !important; /* Colore primario (is-primary di Bulma) */
+    color: white !important;
+}
+/* ==========================================================================
+   7. SEZIONE: DASHBOARD ARTISTA (UC5)
+   ========================================================================== */
+/* Container e gestione foto profilo con overlay CSS nativo */
+.artist-avatar-figure {
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.artist-avatar-figure img {
+    object-fit: cover;
+    height: 100% !important;
+    width: 100% !important;
+    border: 3px solid #eee;
+    transition: var(--transition-smooth);
+}
+
+.artist-avatar-overlay {
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Quando l'utente passa il mouse sulla foto, appare l'icona e l'immagine sotto fa un micro-zoom */
+.artist-avatar-figure:hover .artist-avatar-overlay {
+    opacity: 1;
+}
+
+.artist-avatar-figure:hover img {
+    transform: scale(1.05);
+}
+
+/* Box della Biografia e posizionamento della matita di modifica */
+.artist-bio-box {
+    position: relative !important;
+}
+
+.artist-bio-edit-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+}
+
+/* Griglia delle proprie Opere d'Arte */
+.artist-work-card {
+    transition: var(--transition-smooth);
+    border: 1px solid #edf2f7;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.artist-work-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Posizionamento del cestino per eliminare l'opera sopra l'immagine */
+.artist-work-delete-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+/* Separatore dinamico tra una recensione e l'altra */
+.artist-review-article {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding-bottom: 1.5rem;
+}
+
+.artist-review-article:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+/* ==========================================================================
+   8. SEZIONE: DETTAGLIO OPERA (UC3)
+   ========================================================================== */
+
+/* Stile per l'immagine principale: simula un quadro appeso in galleria */
+.artwork-detail-wrapper {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+
+.artwork-detail-wrapper img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Utility per l'allineamento verticale preciso delle icone/testo */
+.is-v-middle {
+    vertical-align: middle;
+}
+
+/* Riquadri delle recensioni testuali sotto l'opera */
+.artwork-review-box {
+    border-left: 4px solid #ffdd57; /* Richiama il colore delle stelle (is-warning) */
+    background-color: #fafbfc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: var(--transition-smooth);
+}
+
+.artwork-review-box:hover {
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+/* ==========================================================================
+   9. SEZIONE: AGGIUNGI OPERA (UC5)
+   ========================================================================== */
+
+/* Layout e stile per i placeholder delle immagini caricate dall'artista */
+.artwork-upload-preview {
+    background-color: #f5f5f5;
+    position: relative;
+    border: 2px dashed #ddd; /* Dà l'idea che sia uno spazio da riempire */
+    transition: var(--transition-smooth);
+}
+
+/* Quando l'utente ci passa sopra, il bordo si colora leggermente */
+.artwork-upload-preview:hover {
+    border-color: #00d1b2;
+}
+
+/* Badge 'Copertina' posizionato in alto a sinistra dell'anteprima principale */
+.artwork-cover-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+}
+
+/* Piccoli box quadrati per le foto extra */
+.artwork-extra-preview {
+    background-color: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b5b5b5; /* corresponds to has-text-grey-light */
+    border: 1px solid #eee;
+}
+/* ==========================================================================
+   10. SEZIONE: FORM RECENSIONE
+   ========================================================================== */
+/* Bordo superiore colorato per staccarlo visivamente dal resto della pagina */
+.artwork-review-form {
+    border-top: 4px solid #00d1b2; /* Colore primario (is-primary) */
+    transition: var(--transition-smooth);
+}
+
+/* L'effetto :focus-within si attiva quando qualsiasi elemento DENTRO il box è selezionato */
+.artwork-review-form:focus-within {
+    box-shadow: 0 8px 20px rgba(0, 209, 178, 0.15);
+    transform: translateY(-2px);
+    background-color: #fff !important; /* Passa dal grigio chiaro al bianco puro per dare risalto */
+}
+/* ==========================================================================
+   11. SEZIONE: FORM SEGNALAZIONE
+   ========================================================================== */
+/* Box contenitore per le segnalazioni */
+.report-form-box {
+    border-left: 4px solid #f14668; /* Colore di errore/danger di Bulma */
+    transition: var(--transition-smooth);
+}
+
+/* Quando l'utente interagisce con i campi di segnalazione, il box si evidenzia con un'ombra morbida rossa */
+.report-form-box:focus-within {
+    box-shadow: 0 8px 20px rgba(241, 70, 104, 0.12);
+    transform: translateY(-2px);
+    background-color: #fff;
+}
+/* ==========================================================================
+   12. SEZIONE: HOMEPAGE VETRINA (UC1)
+   ========================================================================== */
+/* Tessere delle macro-categorie (Mosaico Bulma Tiles) */
+.home-category-tile {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    transition: var(--transition-smooth);
+}
+
+.home-category-tile.is-main {
+    min-height: 400px;
+}
+
+.home-category-tile.is-sub {
+    min-height: 190px;
+}
+
+/* Immagini di sfondo delle categorie con effetto zoom lento */
+.home-category-tile-img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.home-category-tile:hover .home-category-tile-img {
+    transform: scale(1.06); /* Piacevole effetto zoom all'hover sulla categoria */
+}
+
+/* Sfumatura scura cinematografica per rendere leggibili i titoli bianchi */
+.home-category-tile-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 100%);
+    transition: background 0.3s ease;
+}
+
+.home-category-tile:hover .home-category-tile-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.35) 70%, transparent 100%);
+}
+
+/* Sezione Opere Popolari: azzeramento background card */
+.home-popular-card {
+    background: transparent !important;
+}
+
+/* Contenitore immagine opera con transizione di crescita fluida */
+.home-popular-img-box {
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
+    cursor: pointer;
+}
+
+.home-popular-img-box:hover {
+    transform: scale(1.04); /* Sostituisce elegantemente il vecchio JS inline */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.home-popular-img-box img {
+    object-fit: cover;
+    border-radius: 4px;
+    width: 100%;
+    height: 100%;
+}
+/* ==========================================================================
+   13. SEZIONE: AUTENTICAZIONE E LOGIN
+   ========================================================================== */
+
+/* Sfondo elegante per la pagina di login/registrazione con gradiente dinamico */
+.auth-hero-bg {
+    background: linear-gradient(135deg, #209cee 0%, #0c3e66 100%) !important;
+}
+
+/* Riquadro di login con ombra morbida e leggera levitazione all'hover */
+.auth-box {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+    border-radius: 12px; /* Un bordo leggermente più arrotondato per eleganza */
+    transition: var(--transition-smooth);
+}
+
+.auth-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25) !important;
+}
+/* ==========================================================================
+   14. SEZIONE: REGISTRAZIONE UTENTE E ARTISTA (UC4)
+   ========================================================================== */
+
+/* Layout split-screen per la registrazione */
+.register-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Colonna sinistra con immagine artistica di sfondo a tutta altezza */
+.register-image-sidebar {
+    position: relative;
+    background-color: #1a1a1a;
+}
+
+.register-image-sidebar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.85;
+}
+
+/* Colonna destra contenente il form scrollabile */
+.register-form-scroll {
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 3rem !important;
+}
+
+/* Ottimizzazione icone per i campi speciali */
+.pointer-events-none {
+    pointer-events: none;
+}
+/* ==========================================================================
+   15. SEZIONE: PROFILO PUBBLICO (UC3)
+   ========================================================================== */
+
+/* Header del profilo: contenitore e avatar */
+.public-profile-box {
+    border-top: 5px solid #3273dc; /* Colore Bulma "is-link" di base, sostituibile */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.public-profile-avatar {
+    object-fit: cover;
+    height: 100%;
+}
+
+/* Portfolio Artista: Effetto Hover sulle card delle opere */
+.portfolio-card-img-box {
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
+    cursor: pointer;
+}
+
+.portfolio-card-img-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+.portfolio-card-img {
+    object-fit: cover;
+    border-radius: 4px;
+    width: 100%;
+    height: 100%;
+}
+
+/* Tagla del titolo in sovrimpressione sulle opere */
+.portfolio-title-badge {
+    border-radius: 3px;
+    background-color: rgba(10, 10, 10, 0.85); /* Sostituisce opacity inline */
+}
+/* ==========================================================================
+   16. SEZIONE: CHECKOUT E RIEPILOGO ORDINE
+   ========================================================================== */
+
+/* Contenitore e miniatura dell'opera nel riepilogo */
+.checkout-artwork-box {
+    border: 1px solid #eeeeee;
+    border-radius: 6px;
+}
+
+.checkout-artwork-img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    border-radius: 4px;
+}
+
+/* Riquadri interattivi per i metodi di pagamento */
+.payment-method-box {
+    transition: var(--transition-smooth, all 0.3s ease);
+    border: 2px solid transparent; /* Predispone il bordo per lo stato :checked */
+}
+
+.payment-method-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Evidenzia l'intero riquadro se il radio button al suo interno è selezionato */
+.payment-method-box:has(input[type="radio"]:checked) {
+    border-color: #00d1b2; /* Colore primario (is-primary) */
+    background-color: #f5fffd; /* Leggerissima sfumatura verde/azzurra */
+    box-shadow: 0 4px 10px rgba(0, 209, 178, 0.15);
+}
+/* ==========================================================================
+   17. SEZIONE: DASHBOARD VENDITE (UC7)
+   ========================================================================== */
+
+/* Uniformità altezza schede senza stili inline */
+.dashboard-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenitori per i grafici Canvas */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Miglioramento leggibilità tabella */
+.sales-table-header {
+    background-color: #f8f9fa;
+}
+
+/* Stile per i box delle statistiche rapido */
+.stat-box {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
+}
+/* ==========================================================================
+   18. SEZIONE: PAGINA ERRORE
+   ========================================================================== */
+.error-hero {
+    min-height: 80vh; /* Garantisce che la pagina occupi lo spazio necessario */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-code {
+    font-size: 8rem; /* Molto grande per dare impatto visivo */
+    font-weight: 700;
+    color: #485fc7; /* Link Bulma color */
+    line-height: 1;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    max-width: 600px;
+    margin: 0 auto;
+}
