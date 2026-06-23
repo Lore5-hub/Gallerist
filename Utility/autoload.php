@@ -10,7 +10,8 @@ function my_autoloader($className)
         'E' => 'Entity/',
         'F' => 'Foundation/',
         'V' => 'View/',
-        'C' => 'Control/'
+        'C' => 'Control/',
+        'U' => 'Utility/',
     ];
 
     $iniziale = $className[0];

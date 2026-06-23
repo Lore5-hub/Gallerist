@@ -58,36 +58,46 @@ class Installation {
     /**
      * Crea il database eseguendo gallerist.sql e scrive config.inc.php
      */
-    private static function install(): void {
-        try {
-            $db = new PDO("mysql:host=127.0.0.1;", $_POST['nomeutente'], $_POST['password']);
-            $db->beginTransaction();
+private static function install(): void {
+    #preg_replace('/[^a-zA-Z0-9_]/', '', $_POST['nomedb']); // Sanitize database name
+    $dbName = preg_replace('/[^a-zA-Z0-9_]/', '', $_POST['nomedb']);
+    #preg_replace('/[^a-zA-Z0-9_]/', '', $_POST['nomeutente']); // sanitizza username mettendo \ davanti a eventuali caratteri speciali
+    $dbUser = addslashes($_POST['nomeutente']);
+    $dbPass = addslashes($_POST['password']);
 
-            $query  = 'DROP DATABASE IF EXISTS ' . $_POST['nomedb'] . ';';
-            $query .= 'CREATE DATABASE ' . $_POST['nomedb'] . ';';
-            $query .= 'USE ' . $_POST['nomedb'] . ';';
-            $query .= file_get_contents('gallerist.sql'); // ← nome del tuo file SQL
+    try {
+        $db = new PDO("mysql:host=127.0.0.1;", $dbUser, $dbPass);
+        $db->beginTransaction(); #da questo momento le modifiche al database non sono definitive finché non viene fatto il commit
 
-            $db->exec($query);
-            $db->commit();
+        $query  = 'DROP DATABASE IF EXISTS `' . $dbName . '`;'; #cancella il database se esiste già
+        $query .= 'CREATE DATABASE `' . $dbName . '`;'; #crea il database
+        $query .= 'USE `' . $dbName . '`;'; #entra nel database appena creato
+        $query .= file_get_contents('gallerist.sql'); #legge il file gallerist.sql e lo aggiunge alla query
 
-            // Scrittura di config.inc.php
-            $file   = fopen('config.inc.php', 'c+');
-            $script = '<?php '
-                    . '$GLOBALS[\'database\'] = \'' . $_POST['nomedb']    . '\'; '
-                    . '$GLOBALS[\'username\'] = \'' . $_POST['nomeutente'] . '\'; '
-                    . '$GLOBALS[\'password\'] = \'' . $_POST['password']   . '\'; '
-                    . '?>';
-            fwrite($file, $script);
-            fclose($file);
+        $db->exec($query); #esegue tutte le query in un'unica chiamata, utile per eseguire più query in una volta sola
+        $db->commit(); #sal\va le modifiche al database rendendole definitive
 
-            $db = null;
+        //
+        $file   = fopen('config.inc.php', 'c+'); #apre il file config.inc.php in modalità scrittura, se non esiste lo crea
+        $script = '<?php '
+        # scrive il contenuto del file config.inc.php, definendo le costanti per la connessione al database e il tempo di scadenza dei cookie
+                . 'define(\'COOKIE_EXP_TIME\', 3600); '
+                . '$GLOBALS[\'database\'] = \'' . $dbName . '\'; '
+                . '$GLOBALS[\'username\'] = \'' . $dbUser . '\'; '
+                . '$GLOBALS[\'password\'] = \'' . $dbPass . '\'; '
+                . '?>';
+        fwrite($file, $script);
+        fclose($file);
 
-        } catch (PDOException $e) {
-            echo "Errore durante l'installazione: " . $e->getMessage();
-            $db->rollBack();
-            die;
+        $db = null; #chiude la connessione PDO al database
+
+    } catch (PDOException $e) {
+        echo "Errore durante l'installazione: " . $e->getMessage();
+        if ($db && $db->inTransaction()) {
+            $db->rollBack(); #annulla tutte le modifiche al database se c'è stato un errore durante l'esecuzione delle query
         }
+        die; #interrompe l'esecuzione dello script
     }
 }
-?>
+
+}
