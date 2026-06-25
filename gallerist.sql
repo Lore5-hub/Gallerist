@@ -118,6 +118,22 @@ CREATE TABLE `ordine` (
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `offerta`
+--
+
+CREATE TABLE `offerta` (
+  `id`            int(11)        NOT NULL AUTO_INCREMENT,
+  `cifraProposta` decimal(10,2)  NOT NULL,
+  `nota`          text           DEFAULT NULL,
+  `stato`         enum('inviata','accettata','rifiutata') NOT NULL DEFAULT 'inviata',
+  `dataOfferta`   datetime       NOT NULL DEFAULT current_timestamp(),
+  `idOfferente`   int(11)        NOT NULL,
+  `idOpera`       int(11)        NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ------------------------------------------------------
+--
 -- Struttura della tabella `provvedimento`
 --
 
@@ -308,6 +324,15 @@ ALTER TABLE `opera`
 --
 ALTER TABLE `ordine`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT per la tabella `offerta`
+--
+
+ALTER TABLE `offerta`
+  ADD CONSTRAINT `offerta_ibfk_1` FOREIGN KEY (`idOfferente`) REFERENCES `utente` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `offerta_ibfk_2` FOREIGN KEY (`idOpera`)     REFERENCES `opera`  (`id`) ON DELETE CASCADE;
+
 
 --
 -- AUTO_INCREMENT per la tabella `provvedimento`

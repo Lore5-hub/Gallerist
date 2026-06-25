@@ -1,185 +1,232 @@
 <?php
-require_once __DIR__ . '/../Foundation/FUtente.php';
-require_once __DIR__ . '/../Foundation/FOpera.php';
-// require_once __DIR__ . '/../Foundation/FOrdine.php';
-// require_once __DIR__ . '/../Foundation/FOfferta.php';
-require_once __DIR__ . '/../Entity/EOrdine.php';
-require_once __DIR__ . '/../Entity/EOfferta.php';
-require_once __DIR__ . '/../Entity/EPrezzo.php';
-// require_once __DIR__ . '/../Utility/USession.php';
-// require_once __DIR__ . '/../Utility/UEmail.php';
-// require_once __DIR__ . '/../View/VCompravendita.php';
+// Control/CCompravendita.php
 
 /**
- * Classe di controllo dedicata alla gestione degli ordini e delle offerte d'acquisto.
+ * Classe di controllo dedicata alla gestione degli ordini e delle offerte d'acquisto (UC3).
  * @package Control
  */
 class CCompravendita {
 
     /**
      * Operazione di sistema (Step 1): L'utente clicca su "Acquista".
-     * Il sistema prepara la schermata di riepilogo con i dati dell'utente loggato.
+     * Il sistema verifica la sessione e prepara la schermata di riepilogo.
      *
      * @param int $idOpera Identificativo dell'opera da comprare
      */
     public function avviaAcquisto(int $idOpera): void {
-        // 1. Verifica sessione utente loggato
-        // TODO: $emailUtente = USession::getInstance()->leggiValore('utente_loggato')
-        //       if ($emailUtente === null) { redirect login }
+        $view = new VCompravendita();
 
-        // 2. Caricamento utente e opera tramite Foundation
-        $utente = FUtente::loadByField('email', $emailUtente ?? '');
-        $opera  = FOpera::loadByField('id', $idOpera);
+        // 1. Verifica sessione: UC3 richiede un utente loggato
+        $emailUtente = USession::getInstance()->getValore('utente_loggato');
+        if ($emailUtente === null) {
+            // Salva la destinazione originale in sessione per il redirect post-login
+            USession::getInstance()->impostaValore('redirect_dopo_login', "/Gallerist/Compravendita/avviaAcquisto/$idOpera");
+            header('Location: /Gallerist/Accesso/login');
+            exit;
+        }
+
+        // 2. Caricamento utente e opera — CRUD standard: transitano dal Manager
+        $utente = FPersistentManager::load('EUtente', 'email', $emailUtente);
+        $opera  = FPersistentManager::load('EOpera', 'id', $idOpera);
 
         if ($utente === null || $opera === null) {
-            // TODO: Instanziare VCompravendita e chiamare $view->mostraErrore("Dati non trovati.")
+            $view->mostraErrore('opera_non_trovata');
             return;
         }
 
-        // 3. Prezzo di spedizione predefinito wrappato in EPrezzo per coerenza col dominio
+        // 3. Verifica che l'opera sia effettivamente acquistabile
+        if (!($opera->getStatoOpera() instanceof EStatoInVendita)) {
+            $view->mostraErrore('opera_non_disponibile');
+            return;
+        }
+
+        // 4. Prezzo di spedizione predefinito wrappato in EPrezzo per coerenza col dominio
         $prezzoSpedizione = new EPrezzo(5.00);
 
-        // 4. Mostra modulo di riepilogo con indirizzo precompilato
-        // TODO: Instanziare VCompravendita e chiamare $view->mostraRiepilogoOrdine($utente, $opera, $prezzoSpedizione)
+        // 5. Mostra modulo di riepilogo con indirizzo precompilato dai dati del profilo
+        $view->mostraRiepilogoOrdine($utente, $opera, $prezzoSpedizione);
     }
 
     /**
      * Operazione di sistema (Step 2): L'utente conferma il pagamento dell'acquisto diretto.
      *
-     * @param int   $idOpera   Identificativo dell'opera acquistata
-     * @param array $datiForm  Dati dal form: 'metodoPagamento', 'indirizzoSpedizione', 'costoSpedizione'
+     * @param int    $idOpera              Identificativo dell'opera acquistata
+     * @param string $metodoPagamento      Metodo scelto (es. 'carta', 'paypal')
+     * @param string $indirizzoSpedizione  Indirizzo di consegna inserito nel form
+     * @param string $costoSpedizione      Costo di spedizione come stringa dal form
      */
-    public function confermaAcquisto(int $idOpera, array $datiForm): void {
-        // 1. Verifica sessione e caricamento oggetti
-        // FIX: utente e opera vengono caricati PRIMA di essere usati
-        // TODO: $emailUtente = USession::getInstance()->leggiValore('utente_loggato')
-        //       if ($emailUtente === null) { redirect login }
+    public function confermaAcquisto(
+        int    $idOpera,
+        string $metodoPagamento     = '',
+        string $indirizzoSpedizione = '',
+        string $costoSpedizione     = '5.00'
+    ): void {
+        $view = new VCompravendita();
 
-        $utente = FUtente::loadByField('email', $emailUtente ?? '');
-        $opera  = FOpera::loadByField('id', $idOpera);
+        // 1. Verifica sessione
+        $emailUtente = USession::getInstance()->getValore('utente_loggato');
+        if ($emailUtente === null) {
+            USession::getInstance()->impostaValore('redirect_dopo_login', "/Gallerist/Compravendita/avviaAcquisto/$idOpera");
+            header('Location: /Gallerist/Accesso/login');
+            exit;
+        }
+
+        // 2. Caricamento utente e opera — CRUD standard: transitano dal Manager
+        $utente = FPersistentManager::load('EUtente', 'email', $emailUtente);
+        $opera  = FPersistentManager::load('EOpera', 'id', $idOpera);
 
         if ($utente === null || $opera === null) {
-            // TODO: Instanziare VCompravendita e chiamare $view->mostraErrore("Dati non trovati.")
+            $view->mostraErrore('opera_non_trovata');
             return;
         }
 
-        // 2. Validazione dati form
-        if (empty($datiForm['metodoPagamento']) || empty($datiForm['indirizzoSpedizione'])) {
-            // TODO: Instanziare VCompravendita e chiamare $view->mostraErrore("Dati mancanti.")
+        // 3. Validazione dati form
+        if (empty(trim($metodoPagamento)) || empty(trim($indirizzoSpedizione))) {
+            $view->mostraErrore('dati_mancanti');
             return;
         }
 
-        // 3. Controllo anti-doppio acquisto: l'opera potrebbe essere stata
-        // acquistata da un altro utente nel tempo trascorso dalla pagina di riepilogo
-        if ($opera->getStato() !== 'in_vendita') {
-            // TODO: Instanziare VCompravendita e chiamare $view->mostraErrore("Ci dispiace, quest'opera non è più disponibile.")
+        // 4. Controllo anti-doppio acquisto (race condition):
+        //    l'opera potrebbe essere stata acquistata da un altro utente nel frattempo
+        if (!($opera->getStatoOpera() instanceof EStatoInVendita)) {
+            $view->mostraErrore('opera_non_disponibile');
             return;
         }
 
-        // 4. Costruzione degli EPrezzo per i valori monetari
-        // FIX: EOrdine vuole EPrezzo, non float — i calcoli (totale e commissione)
-        // vengono eseguiti automaticamente dal costruttore di EOrdine,
-        // quindi non vanno passati come parametri esterni
-        $totaleArticolo  = $opera->getPrezzo();                                  // già EPrezzo
-        $costoSpedizione = new EPrezzo((float) $datiForm['costoSpedizione']);
-
-        // 5. Creazione dell'oggetto Entity Ordine
-        // FIX: dataOrdine vuole DateTimeImmutable, non una stringa date()
-        // FIX: totaleOrdine e commissione rimossi — EOrdine li calcola in autonomia
-        //      nel costruttore tramite calcolaTotaleOrdine() e calcolaTrattenuta()
+        // 5. Costruzione dell'oggetto EOrdine
+        //    EOrdine calcola totaleOrdine e commissionePiattaforma autonomamente nel costruttore
         $nuovoOrdine = new EOrdine(
-            0,                            // id: AUTO_INCREMENT sul DB
-            new DateTimeImmutable(),      // dataOrdine: adesso, con DateTimeImmutable
-            $datiForm['metodoPagamento'],
-            $datiForm['indirizzoSpedizione'],
-            $costoSpedizione,
-            $totaleArticolo,
-            new EPrezzo(0.0),             // commissionePiattaforma: calcolata dal costruttore
+            0,                                         // id: AUTO_INCREMENT sul DB
+            new DateTimeImmutable(),                   // dataOrdine: adesso
+            trim($metodoPagamento),
+            trim($indirizzoSpedizione),
+            new EPrezzo((float) $costoSpedizione),     // costoSpedizione
+            $opera->getPrezzo(),                       // totaleArticolo: già EPrezzo
+            new EPrezzo(0.0),                          // commissionePiattaforma: calcolata dal costruttore
             $utente,
             $opera
         );
 
-        // 6. Persistenza ordine e aggiornamento stato opera
-        // TODO: $id = FOrdine::store($nuovoOrdine)
-        //       if ($id === null) { mostraErrore }
-        //       $nuovoOrdine->setId((int) $id)
-        // TODO: FOpera::update('stato', 'venduta', 'id', $idOpera)
+        // 6. Persistenza ordine — CRUD standard: transita dal Manager
+        $id = FPersistentManager::store($nuovoOrdine);
+        if ($id === null) {
+            error_log("CCompravendita::confermaAcquisto - FOrdine::store fallito per opera: $idOpera");
+            $view->mostraErrore('errore_persistenza');
+            return;
+        }
+        $nuovoOrdine->setId((int) $id);
 
-        // 7. Notifica all'artista
+        // 7. Aggiornamento stato opera a "venduta" — CRUD standard: transita dal Manager
+        FPersistentManager::update('EOpera', 'statoOpera', 'Venduta', 'id', $idOpera);
+
+        // 8. Notifica all'artista
         // TODO: UEmail::inviaEmail($opera->getArtista()->getEmail(), "Opera venduta!", "...")
+        //       (UEmail non ancora implementata)
 
-        // 8. Visualizzazione pagina di conferma
-        // TODO: Instanziare VCompravendita e chiamare $view->mostraConfermaOrdine($nuovoOrdine)
+        // 9. Visualizzazione pagina di conferma
+        $view->mostraConfermaOrdine($nuovoOrdine);
     }
 
     /**
-     * Operazione di sistema (Step 3): L'utente richiede di effettuare una proposta d'acquisto.
+     * Operazione di sistema (Step 3): L'utente richiede di formulare una proposta d'acquisto.
      *
      * @param int $idOpera Identificativo dell'opera
      */
     public function avviaPropostaOfferta(int $idOpera): void {
-        // Caricamento opera tramite Foundation
-        $opera = FOpera::loadByField('id', $idOpera);
+        $view = new VCompravendita();
 
+        // 1. Verifica sessione
+        $emailUtente = USession::getInstance()->getValore('utente_loggato');
+        if ($emailUtente === null) {
+            USession::getInstance()->impostaValore('redirect_dopo_login', "/Gallerist/Compravendita/avviaPropostaOfferta/$idOpera");
+            header('Location: /Gallerist/Accesso/login');
+            exit;
+        }
+
+        // 2. Caricamento opera — CRUD standard: transita dal Manager
+        $opera = FPersistentManager::load('EOpera', 'id', $idOpera);
         if ($opera === null) {
-            // TODO: Instanziare VCompravendita e chiamare $view->mostraErrore("Opera non trovata.")
+            $view->mostraErrore('opera_non_trovata');
             return;
         }
 
-        // TODO: Instanziare VCompravendita e chiamare $view->mostraModuloOfferta($opera)
+        // 3. Verifica che l'opera sia in uno stato che accetta offerte
+        if (!($opera->getStatoOpera() instanceof EStatoInVendita)) {
+            $view->mostraErrore('opera_non_disponibile');
+            return;
+        }
+
+        // 4. Mostra il modulo di inserimento offerta
+        $view->mostraModuloOfferta($opera);
     }
 
     /**
      * Operazione di sistema (Step 4): L'utente invia formalmente la cifra proposta.
      *
-     * @param int   $idOpera      Identificativo dell'opera
-     * @param array $datiOfferta  Dati dal form: 'cifraProposta', 'nota' (opzionale)
+     * @param int    $idOpera       Identificativo dell'opera
+     * @param string $cifraProposta Cifra offerta come stringa dal form
+     * @param string $nota          Nota facoltativa per l'artista
      */
-    public function inviaPropostaOfferta(int $idOpera, array $datiOfferta): void {
-        // 1. Verifica sessione e caricamento oggetti
-        // TODO: $emailUtente = USession::getInstance()->leggiValore('utente_loggato')
-        //       if ($emailUtente === null) { redirect login }
+    public function inviaPropostaOfferta(
+        int    $idOpera,
+        string $cifraProposta = '',
+        string $nota          = ''
+    ): void {
+        $view = new VCompravendita();
 
-        $utente = FUtente::loadByField('email', $emailUtente ?? '');
-        $opera  = FOpera::loadByField('id', $idOpera);
+        // 1. Verifica sessione
+        $emailUtente = USession::getInstance()->getValore('utente_loggato');
+        if ($emailUtente === null) {
+            USession::getInstance()->impostaValore('redirect_dopo_login', "/Gallerist/Compravendita/avviaPropostaOfferta/$idOpera");
+            header('Location: /Gallerist/Accesso/login');
+            exit;
+        }
+
+        // 2. Caricamento utente e opera — CRUD standard: transitano dal Manager
+        $utente = FPersistentManager::load('EUtente', 'email', $emailUtente);
+        $opera  = FPersistentManager::load('EOpera', 'id', $idOpera);
 
         if ($utente === null || $opera === null) {
-            // TODO: Instanziare VCompravendita e chiamare $view->mostraErrore("Dati non trovati.")
+            $view->mostraErrore('opera_non_trovata');
             return;
         }
 
-        // 2. Validazione cifra proposta
-        // FIX: controllo che la cifra sia presente e positiva prima di creare l'Entity
-        $cifra = (float) ($datiOfferta['cifraProposta'] ?? 0);
+        // 3. Validazione cifra proposta
+        $cifra = (float) $cifraProposta;
         if ($cifra <= 0) {
-            // TODO: Instanziare VCompravendita e chiamare $view->mostraErrore("La cifra proposta deve essere maggiore di zero.")
+            $view->mostraModuloOfferta($opera, 'cifra_non_valida', [
+                'cifraProposta' => $cifraProposta,
+                'nota'          => $nota,
+            ]);
             return;
         }
 
-        // 3. Creazione dell'oggetto Entity Offerta
-        // FIX: cifraProposta wrappata in EPrezzo (non più float grezzo)
-        // FIX: dataOfferta come DateTimeImmutable (non più stringa date())
-        // FIX: stato iniziale tramite costante EOfferta::STATO_INVIATA (non stringa magica)
+        // 4. Costruzione dell'oggetto EOfferta
         $nuovaOfferta = new EOfferta(
-            0,                                        // id: AUTO_INCREMENT sul DB
-            new EPrezzo($cifra),                      // cifraProposta: EPrezzo
-            $datiOfferta['nota'] ?? '',               // nota: opzionale
-            EOfferta::STATO_INVIATA,                  // stato: costante, non stringa magica
-            new DateTimeImmutable(),                  // dataOfferta: DateTimeImmutable
+            0,                            // id: AUTO_INCREMENT sul DB
+            new EPrezzo($cifra),          // cifraProposta: EPrezzo
+            trim($nota),                  // nota: opzionale
+            EOfferta::STATO_INVIATA,      // stato: costante, non stringa magica
+            new DateTimeImmutable(),      // dataOfferta: DateTimeImmutable
             $utente,
             $opera
         );
 
-        // 4. Persistenza della proposta
-        // TODO: $id = FOfferta::store($nuovaOfferta)
-        //       if ($id === null) { mostraErrore }
-        //       $nuovaOfferta->setId((int) $id)
+        // 5. Persistenza della proposta — CRUD standard: transita dal Manager
+        $id = FPersistentManager::store($nuovaOfferta);
+        if ($id === null) {
+            error_log("CCompravendita::inviaPropostaOfferta - FOfferta::store fallita per opera: $idOpera");
+            $view->mostraErrore('errore_persistenza');
+            return;
+        }
+        $nuovaOfferta->setId((int) $id);
 
-        // 5. Notifica all'artista
+        // 6. Notifica all'artista
         // TODO: UEmail::inviaEmail($opera->getArtista()->getEmail(), "Nuova offerta ricevuta", "...")
+        //       (UEmail non ancora implementata)
 
-        // 6. Visualizzazione messaggio di conferma
-        // TODO: Instanziare VCompravendita e chiamare $view->mostraConfermaInvioOfferta()
-    }
+        // 7. Visualizzazione messaggio di conferma
+        $view->mostraConfermaInvioOfferta($nuovaOfferta);
+}
 }
 ?>

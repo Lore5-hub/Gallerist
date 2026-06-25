@@ -46,20 +46,59 @@ class FOpera {
     public static function getValues(): string { return static::$values; }
 
     /**
-     * Salva una nuova Opera nel database, dopo aver verificato che l'artista esista.
+     * Salva una nuova EOpera nel database con salvataggio a cascata di immagini e tag.
      *
-     * FIX: usato FArtista::exist() invece di FUtente::exist() — un'opera
-     * appartiene a un artista, non a un utente generico.
+     * L'opera "possiede" le sue immagini e i suoi tag: è responsabilità di FOpera
+     * salvarli dopo aver ottenuto l'ID dell'opera dal DB.
+     * Questo approccio risolve il problema di FPersistentManager::store() che
+     * accetta un solo parametro: il Manager chiama FOpera::store($opera) e
+     * FOpera gestisce internamente il salvataggio degli oggetti annidati.
+     *
+     * Flusso:
+     *  1. Verifica che l'artista esista
+     *  2. Salva l'opera → ottiene $idOpera
+     *  3. Per ogni EImmagine in $opera->getImmagini(): FImmagine::store($img, $idOpera)
+     *  4. Per ogni ETag in $opera->getTag():           FTag::store($tag, $idOpera)
+     *
+     * Se il salvataggio dell'opera fallisce, immagini e tag non vengono toccate.
+     * I fallimenti sui singoli asset (immagine/tag) sono loggati ma non bloccanti:
+     * un'opera senza immagini o senza tag è comunque valida.
      *
      * @return string|null L'ID generato dal DB oppure null in caso di errore.
      */
     public static function store(EOpera $opera): ?string {
         $db = FDataBase::getInstance();
+
         if (!FArtista::exist('email_utente', $opera->getArtista()->getEmail())) {
             error_log("FOpera::store - Artista non esistente per email: " . $opera->getArtista()->getEmail());
             return null;
         }
-        return $db->storeDB(static::$class, $opera);
+
+        // 1. Salvataggio dell'opera — il DB genera l'ID
+        $idOpera = $db->storeDB(static::$class, $opera);
+        if ($idOpera === null) {
+            return null;
+        }
+
+        // 2. Salvataggio a cascata delle immagini (ordine preservato: la prima è la copertina)
+        foreach ($opera->getImmagini() as $immagine) {
+            $idImg = FImmagine::store($immagine, (int) $idOpera);
+            if ($idImg === null) {
+                error_log("FOpera::store - FImmagine::store fallita per opera $idOpera, file: " . $immagine->getUrlFile());
+                // Non bloccante: l'opera è comunque salvata
+            }
+        }
+
+        // 3. Salvataggio a cascata dei tag (deduplicazione gestita da FTag::store)
+        foreach ($opera->getTag() as $tag) {
+            $idTag = FTag::store($tag, (int) $idOpera);
+            if ($idTag === null) {
+                error_log("FOpera::store - FTag::store fallita per opera $idOpera, tag: " . $tag->getNomeTag());
+                // Non bloccante: l'opera è comunque salvata
+            }
+        }
+
+        return $idOpera;
     }
 
     /**

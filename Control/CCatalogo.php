@@ -1,16 +1,20 @@
 <?php
-require_once __DIR__ . '/../Foundation/FOpera.php';
-require_once __DIR__ . '/../Foundation/FCategoria.php';
-require_once __DIR__ . '/../Entity/EOpera.php';
-require_once __DIR__ . '/../Entity/ECategoria.php';
-// require_once __DIR__ . '/../Foundation/FImmagine.php';
-// require_once __DIR__ . '/../Foundation/FTag.php';
-// require_once __DIR__ . '/../Foundation/FCommento.php';
-// require_once __DIR__ . '/../View/VCatalogo.php';
-// require_once __DIR__ . '/../View/VOpera.php';
+// Control/CCatalogo.php
 
 /**
- * Classe di controllo per il Caso d'Uso: Esplorazione e Visualizzazione Catalogo.
+ * Classe di controllo per il Caso d'Uso: Esplorazione e Visualizzazione Catalogo (UC2).
+ *
+ * NOTA ARCHITETTURALE — uso di FPersistentManager vs Foundation dirette:
+ * Le operazioni CRUD standard (load per PK, store, update, delete) transitano
+ * sempre attraverso FPersistentManager, che funge da Facade e disaccoppia il
+ * Controller dalle singole classi Foundation.
+ * I metodi di dominio specifici (FOpera::loadRecenti, FOpera::ricercaFiltrata,
+ * FCategoria::loadAll) vengono invece chiamati direttamente sulla Foundation
+ * perché non hanno un corrispondente generico nel Manager: aggiungere un caso
+ * speciale nel Manager per ogni query custom violerebbe il principio di
+ * responsabilità singola del Facade stesso. Questa eccezione è documentata e
+ * limitata ai soli metodi che il Manager non può astrarre in modo generico.
+ *
  * @package Control
  */
 class CCatalogo {
@@ -20,43 +24,41 @@ class CCatalogo {
      * Recupera le categorie per i filtri e la griglia iniziale delle opere recenti.
      */
     public function esploraCatalogo(): void {
-        // 1. Recupero di tutte le categorie per popolare la sidebar dei filtri
-        $categorie = FCategoria::loadAll();
+        // Metodi custom di dominio: non astraibili dal Manager (vedi nota architetturale)
+        $categorie = FCategoria::loadAll() ?? [];
+        $opere     = FOpera::loadRecenti() ?? [];
 
-        // 2. Recupero delle opere più recenti per la griglia iniziale
-        $opere = FOpera::loadRecenti();
-
-        // 3. Rendering della pagina di catalogo iniziale
-        // TODO: Instanziare VCatalogo e chiamare $view->mostraPaginaCatalogo($categorie, $opere)
+        $view = new VCatalogo();
+        $view->mostraPaginaCatalogo($categorie, $opere);
     }
 
     /**
      * Operazione di sistema (Step 2): L'utente applica filtri o criteri di ricerca.
      *
-     * @param array $parametri Chiavi supportate:
-     *   'parola_chiave' (string) — ricerca su titolo e descrizione
-     *   'categoria'     (string) — filtro sulla categoria
-     *   'ordinamento'   (string) — 'prezzo_asc', 'prezzo_desc', 'recenti' (default)
+     * @param string $parolaChiave Testo di ricerca libera su titolo e descrizione
+     * @param string $categoria    Nome della categoria selezionata (stringa vuota = nessun filtro)
+     * @param string $ordinamento  'recenti' | 'prezzo_asc' | 'prezzo_desc'
      */
-    public function filtraCatalogo(array $parametri): void {
-        // 1. Validazione minima dei parametri in ingresso
-        $parametriPuliti = [
-            'parola_chiave' => trim($parametri['parola_chiave'] ?? ''),
-            'categoria'     => trim($parametri['categoria']     ?? ''),
-            'ordinamento'   => trim($parametri['ordinamento']   ?? 'recenti'),
+    public function filtraCatalogo(
+        string $parolaChiave = '',
+        string $categoria    = '',
+        string $ordinamento  = 'recenti'
+    ): void {
+        $ordinamentiValidi = ['recenti', 'prezzo_asc', 'prezzo_desc'];
+        $parametriPuliti   = [
+            'parola_chiave' => trim($parolaChiave),
+            'categoria'     => trim($categoria),
+            'ordinamento'   => in_array(trim($ordinamento), $ordinamentiValidi, true)
+                                    ? trim($ordinamento)
+                                    : 'recenti',
         ];
 
-        // Verifica che l'ordinamento sia un valore atteso (whitelist)
-        $ordinamentiValidi = ['recenti', 'prezzo_asc', 'prezzo_desc'];
-        if (!in_array($parametriPuliti['ordinamento'], $ordinamentiValidi, true)) {
-            $parametriPuliti['ordinamento'] = 'recenti';
-        }
+        // Metodo custom di dominio: non astraibile dal Manager (vedi nota architetturale)
+        $opereFiltrate = FOpera::ricercaFiltrata($parametriPuliti) ?? [];
+        $categorie     = FCategoria::loadAll() ?? [];
 
-        // 2. Interrogazione dello strato di persistenza con i filtri puliti
-        $opereFiltrate = FOpera::ricercaFiltrata($parametriPuliti);
-
-        // 3. Passaggio dei risultati alla View
-        // TODO: Instanziare VCatalogo e chiamare $view->mostraRisultatiFiltrati($opereFiltrate)
+        $view = new VCatalogo();
+        $view->mostraRisultatiFiltrati($opereFiltrate, $categorie, $parametriPuliti);
     }
 
     /**
@@ -65,32 +67,50 @@ class CCatalogo {
      * @param int $idOpera Identificativo dell'opera da caricare
      */
     public function visualizzaDettagliOpera(int $idOpera): void {
-        // 1. Caricamento dell'oggetto EOpera (con EArtista annidato) tramite Foundation
-        $opera = FOpera::loadByField('id', $idOpera);
+        $view      = new VCatalogo();
+        $categorie = FCategoria::loadAll() ?? []; // necessarie anche in caso di errore (navbar)
+
+        // Operazione CRUD standard: transita dal Manager
+        $opera = FPersistentManager::load('EOpera', 'id', $idOpera);
 
         if ($opera === null) {
-            // TODO: Instanziare VCatalogo e chiamare $view->mostraErrore("Opera non trovata.")
+            $view->mostraErrore('opera_non_trovata', $categorie);
             return;
         }
 
-        // 2. Caricamento dei componenti subordinati dell'opera
-        // TODO: $immagini = FImmagine::getImmaginiByOpera($idOpera)
-        //       foreach ($immagini as $img) { $opera->addImmagine($img); }
+        // Aggregazione commenti: loadByField su campo non-PK, delegabile al Manager
+        $commenti = FPersistentManager::load('ECommento', 'idOpera', $idOpera);
+        if (is_array($commenti)) {
+            foreach ($commenti as $commento) {
+                $opera->addCommento($commento);
+            }
+        }
 
-        // TODO: $tags = FTag::getTagByOpera($idOpera)
-        //       foreach ($tags as $tag) { $opera->addTag($tag); }
+        // Aggregazione immagini: loadByField('idOpera') restituisce array ordinato per inserimento;
+        // la prima immagine è la copertina (convenzione del progetto, cfr. EImmagine e VCatalogo)
+        $immagini = FPersistentManager::load('EImmagine', 'idOpera', $idOpera);
+        if (is_array($immagini)) {
+            foreach ($immagini as $immagine) {
+                $opera->addImmagine($immagine);
+            }
+        } elseif ($immagini instanceof EImmagine) {
+            $opera->addImmagine($immagini);
+        }
 
-        // TODO: $commenti = FCommento::getCommentiByOpera($idOpera)
-        //       foreach ($commenti as $commento) { $opera->addCommento($commento); }
+        // Aggregazione tag: FTag::loadByField intercetta 'idOpera' e usa la JOIN su opera_tag
+        $tags = FPersistentManager::load('ETag', 'idOpera', $idOpera);
+        if (is_array($tags)) {
+            foreach ($tags as $tag) {
+                $opera->addTag($tag);
+            }
+        } elseif ($tags instanceof ETag) {
+            $opera->addTag($tags);
+        }
 
-        // 3. Recupero delle altre opere dello stesso artista (esclusa quella corrente)
-        $altreOpere = FOpera::loadByArtista(
-            $opera->getArtista()->getId(),
-            $idOpera
-        );
+        // Metodo custom di dominio: non astraibile dal Manager (vedi nota architetturale)
+        $altreOpere = FOpera::loadByArtista($opera->getArtista()->getId(), $idOpera) ?? [];
 
-        // 4. Invio del grafo di oggetti alla View
-        // TODO: Instanziare VOpera e chiamare $view->mostraSchedaDettaglio($opera, $altreOpere)
+        $view->mostraSchedaDettaglio($opera, $altreOpere);
     }
 }
 ?>
