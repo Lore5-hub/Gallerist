@@ -1,6 +1,56 @@
-{extends file='layout.tpl'}
+<?php
+/* Smarty version 5.8.0, created on 2026-06-24 09:37:58
+  from 'file:homepage.tpl' */
 
-{block name=content}
+/* @var \Smarty\Template $_smarty_tpl */
+if ($_smarty_tpl->getCompiled()->isFresh($_smarty_tpl, array (
+  'version' => '5.8.0',
+  'unifunc' => 'content_6a3b8956961134_05652420',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    'c0f21ab22a0fc64fe925a8ec432410d37e7510e9' => 
+    array (
+      0 => 'homepage.tpl',
+      1 => 1782286672,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+  ),
+))) {
+function content_6a3b8956961134_05652420 (\Smarty\Template $_smarty_tpl) {
+$_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
+$_smarty_tpl->getInheritance()->init($_smarty_tpl, true);
+?>
+
+<?php 
+$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_14336185626a3b8956929f57_88805734', 'title');
+?>
+
+
+<?php 
+$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_16282770586a3b8956939907_33198061', 'content');
+$_smarty_tpl->getInheritance()->endChild($_smarty_tpl, 'layout.tpl', $_smarty_current_dir);
+}
+/* {block 'title'} */
+class Block_14336185626a3b8956929f57_88805734 extends \Smarty\Runtime\Block
+{
+public function callBlock(\Smarty\Template $_smarty_tpl) {
+$_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
+?>
+Homepage - Galleria d'Arte<?php
+}
+}
+/* {/block 'title'} */
+/* {block 'content'} */
+class Block_16282770586a3b8956939907_33198061 extends \Smarty\Runtime\Block
+{
+public function callBlock(\Smarty\Template $_smarty_tpl) {
+$_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
+?>
+
 
  
 <section class="hero is-black is-medium">
@@ -83,24 +133,41 @@
     </div>
 
     <div class="columns is-multiline">
-      {foreach from=$opere_popolari item=opera}
+      <?php
+$_from = $_smarty_tpl->getSmarty()->getRuntime('Foreach')->init($_smarty_tpl, $_smarty_tpl->getValue('opere_popolari'), 'opera');
+$foreach0DoElse = true;
+foreach ($_from ?? [] as $_smarty_tpl->getVariable('opera')->value) {
+$foreach0DoElse = false;
+?>
         <div class="column is-3-desktop is-6-tablet">
-          <a href="dettaglio_opera.php?id={$opera->getId()}">
+          <a href="dettaglio_opera.php?id=<?php echo $_smarty_tpl->getValue('opera')->getId();?>
+">
             <div class="card is-shadowless home-popular-card">
               <div class="card-image box p-1 home-popular-img-box">
                 <figure class="image is-4by3">
-                  <img src="{$opera->getUrlImmagine()}" alt="Opera: {$opera->getId()}">
+                  <img src="<?php echo $_smarty_tpl->getValue('opera')->getUrlImmagine();?>
+" alt="Opera: <?php echo $_smarty_tpl->getValue('opera')->getId();?>
+">
                 </figure>
               </div>
             </div>
           </a>
         </div>
-      {foreachelse}
+      <?php
+}
+if ($foreach0DoElse) {
+?>
         <div class="column is-12 has-text-centered">
           <p class="has-text-grey">Al momento non ci sono opere popolari da mostrare.</p>
         </div>
-      {/foreach}
+      <?php
+}
+$_smarty_tpl->getSmarty()->getRuntime('Foreach')->restore($_smarty_tpl, 1);?>
     </div>
   </div>
 </section>
-   {/block}
+   <?php
+}
+}
+/* {/block 'content'} */
+}

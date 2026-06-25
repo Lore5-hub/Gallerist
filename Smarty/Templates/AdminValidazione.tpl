@@ -1,4 +1,6 @@
-<section class="section has-background-white-bis">
+{extends file='layout.tpl'}
+{block name=content}
+<section class="section admin-validation">
   <div class="container is-fluid">
 
     <!-- ==========================================
@@ -37,7 +39,7 @@
           <div class="media is-align-items-center mb-5">
             <div class="media-left">
               <figure class="image is-96x96">
-                <img class="is-rounded" src="{$utente.foto_profilo|default:'img/default-avatar.png'}" alt="Foto Profilo" style="object-fit: cover; height: 96px;">
+                <img class="is-rounded admin-validation-avatar" src="...">
               </figure>
             </div>
             <div class="media-content">
@@ -59,7 +61,7 @@
           </div>
 
           <!-- Spaziatore visivo pulito senza usare tag hr -->
-          <div class="has-background-light my-5" style="height: 1px; width: 100%;"></div>
+          <div class="my-5 admin-validation-divider"></div>
 
           <!-- Dettagli Artistici e Personali -->
           <div class="content">
@@ -104,11 +106,10 @@
               <div class="columns is-mobile is-multiline">
                 {foreach from=$opere_portfolio item=opera}
                   <div class="column is-4-tablet is-12-mobile">
-                    <div class="card" style="box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #edf2f7;">
+                    <div class="card admin-validation-portfolio-card">
                       <div class="card-image">
                         <figure class="image is-4by3">
-                          <img src="{$opera.src}" alt="{$opera.titolo}" style="object-fit: cover;">
-                        </figure>
+                          <img src="{$opera.src}" alt="{$opera.titolo}">
                       </div>
                       <div class="p-2 has-text-centered">
                         <p class="is-size-7 has-text-weight-semibold is-truncated" title="{$opera.titolo}">{$opera.titolo}</p>
@@ -198,9 +199,10 @@
   <div class="modal-content">
     <p class="image">
       <!-- Immagine composita fronte/retro caricata dal backend -->
-      <img src="{$utente.url_documento|default:'img/placeholder-documento.jpg'}" alt="Documento Identità Fronte Retro" style="border-radius: 6px;">
+      <img src="..." alt="Documento Identità Fronte Retro" class="admin-validation-doc-preview">
     </p>
   </div>
   <button class="modal-close is-large" aria-label="close" id="chiudi-modal-btn"></button>
 </div>
 <script src="js/adminValidazione.js"></script>
+{/block}

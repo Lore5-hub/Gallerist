@@ -1,4 +1,6 @@
-<section class="hero is-info is-fullheight">
+{extends file='layout.tpl'}
+{block name=content}
+<section class="hero is-info is-fullheight auth-hero-bg">
   <div class="hero-body">
     <div class="container">
       <div class="columns is-centered">
@@ -13,7 +15,7 @@
           </div>
           {/if}
 
-          <div class="box p-6">
+          <div class="box p-6 auth-box">
             
             <div class="has-text-centered mb-5">
               <h1 class="title has-text-dark">Bentornato!</h1>
@@ -59,7 +61,12 @@
               </p>
             </div>
 
-          </div> </div> </div>
+          </div>
+          
+        </div>
+        
+      </div>
     </div>
   </div>
 </section>
+{/block}

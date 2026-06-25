@@ -1,4 +1,6 @@
-<section class="section has-background-white-bis">
+{extends file='layout.tpl'}
+{block name=content}
+<section class="section admin-stats">
   <div class="container is-fluid"> <div class="is-flex is-justify-content-space-between is-align-items-center mb-6">
       
       <div>
@@ -27,7 +29,7 @@
     <div class="columns is-multiline is-mobile mb-5">
       
       <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3" style="height: 100%;">
+        <div class="box has-text-centered p-3 h-full">
           <span class="icon is-medium has-text-info mb-1"><i class="fas fa-users fa-lg"></i></span>
           <p class="heading mb-1">Visite Totali</p>
           <p class="title is-4 mb-2">{$stats.visite_totali}</p>
@@ -38,7 +40,7 @@
       </div>
 
       <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3" style="height: 100%;">
+        <div class="box has-text-centered p-3 h-full">
           <span class="icon is-medium has-text-primary mb-1"><i class="fas fa-user-plus fa-lg"></i></span>
           <p class="heading mb-1">Registrazioni</p>
           <p class="title is-4 mb-2">{$stats.registrazioni}</p>
@@ -49,7 +51,7 @@
       </div>
 
       <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3" style="height: 100%;">
+        <div class="box has-text-centered p-3 h-full">
           <span class="icon is-medium has-text-link mb-1"><i class="fas fa-eye fa-lg"></i></span>
           <p class="heading mb-1">Vis. Pagina</p>
           <p class="title is-4 mb-2">{$stats.vis_pagina}</p>
@@ -60,7 +62,7 @@
       </div>
 
       <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3" style="height: 100%;">
+        <div class="box has-text-centered p-3 h-full">
           <span class="icon is-medium has-text-warning mb-1"><i class="fas fa-clock fa-lg"></i></span>
           <p class="heading mb-1">Tempo Medio</p>
           <p class="title is-4 mb-2">{$stats.tempo_medio}</p>
@@ -71,7 +73,7 @@
       </div>
 
       <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3" style="height: 100%;">
+        <div class="box has-text-centered p-3 h-full">
           <span class="icon is-medium has-text-danger mb-1"><i class="fas fa-exchange-alt fa-lg"></i></span>
           <p class="heading mb-1">Movimenti Totali</p>
           <p class="title is-4 mb-2">{$stats.movimenti}</p>
@@ -82,7 +84,7 @@
       </div>
 
       <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3 has-background-success-light" style="height: 100%;">
+        <div class="box has-text-centered p-3 has-background-success-light h-full">
           <span class="icon is-medium has-text-success mb-1"><i class="fas fa-coins fa-lg"></i></span>
           <p class="heading mb-1">Guadagni Piattaforma</p>
           <p class="title is-4 mb-2">€ {$stats.guadagni|number_format:2:',':'.'}</p>
@@ -97,18 +99,18 @@
     <div class="columns is-multiline mb-5">
       
       <div class="column is-6-desktop">
-        <div class="box" style="height: 100%;">
+        <div class="box has-text-centered p-3 h-full">
           <h2 class="title is-5 mb-4"><i class="fas fa-chart-line has-text-info mr-2"></i> Andamento Visite</h2>
-          <div style="position: relative; height: 300px; width: 100%;">
+          <div class="admin-stats-chart-wrapper admin-stats-chart-sm">
             <canvas id="chartVisite"></canvas>
           </div>
         </div>
       </div>
 
       <div class="column is-6-desktop">
-        <div class="box" style="height: 100%;">
+        <div class="box has-text-centered p-3 h-full">
           <h2 class="title is-5 mb-4"><i class="fas fa-chart-area has-text-link mr-2"></i> Visualizzazioni di Pagina</h2>
-          <div style="position: relative; height: 300px; width: 100%;">
+          <div class="admin-stats-chart-wrapper admin-stats-chart-sm">
             <canvas id="chartPagine"></canvas>
           </div>
         </div>
@@ -119,9 +121,9 @@
     <div class="columns is-multiline">
       
       <div class="column is-6-desktop">
-        <div class="box" style="height: 100%;">
+        <div class="box has-text-centered p-3 h-full">
           <h2 class="title is-5 mb-4"><i class="fas fa-euro-sign has-text-success mr-2"></i> Andamento Guadagni</h2>
-          <div style="position: relative; height: 400px; width: 100%;">
+          <div class="admin-stats-chart-wrapper admin-stats-chart-lg">
             <canvas id="chartGuadagni"></canvas>
           </div>
         </div>
@@ -191,3 +193,4 @@
 
   </div>
 </section>
+{/block}

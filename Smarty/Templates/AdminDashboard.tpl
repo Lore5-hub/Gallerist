@@ -1,4 +1,7 @@
-<section class="section has-background-white-bis">
+{extends file='layout.tpl'}
+{block name=content}
+<section class="section admin-dashboard">
+
   <div class="container is-fluid">
 
     <div class="is-flex is-justify-content-space-between is-align-items-center mb-6">
@@ -16,7 +19,7 @@
     <div class="columns is-multiline is-mobile mb-6">
       
       <div class="column is-one-fifth-desktop is-half-tablet">
-        <div class="box has-text-centered p-4" style="height: 100%;">
+        <div class="box has-text-centered p-4 h-full">
           <span class="icon is-medium has-text-link mb-2"><i class="fas fa-users fa-lg"></i></span>
           <p class="heading">Utenti Totali</p>
           <p class="title is-4 mb-2">{$dashboard.utenti_totali}</p>
@@ -27,7 +30,7 @@
       </div>
 
       <div class="column is-one-fifth-desktop is-half-tablet">
-        <div class="box has-text-centered p-4 has-background-warning-light" style="height: 100%;">
+        <div class="box has-text-centered p-4 has-background-warning-light h-full">
           <span class="icon is-medium has-text-warning-dark mb-2"><i class="fas fa-user-clock fa-lg"></i></span>
           <p class="heading">In Attesa Verifica</p>
           <p class="title is-4 mb-2 has-text-warning-dark">{$dashboard.utenti_attesa}</p>
@@ -36,7 +39,7 @@
       </div>
 
       <div class="column is-one-fifth-desktop is-half-tablet">
-        <div class="box has-text-centered p-4" style="height: 100%;">
+        <div class="box has-text-centered p-4 h-full">
           <span class="icon is-medium has-text-primary mb-2"><i class="fas fa-paint-brush fa-lg"></i></span>
           <p class="heading">Artisti Attivi</p>
           <p class="title is-4 mb-2">{$dashboard.artisti_attivi}</p>
@@ -47,7 +50,7 @@
       </div>
 
       <div class="column is-one-fifth-desktop is-half-tablet">
-        <div class="box has-text-centered p-4" style="height: 100%;">
+        <div class="box has-text-centered p-4 h-full">
           <span class="icon is-medium has-text-danger mb-2"><i class="fas fa-flag fa-lg"></i></span>
           <p class="heading">Segnalazioni</p>
           <p class="title is-4 mb-2">{$dashboard.segnalazioni_aperte}</p>
@@ -58,7 +61,7 @@
       </div>
 
       <div class="column is-one-fifth-desktop is-half-tablet">
-        <div class="box has-text-centered p-4" style="height: 100%;">
+        <div class="box has-text-centered p-4 h-full">
           <span class="icon is-medium has-text-danger mb-2"><i class="fas fa-comments fa-lg"></i></span>
           <p class="heading">Commenti Segnalati</p>
           <p class="title is-4 mb-2">{$dashboard.commenti_segnalati}</p>
@@ -186,7 +189,7 @@
                 {foreach from=$segnalazioni item=segnalazione}
                   <tr>
                     <td><strong>{$segnalazione.tipo}</strong></td>
-                    <td><span class="is-truncated" style="max-width: 150px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{$segnalazione.contenuto}</span></td>
+                    <td><span class="text-truncate-custom max-w-150">{$segnalazione.contenuto}</span></td>
                     <td>@{$segnalazione.autore_segnalazione}</td>
                     <td>{$segnalazione.data|date_format:"%d/%m/%Y"}</td>
                     <td>
@@ -237,7 +240,7 @@
                 {foreach from=$bannati item=ban}
                   <tr>
                     <td><strong>@{$ban.utente}</strong></td>
-                    <td title="{$ban.motivo}"><span class="is-truncated" style="max-width: 80px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{$ban.motivo}</span></td>
+                    <td title="{$ban.motivo}"><span class="text-truncate-custom max-w-80">{$ban.motivo}</span></td>
                     <td>{$ban.tipo}</td>
                     <td>{$ban.inizio|date_format:"%d/%m"}</td>
                     <td>{if $ban.fine}{$ban.fine|date_format:"%d/%m"}{else}<em>Perm.</em>{/if}</td>
@@ -258,3 +261,5 @@
 
   </div>
 </section>
+              {/block}
+  

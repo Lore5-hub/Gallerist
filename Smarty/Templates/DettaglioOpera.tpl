@@ -1,3 +1,5 @@
+{extends file='layout.tpl'}
+{block name=content}
 {if isset($messaggio_successo)}
 <div class="notification is-success">
   <button class="delete" onclick="this.parentElement.remove()"></button>
@@ -16,15 +18,15 @@
   
   <div class="column is-7">
     
-    <figure class="image is-fullwidth box p-0 overflow-hidden mb-2">
-      <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" />
-    </figure>
+    <figure class="image is-fullwidth artwork-detail-wrapper mb-2">
+  <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" />
+</figure>
     
     <div class="has-text-centered mb-5">
       <span class="icon has-text-warning is-medium">
         <i class="fas fa-star fa-lg"></i>
       </span>
-      <span class="has-text-weight-bold is-size-5 ml-1" style="vertical-align: middle;">
+      <span class="has-text-weight-bold is-size-5 ml-1 is-v-middle">
         {$opera->getValutazioneMedia()|number_format:1:',':'.'} 
         <span class="has-text-grey is-size-6 fw-normal">/ 5</span>
       </span>
@@ -112,7 +114,7 @@
       <h3 class="title is-3">Recensioni degli utenti</h3>
       
       {foreach from=$opera->getRecensioni() item=recensione}
-        <div class="box mb-4">
+        <div class="box mb-4 artwork-review-box">
           <p class="has-text-weight-bold">{$recensione->getNomeUtente()} <span class="has-text-grey is-size-7 ml-2">{$recensione->getData()|date_format:"%d/%m/%Y"}</span></p>
           <p class="mt-2">{$recensione->getTesto()}</p>
         </div>
@@ -136,12 +138,12 @@
   <div class="columns is-multiline">
     {foreach from=$altre_opere item=altra_opera}
       <div class="column is-3">
-        <div class="card h-100">
-          <div class="card-image">
-            <figure class="image is-4by3">
-              <img src="{$altra_opera->getUrlImmagine()}" alt="{$altra_opera->getTitolo()}" style="object-fit: cover;">
-            </figure>
-          </div>
+        <div class="card h-full artwork-card">
+  <div class="card-image">
+    <figure class="image is-4by3">
+      <img src="{$altra_opera->getUrlImmagine()}" alt="..." class="artwork-img">
+    </figure>
+  </div>
           <div class="card-content">
             <p class="title is-5 mb-1">{$altra_opera->getTitolo()}</p>
             <p class="subtitle is-6 mb-3 has-text-grey">{$altra_opera->getDimensioni()}</p>
@@ -158,3 +160,4 @@
   </div>
 </section>
 <script src="js/dettaglioOpera.js"></script>
+{/block}

@@ -1,3 +1,5 @@
+{extends file='layout.tpl'}
+{block name=content}
 <form method="POST" action="processa_pagamento.php">
   
   <input type="hidden" name="id_opera" value="{$ordine->getOpera()->getId()}">
@@ -19,8 +21,8 @@
 
         <article class="media">
           <figure class="media-left">
-            <p class="image is-128x128 box p-1 is-shadowless" style="border: 1px solid #eee;">
-              <img src="{$ordine->getOpera()->getUrlImmagine()}" alt="Immagine dell'opera" style="object-fit: cover; height: 100%;">
+            <p class="image is-128x128 box p-1 is-shadowless checkout-artwork-box">
+              <img src="{$ordine->getOpera()->getUrlImmagine()}" alt="Immagine dell'opera" class="checkout-artwork-img">
             </p>
           </figure>
           
@@ -42,7 +44,9 @@
         </article>
         
       </div>
-    </div> <div class="column is-5">
+    </div> 
+    
+    <div class="column is-5">
       
       <h3 class="title is-5 mb-3">Indirizzo di Spedizione</h3>
       <div class="box is-flex is-justify-content-space-between is-align-items-center has-background-light">
@@ -57,19 +61,19 @@
 
       <h3 class="title is-5 mt-5 mb-3">Metodo di Pagamento</h3>
       
-      <label class="box is-flex is-align-items-center is-clickable mb-2 py-3">
+      <label class="box is-flex is-align-items-center is-clickable mb-2 py-3 payment-method-box">
         <input type="radio" name="metodo_pagamento" value="carta" checked>
         <span class="icon is-medium ml-3 has-text-info"><i class="fas fa-credit-card fa-lg"></i></span>
         <span class="ml-2 has-text-weight-bold">Carta di Credito / Debito</span>
       </label>
       
-      <label class="box is-flex is-align-items-center is-clickable mb-2 py-3">
+      <label class="box is-flex is-align-items-center is-clickable mb-2 py-3 payment-method-box">
         <input type="radio" name="metodo_pagamento" value="paypal">
         <span class="icon is-medium ml-3 has-text-link"><i class="fab fa-paypal fa-lg"></i></span>
         <span class="ml-2 has-text-weight-bold">PayPal</span>
       </label>
       
-      <label class="box is-flex is-align-items-center is-clickable mb-5 py-3">
+      <label class="box is-flex is-align-items-center is-clickable mb-5 py-3 payment-method-box">
         <input type="radio" name="metodo_pagamento" value="bonifico">
         <span class="icon is-medium ml-3 has-text-grey"><i class="fas fa-university fa-lg"></i></span>
         <span class="ml-2 has-text-weight-bold">Bonifico Bancario</span>
@@ -104,5 +108,8 @@
         <i class="fas fa-shield-alt"></i> Transazione sicura e crittografata
       </p>
       
-    </div> </div>
+    </div> 
+    
+  </div>
 </form>
+{/block}

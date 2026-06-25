@@ -1,3 +1,5 @@
+{extends file='layout.tpl'}
+{block name=content}
 <form method="POST" action="aggiungi_opera.php" enctype="multipart/form-data">
   
   <div class="columns is-variable is-6 mt-4">
@@ -104,18 +106,18 @@
 
       <div class="columns is-multiline is-mobile mt-3">
         <div class="column is-12">
-          <figure class="image is-5by3 box p-1 is-relative" style="background-color: #f5f5f5;">
-            <span class="tag is-primary" style="position: absolute; top: 10px; left: 10px; z-index: 10;">Copertina</span>
-            <div class="has-text-centered has-text-grey mt-6 pt-4">
-              <i class="fas fa-image fa-2x mb-2"></i><br>Anteprima Copertina
-            </div>
-          </figure>
+          <figure class="image is-5by3 box p-1 artwork-upload-preview">
+  <span class="tag is-primary artwork-cover-badge">Copertina</span>
+  <div class="has-text-centered has-text-grey mt-6 pt-4">
+    <i class="fas fa-image fa-2x mb-2"></i><br>Anteprima Copertina
+  </div>
+</figure>
         </div>
         <div class="column is-4">
-          <figure class="image is-1by1 box p-1 has-background-light has-text-centered has-text-grey">
-            <br><i class="fas fa-image"></i>
-          </figure>
-        </div>
+  <figure class="image is-1by1 box p-1 artwork-extra-preview">
+    <i class="fas fa-image fa-lg"></i>
+  </figure>
+</div>
         <div class="column is-4">
           <figure class="image is-1by1 box p-1 has-background-light has-text-centered has-text-grey">
             <br><i class="fas fa-image"></i>
@@ -165,3 +167,4 @@
     </div> </div>
 </form>
 <script src="js/formOpera.js"></script>
+{/block}

@@ -1,8 +1,11 @@
+{extends file='layout.tpl'}
+{block name=content}
 <form method="POST" action="processa_moderazione.php">
   <input type="hidden" name="id_segnalazione" value="{$segnalazione.id}">
   <input type="hidden" name="id_utente_segnalato" value="{$autore_contenuto.id}">
 
-  <section class="section has-background-white-bis">
+
+  <section class="section admin-ticket">
     <div class="container is-fluid">
 
       <!-- ==========================================
@@ -20,7 +23,7 @@
         
         <!-- Riquadro 1: Informazioni Segnalazione -->
         <div class="column is-4-desktop">
-          <div class="box" style="height: 100%;">
+          <div class="box h-full">
             <h3 class="title is-5 mb-4 has-text-grey-dark">
               <span class="icon mr-2"><i class="fas fa-info-circle"></i></span>Informazioni
             </h3>
@@ -55,7 +58,7 @@
 
         <!-- Riquadro 2: Contenuto Segnalato (Gestione Dinamica Commento / Opera) -->
         <div class="column is-4-desktop">
-          <div class="box is-flex is-flex-direction-column is-justify-content-space-between" style="height: 100%;">
+          <div class="box is-flex is-flex-direction-column is-justify-content-space-between h-full">
             <div>
               <h3 class="title is-5 mb-4 has-text-grey-dark">
                 <span class="icon mr-2"><i class="fas fa-exclamation-triangle"></i></span>Contenuto Segnalato
@@ -67,7 +70,7 @@
                   <span class="icon has-text-info mr-1"><i class="fas fa-comment-dots"></i></span>
                   Commento su: <strong>{$segnalazione.titolo_opera}</strong>
                 </p>
-                <div class="box has-background-light p-3 is-shadowless" style="border-left: 4px solid #3273dc;">
+                <div class="box has-background-light p-3 is-shadowless admin-ticket-comment-quote">
                   <p class="is-italic is-size-6">"{$segnalazione.testo_incriminato}"</p>
                 </div>
               {else}
@@ -78,9 +81,9 @@
                 </p>
                 <p class="is-size-7 has-text-grey mb-2">Categoria: {$segnalazione.categoria_opera}</p>
                 <div class="has-text-centered mb-2">
-                  <figure class="image is-inline-block" style="max-height: 100px; overflow: hidden;">
-                    <img src="{$segnalazione.url_anteprima_opera}" style="object-fit: contain; max-height: 100px;">
-                  </figure>
+                  <figure class="image admin-ticket-artwork-container">
+  <img src="{$segnalazione.url_anteprima_opera}" class="admin-ticket-artwork-img">
+</figure>
                 </div>
               {/if}
             </div>
@@ -95,7 +98,7 @@
 
         <!-- Riquadro 3: Motivo della Segnalazione -->
         <div class="column is-4-desktop">
-          <div class="box" style="height: 100%;">
+          <div class="box h-full">
             <h3 class="title is-5 mb-3 has-text-grey-dark">
               <span class="icon mr-2"><i class="fas fa-gavel"></i></span>Motivazione Admin
             </h3>
@@ -122,7 +125,7 @@
             <div class="media is-align-items-center mb-4">
               <div class="media-left">
                 <figure class="image is-48x48">
-                  <img class="is-rounded" src="{$autore_contenuto.foto_profilo|default:'img/default-avatar.png'}" style="object-fit: cover; height: 48px;">
+                  <img class="is-rounded admin-ticket-avatar" src="...">
                 </figure>
               </div>
               <div class="media-content">
@@ -220,7 +223,7 @@
             </label>
 
             <!-- Opzione 2: Banna Utente -->
-            <div class="box py-2 px-3 mb-3 is-shadowless" style="border: 1px solid #dbdbdb;">
+            <div class="box py-2 px-3 mb-3 is-shadowless admin-ticket-ban-panel">
               <label class="radio is-flex is-align-items-center mb-2 is-clickable">
                 <input type="radio" name="azione_moderazione" value="ban">
                 <span class="icon has-text-danger ml-2 mr-1"><i class="fas fa-ban"></i></span>
@@ -290,3 +293,4 @@
     </div>
   </section>
 </form>
+{/block}

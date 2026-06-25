@@ -1,4 +1,6 @@
-<div class="box has-background-light">
+{extends file='layout.tpl'}
+{block name=content}
+<div class="box has-background-light artwork-review-form">
   <h4 class="title is-4 mb-4">Lascia una recensione</h4>
   
   <form method="POST" action="salva_recensione.php">
@@ -56,3 +58,4 @@
 
   </form>
 </div>
+{/block}

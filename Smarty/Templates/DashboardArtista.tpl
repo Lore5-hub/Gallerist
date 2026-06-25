@@ -1,3 +1,5 @@
+{extends file='layout.tpl'}
+{block name=content}
 <section class="section">
   <div class="container">
     
@@ -6,12 +8,12 @@
       <div class="columns is-vcentered">
         
         <div class="column is-narrow has-text-centered">
-          <figure class="image is-128x128 is-inline-block is-relative is-clickable" style="cursor: pointer;" title="Cambia foto profilo">
-            <img class="is-rounded" src="{$utente->getUrlImmagineProfilo()}" style="object-fit: cover; height: 100%; border: 3px solid #eee;">
-            <div class="is-overlay is-flex is-align-items-center is-justify-content-center is-rounded" style="background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
-              <i class="fas fa-camera fa-2x has-text-white"></i>
-            </div>
-          </figure>
+          <figure class="image is-128x128 is-inline-block artist-avatar-figure is-clickable" title="Cambia foto profilo">
+  <img class="is-rounded" src="...">
+  <div class="artist-avatar-overlay is-flex is-align-items-center is-justify-content-center is-rounded">
+    <i class="fas fa-camera fa-2x has-text-white"></i>
+  </div>
+</figure>
         </div>
 
         <div class="column is-4">
@@ -32,8 +34,8 @@
         </div>
 
         <div class="column">
-          <div class="box has-background-light is-relative pt-5">
-            <a href="#" class="icon has-text-grey" style="position: absolute; top: 10px; left: 10px;" title="Modifica Biografia">
+          <div class="box has-background-light artist-bio-box pt-5">
+  <a href="#" class="icon has-text-grey artist-bio-edit-btn" title="Modifica Biografia">...</a>
               <i class="fas fa-pencil-alt"></i>
             </a>
             <p class="is-size-6 pl-4 has-text-justified">
@@ -110,20 +112,19 @@
     <div class="columns is-multiline mb-6">
       {foreach from=$mie_opere item=opera}
         <div class="column is-3">
-          <div class="card">
-            
-            <div class="card-image is-relative">
-              <figure class="image is-4by3">
-                <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" style="object-fit: cover;">
-              </figure>
-              
-              <div style="position: absolute; top: 10px; right: 10px;">
-                <form method="POST" action="elimina_opera.php" onsubmit="return confirm('Sei sicuro di voler eliminare questa opera?');">
+          <div class="card artist-work-card">
+  <div class="card-image is-relative">
+    <figure class="image is-4by3"><img src="..."></figure> <div class="artist-work-delete-wrapper"><form method="POST" action="elimina_opera.php" onsubmit="return confirm('Sei sicuro di voler eliminare questa opera?');">
                   <input type="hidden" name="id_opera" value="{$opera->getId()}">
                   <button type="submit" class="button is-danger is-small is-rounded" title="Elimina Opera">
                     <span class="icon"><i class="fas fa-trash"></i></span>
                   </button>
                 </form>
+                </div>
+  </div>
+              
+              
+                
               </div>
             </div>
 
@@ -153,7 +154,7 @@
     <div class="box mb-6">
       
       {foreach from=$recensioni item=recensione}
-        <article class="media mb-5">
+        <article class="media mb-5 artist-review-article">
           <figure class="media-left">
             <p class="image is-48x48">
               <img class="is-rounded" src="{$recensione->getUtente()->getUrlImmagineProfilo()|default:'img/default-avatar.png'}">
@@ -210,3 +211,4 @@
 
   </div>
 </section>
+{/block}

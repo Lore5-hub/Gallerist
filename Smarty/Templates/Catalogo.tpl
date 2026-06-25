@@ -1,7 +1,9 @@
-<div class="columns is-variable is-5 mt-4">
+{extends file='layout.tpl'}
+{block name=content}
+<div class="columns is-variable is-5 mt-4 page-catalog">
   
   <div class="column is-3">
-    <div class="box">
+    <div class="box filter-sidebar">
       <h3 class="title is-4 mb-4">Filtra Opere</h3>
       
       <form method="GET" action="catalogo.php">
@@ -59,11 +61,11 @@
       {foreach from=$opere item=opera}
         
         <div class="column is-4">
-          <div class="card h-100 is-flex is-flex-direction-column">
+          <div class="card h-full is-flex is-flex-direction-column artwork-card">
             
             <div class="card-image">
               <figure class="image is-4by3">
-                <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" style="object-fit: cover;">
+                <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" class="artwork-img">
               </figure>
             </div>
             
@@ -100,3 +102,4 @@
   </div>
   
 </div>
+{/block}

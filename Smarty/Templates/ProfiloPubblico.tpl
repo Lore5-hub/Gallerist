@@ -1,10 +1,12 @@
-<div class="box mt-5 p-5">
+{extends file='layout.tpl'}
+{block name=content}
+<div class="box mt-5 p-5 public-profile-box">
   <div class="is-flex is-justify-content-space-between is-align-items-flex-start">
     
     <article class="media">
       <figure class="media-left">
         <p class="image is-96x96">
-          <img class="is-rounded" src="{$utente->getUrlImmagineProfilo()|default:'img/default-avatar.png'}" style="object-fit: cover; height: 100%;" alt="Profilo" />
+          <img class="is-rounded public-profile-avatar" src="{$utente->getUrlImmagineProfilo()|default:'img/default-avatar.png'}" alt="Profilo" />
         </p>
       </figure>
       <div class="media-content">
@@ -52,15 +54,15 @@
     {foreach from=$opere item=opera}
       <div class="column is-4">
         <a href="dettaglio_opera.php?id={$opera->getId()}">
-          <div class="card is-shadowless">
+          <div class="card is-shadowless" style="background: transparent;">
             
-            <div class="card-image box p-1 is-relative" style="transition: transform 0.3s; cursor: pointer;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="card-image box p-1 is-relative portfolio-card-img-box">
               <figure class="image is-4by3">
-                <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" style="object-fit: cover; border-radius: 4px;">
+                <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" class="portfolio-card-img">
               </figure>
               
               <div class="is-overlay is-flex is-align-items-flex-end p-2">
-                 <span class="has-text-white is-size-7 has-text-weight-bold has-background-black-bis px-2 py-1" style="border-radius: 3px; opacity: 0.8;">
+                 <span class="has-text-white is-size-7 has-text-weight-bold px-2 py-1 portfolio-title-badge">
                    {$opera->getTitolo()}
                  </span>
               </div>
@@ -108,3 +110,4 @@
 </div>
 
 <script src="js/profiloPubblico.js"></script>
+{/block}
