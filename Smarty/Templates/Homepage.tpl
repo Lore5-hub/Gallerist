@@ -12,7 +12,7 @@
       </p>
       <div class="columns is-centered mt-5">
         <div class="column is-6">
-          <form action="catalogo.php" method="GET">
+          <form action="/Gallerist/catalogo/" method="GET">
             <div class="field has-addons">
               <div class="control is-expanded has-icons-left">
                 <input class="input is-medium" type="text" name="ricerca" placeholder="Cerca un'opera, un artista o una tecnica...">
@@ -35,7 +35,7 @@
   <div class="container">
     <div class="is-flex is-justify-content-space-between is-align-items-flex-end mb-5">
       <h2 class="title is-3 mb-0">Esplora per Categorie</h2>
-      <a href="catalogo.php" class="button is-outlined is-link">
+      <a href="Gallerist/catalogo/esploracatalogo" class="button is-outlined is-link">
         Esplora Catalogo <i class="fas fa-arrow-right ml-2"></i>
       </a>
     </div>

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 5.8.0, created on 2026-06-24 09:32:23
+/* Smarty version 5.8.0, created on 2026-06-25 17:36:09
   from 'file:layout.tpl' */
 
 /* @var \Smarty\Template $_smarty_tpl */
 if ($_smarty_tpl->getCompiled()->isFresh($_smarty_tpl, array (
   'version' => '5.8.0',
-  'unifunc' => 'content_6a3b8807793681_98898320',
+  'unifunc' => 'content_6a3d4ae9a15194_21921931',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '95bda1bc1e3dde6669744f3087d4355621a6afcd' => 
     array (
       0 => 'layout.tpl',
-      1 => 1782286311,
+      1 => 1782401766,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->getCompiled()->isFresh($_smarty_tpl, array (
   array (
   ),
 ))) {
-function content_6a3b8807793681_98898320 (\Smarty\Template $_smarty_tpl) {
+function content_6a3d4ae9a15194_21921931 (\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
 $_smarty_tpl->getInheritance()->init($_smarty_tpl, false);
 ?>
@@ -29,7 +29,7 @@ $_smarty_tpl->getInheritance()->init($_smarty_tpl, false);
 <head>
     <meta charset="UTF-8">
     <title><?php 
-$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_828051716a3b8807784d83_59076012', 'title');
+$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_684318206a3d4ae9a10123_90212784', 'title');
 ?>
 </title>
     
@@ -43,7 +43,7 @@ $_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_828051716a3b8
 
     <main>
         <?php 
-$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_20098207176a3b8807792343_55142989', 'content');
+$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_4042862746a3d4ae9a14313_78095190', 'content');
 ?>
 
     </main>
@@ -55,7 +55,7 @@ $_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_20098207176a3
 </body>
 </html><?php }
 /* {block 'title'} */
-class Block_828051716a3b8807784d83_59076012 extends \Smarty\Runtime\Block
+class Block_684318206a3d4ae9a10123_90212784 extends \Smarty\Runtime\Block
 {
 public function callBlock(\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
@@ -65,7 +65,7 @@ Gallerist<?php
 }
 /* {/block 'title'} */
 /* {block 'content'} */
-class Block_20098207176a3b8807792343_55142989 extends \Smarty\Runtime\Block
+class Block_4042862746a3d4ae9a14313_78095190 extends \Smarty\Runtime\Block
 {
 public function callBlock(\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';

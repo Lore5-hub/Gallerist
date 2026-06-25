@@ -27,9 +27,10 @@ class CCatalogo {
         // Metodi custom di dominio: non astraibili dal Manager (vedi nota architetturale)
         $categorie = FCategoria::loadAll() ?? [];
         $opere     = FOpera::loadRecenti() ?? [];
-
+       $isLogged = isset($_SESSION['id_utente']) ? true : false;
         $view = new VCatalogo();
-        $view->mostraPaginaCatalogo($categorie, $opere);
+
+        $view->mostraPaginaCatalogo($categorie, $opere, $isLogged);
     }
 
     /**

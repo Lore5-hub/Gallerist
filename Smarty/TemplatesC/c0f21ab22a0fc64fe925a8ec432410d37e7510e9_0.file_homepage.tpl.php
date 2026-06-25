@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 5.8.0, created on 2026-06-24 09:37:58
+/* Smarty version 5.8.0, created on 2026-06-25 17:58:54
   from 'file:homepage.tpl' */
 
 /* @var \Smarty\Template $_smarty_tpl */
 if ($_smarty_tpl->getCompiled()->isFresh($_smarty_tpl, array (
   'version' => '5.8.0',
-  'unifunc' => 'content_6a3b8956961134_05652420',
+  'unifunc' => 'content_6a3d503e308604_77980174',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'c0f21ab22a0fc64fe925a8ec432410d37e7510e9' => 
     array (
       0 => 'homepage.tpl',
-      1 => 1782286672,
+      1 => 1782399917,
       2 => 'file',
     ),
   ),
@@ -20,32 +20,18 @@ if ($_smarty_tpl->getCompiled()->isFresh($_smarty_tpl, array (
   array (
   ),
 ))) {
-function content_6a3b8956961134_05652420 (\Smarty\Template $_smarty_tpl) {
+function content_6a3d503e308604_77980174 (\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
 $_smarty_tpl->getInheritance()->init($_smarty_tpl, true);
 ?>
 
-<?php 
-$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_14336185626a3b8956929f57_88805734', 'title');
-?>
-
 
 <?php 
-$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_16282770586a3b8956939907_33198061', 'content');
+$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_21094068606a3d503e2fa563_77809570', 'content');
 $_smarty_tpl->getInheritance()->endChild($_smarty_tpl, 'layout.tpl', $_smarty_current_dir);
 }
-/* {block 'title'} */
-class Block_14336185626a3b8956929f57_88805734 extends \Smarty\Runtime\Block
-{
-public function callBlock(\Smarty\Template $_smarty_tpl) {
-$_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
-?>
-Homepage - Galleria d'Arte<?php
-}
-}
-/* {/block 'title'} */
 /* {block 'content'} */
-class Block_16282770586a3b8956939907_33198061 extends \Smarty\Runtime\Block
+class Block_21094068606a3d503e2fa563_77809570 extends \Smarty\Runtime\Block
 {
 public function callBlock(\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
@@ -85,7 +71,7 @@ $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\S
   <div class="container">
     <div class="is-flex is-justify-content-space-between is-align-items-flex-end mb-5">
       <h2 class="title is-3 mb-0">Esplora per Categorie</h2>
-      <a href="catalogo.php" class="button is-outlined is-link">
+      <a href="Gallerist/catalogo/esploracatalogo" class="button is-outlined is-link">
         Esplora Catalogo <i class="fas fa-arrow-right ml-2"></i>
       </a>
     </div>

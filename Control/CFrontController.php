@@ -4,23 +4,23 @@
 class CFrontController {
 
     public function run($path)
-    {
-        // 1. Pulizia dell'URL: divide la stringa e rimuove gli elementi vuoti.
-        $segments = array_values(array_filter(explode('/', $path)));
-        
-        // 2. Se l'app gira in una sottocartella (es. Gallerist), scartiamo il primo segmento.
-        if (isset($segments[0]) && $segments[0] === 'Gallerist') {
-            array_shift($segments);
-        }
+    { 
+       // 1. Pulizia dell'URL: divide la stringa e rimuove gli elementi vuoti.
+$segments = array_values(array_filter(explode('/', $path)));
 
-        // ⭐ NOVITÀ: Se l'utente ha scritto "index.php" nell'URL, scartiamo anche questo segmento!
-        if (isset($segments[0]) && $segments[0] === 'index.php') {
-            array_shift($segments);
-        }
+// 2. 🟢 MODIFICA: Usiamo il WHILE al posto dell'IF per eliminare TUTTI i duplicati della cartella
+while (isset($segments[0]) && strtolower($segments[0]) === 'gallerist') {
+    array_shift($segments);
+}
+
+// ⭐ Se l'utente ha scritto "index.php" nell'URL, scartiamo anche questo segmento!
+if (isset($segments[0]) && strtolower($segments[0]) === 'index.php') {
+    array_shift($segments);
+}
 
         // 3. Identifica Controller, Metodo e Parametri
         // NOTA: Se la vostra homepage si trova in un controller diverso da "Catalogo" (es. "Home"), cambia la parola qui sotto!
-        $controllerName = "C" . ($segments[0] ?? "Catalogo");
+        $controllerName = "C" . ucfirst($segments[0] ?? "Catalogo");
         $method         = $segments[1] ?? "homepage";
         
         // Tutti gli elementi dal terzo in poi diventano parametri

@@ -44,10 +44,10 @@ class VCatalogo
      * @param array $categorie  Array di oggetti ECategoria per popolare il menu filtri
      * @param array $opere      Array di oggetti EOpera per la griglia iniziale
      */
-    public function mostraPaginaCatalogo(array $categorie, array $opere): void
+    public function mostraPaginaCatalogo(array $categorie, array $opere,bool $isLogged = false): void
     {
         // Stato sessione: verificato centralmente, non assumiamo nulla dal Control
-        if (CUtente::isLogged()) {
+        if ($isLogged) {
             $this->smarty->assign('userlogged', 'loggato');
         }
 
@@ -88,9 +88,10 @@ class VCatalogo
     public function mostraRisultatiFiltrati(
         array $opere,
         array $categorie,
-        array $parametriUsati = []
+        array $parametriUsati = [],
+        bool $isLogged= false
     ): void {
-        if (CUtente::isLogged()) {
+        if ($isLogged) {
             $this->smarty->assign('userlogged', 'loggato');
         }
 
@@ -146,9 +147,9 @@ class VCatalogo
      * @param array  $altreOpere  Altre opere dello stesso artista (esclusa quella corrente),
      *                            mostrate nella sezione "Scopri altri lavori"
      */
-    public function mostraSchedaDettaglio(EOpera $opera, array $altreOpere): void
+    public function mostraSchedaDettaglio(EOpera $opera, array $altreOpere, bool $isLogged=false): void
     {
-        if (CUtente::isLogged()) {
+        if ($isLogged()) {
             $this->smarty->assign('userlogged', 'loggato');
         }
 

@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteBase /Gallerist/
+
+# Serve i file statici reali (css, js, immagini) direttamente senza passare da index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Tutto il resto → index.php, preservando la query string
+RewriteRule ^(.*)$ index.php [QSA,L]
