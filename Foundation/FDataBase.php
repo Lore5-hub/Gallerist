@@ -1,6 +1,6 @@
 <?php
 
-if(file_exists('config.inc.php')) require_once 'config.inc.php';
+if(file_exists(dirname(__DIR__) . '/config.inc.php')) require_once dirname(__DIR__) . '/config.inc.php';
 
 /**
  * La classe FDataBase fornisce il motore di persistenza di basso livello basato su PDO.

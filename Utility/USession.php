@@ -15,7 +15,7 @@ class USession {
     private function __clone() {}
 
     // 2. SIGILLO SINGLETON: Impedisce la deserializzazione (es. tramite unserialize)
-    private function __wakeup() {}
+    public function __wakeup() {}
 
     public static function getInstance(): USession {
         if (self::$instance === null) {
