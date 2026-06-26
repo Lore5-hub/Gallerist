@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 5.8.0, created on 2026-06-25 17:36:09
+/* Smarty version 5.8.0, created on 2026-06-26 11:50:23
   from 'file:layout.tpl' */
 
 /* @var \Smarty\Template $_smarty_tpl */
 if ($_smarty_tpl->getCompiled()->isFresh($_smarty_tpl, array (
   'version' => '5.8.0',
-  'unifunc' => 'content_6a3d4ae9a15194_21921931',
+  'unifunc' => 'content_6a3e4b5f22fc53_12122905',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '95bda1bc1e3dde6669744f3087d4355621a6afcd' => 
     array (
       0 => 'layout.tpl',
-      1 => 1782401766,
+      1 => 1782467413,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->getCompiled()->isFresh($_smarty_tpl, array (
   array (
   ),
 ))) {
-function content_6a3d4ae9a15194_21921931 (\Smarty\Template $_smarty_tpl) {
+function content_6a3e4b5f22fc53_12122905 (\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
 $_smarty_tpl->getInheritance()->init($_smarty_tpl, false);
 ?>
@@ -29,21 +29,49 @@ $_smarty_tpl->getInheritance()->init($_smarty_tpl, false);
 <head>
     <meta charset="UTF-8">
     <title><?php 
-$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_684318206a3d4ae9a10123_90212784', 'title');
+$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_11557671236a3e4b5f218874_95761719', 'title');
 ?>
 </title>
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/Gallerist/css/main.css"> 
 </head>
 <body>
 
-    <header>
-        <h1>Gallerist</h1>
-    </header>
+    <nav class="navbar is-black" role="navigation" aria-label="main navigation">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item has-text-weight-bold is-size-4" href="/Gallerist/">
+                    Gallerist
+                </a>
+            </div>
+
+            <div class="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link is-arrowless">
+                            <span class="icon is-large has-text-grey-light">
+                                <i class="fas fa-user-circle fa-2x"></i>
+                            </span>
+                        </a>
+
+                        <div class="navbar-dropdown is-right">
+                            <a href="/Gallerist/utente/login" class="navbar-item has-text-light">
+                                Accedi
+                            </a>
+                            <a href="/Gallerist/utente/registrazione" class="navbar-item has-text-light">
+                                Registrati
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <main>
         <?php 
-$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_4042862746a3d4ae9a14313_78095190', 'content');
+$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_15794446006a3e4b5f22dc94_34538980', 'content');
 ?>
 
     </main>
@@ -55,7 +83,7 @@ $_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_4042862746a3d
 </body>
 </html><?php }
 /* {block 'title'} */
-class Block_684318206a3d4ae9a10123_90212784 extends \Smarty\Runtime\Block
+class Block_11557671236a3e4b5f218874_95761719 extends \Smarty\Runtime\Block
 {
 public function callBlock(\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
@@ -65,7 +93,7 @@ Gallerist<?php
 }
 /* {/block 'title'} */
 /* {block 'content'} */
-class Block_4042862746a3d4ae9a14313_78095190 extends \Smarty\Runtime\Block
+class Block_15794446006a3e4b5f22dc94_34538980 extends \Smarty\Runtime\Block
 {
 public function callBlock(\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';

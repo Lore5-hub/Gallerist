@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 5.8.0, created on 2026-06-25 17:58:54
+/* Smarty version 5.8.0, created on 2026-06-26 11:35:05
   from 'file:homepage.tpl' */
 
 /* @var \Smarty\Template $_smarty_tpl */
 if ($_smarty_tpl->getCompiled()->isFresh($_smarty_tpl, array (
   'version' => '5.8.0',
-  'unifunc' => 'content_6a3d503e308604_77980174',
+  'unifunc' => 'content_6a3e47c91ab753_22053480',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'c0f21ab22a0fc64fe925a8ec432410d37e7510e9' => 
     array (
       0 => 'homepage.tpl',
-      1 => 1782399917,
+      1 => 1782466501,
       2 => 'file',
     ),
   ),
@@ -20,18 +20,18 @@ if ($_smarty_tpl->getCompiled()->isFresh($_smarty_tpl, array (
   array (
   ),
 ))) {
-function content_6a3d503e308604_77980174 (\Smarty\Template $_smarty_tpl) {
+function content_6a3e47c91ab753_22053480 (\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
 $_smarty_tpl->getInheritance()->init($_smarty_tpl, true);
 ?>
 
 
 <?php 
-$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_21094068606a3d503e2fa563_77809570', 'content');
+$_smarty_tpl->getInheritance()->instanceBlock($_smarty_tpl, 'Block_6152565196a3e47c917e355_65793011', 'content');
 $_smarty_tpl->getInheritance()->endChild($_smarty_tpl, 'layout.tpl', $_smarty_current_dir);
 }
 /* {block 'content'} */
-class Block_21094068606a3d503e2fa563_77809570 extends \Smarty\Runtime\Block
+class Block_6152565196a3e47c917e355_65793011 extends \Smarty\Runtime\Block
 {
 public function callBlock(\Smarty\Template $_smarty_tpl) {
 $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\Smarty\\Templates';
@@ -48,7 +48,7 @@ $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\S
       </p>
       <div class="columns is-centered mt-5">
         <div class="column is-6">
-          <form action="catalogo.php" method="GET">
+          <form action="/Gallerist/catalogo/" method="GET">
             <div class="field has-addons">
               <div class="control is-expanded has-icons-left">
                 <input class="input is-medium" type="text" name="ricerca" placeholder="Cerca un'opera, un artista o una tecnica...">
@@ -79,8 +79,8 @@ $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\S
     <div class="tile is-ancestor">
       <!-- Categoria Principale Grande -->
       <div class="tile is-parent is-8">
-        <a href="catalogo.php?categoria=pittura" class="tile is-child box p-0 is-clipped home-category-tile is-main">
-          <img src="img/categoria-pittura.jpg" alt="Pittura" class="home-category-tile-img">
+        <a href="Gallerist/catalogo/filtraCatalogo(pittura)" class="tile is-child box p-0 is-clipped home-category-tile is-main">
+          <img src="https://wips.plug.it/cips/paginegiallecasa/cms/2025/01/pittura-effetti-2.jpg" alt="Pittura" class="home-category-tile-img">
           <div class="is-overlay is-flex is-align-items-flex-end p-5 home-category-tile-overlay">
             <h3 class="title is-2 has-text-white">Pittura</h3>
           </div>
@@ -91,7 +91,7 @@ $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\S
       <div class="tile is-vertical is-4">
         <div class="tile is-parent">
           <a href="catalogo.php?categoria=scultura" class="tile is-child box p-0 is-clipped home-category-tile is-sub">
-            <img src="img/categoria-scultura.jpg" alt="Scultura" class="home-category-tile-img">
+            <img src="https://www.datocms-assets.com/65765/1674835845-venere-di-roma.jpg?ar64=Nzo1&auto=format%2Ccompress&fit=crop" alt="Scultura" class="home-category-tile-img">
             <div class="is-overlay is-flex is-align-items-flex-end p-4 home-category-tile-overlay">
               <h3 class="title is-4 has-text-white">Scultura</h3>
             </div>
@@ -100,7 +100,7 @@ $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\S
         
         <div class="tile is-parent">
           <a href="catalogo.php?categoria=fotografia" class="tile is-child box p-0 is-clipped home-category-tile is-sub">
-            <img src="img/categoria-fotografia.jpg" alt="Fotografia" class="home-category-tile-img">
+            <img src="https://mundodasfotos.com.br/wp-content/uploads/2024/11/melhores-cameras-fotograficas-para-iniciantes-768x404.png" alt="Fotografia" class="home-category-tile-img">
             <div class="is-overlay is-flex is-align-items-flex-end p-4 home-category-tile-overlay">
               <h3 class="title is-4 has-text-white">Fotografia</h3>
             </div>
@@ -111,7 +111,7 @@ $_smarty_current_dir = 'C:\\Users\\ranch\\Downloads\\xampp\\htdocs\\Gallerist\\S
   </div>
 </section>
 
-<section class="section has-background-light">
+<section class="section has-background-green">
   <div class="container">
     <div class="has-text-centered mb-6">
       <h2 class="title is-3">Opere più apprezzate</h2>

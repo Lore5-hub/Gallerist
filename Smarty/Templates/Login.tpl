@@ -57,7 +57,7 @@
             <div class="has-text-centered">
               <p class="is-size-6">
                 Sei nuovo qui? 
-                <a href="registrazione.php" class="has-text-info has-text-weight-bold">Registrati ora</a>
+                <a href="/Gallerist/utente/registrazione" class="has-text-info has-text-weight-bold">Registrati ora</a>
               </p>
             </div>
 

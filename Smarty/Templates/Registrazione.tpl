@@ -9,7 +9,7 @@
           <div class="columns is-gapless">
             
             <div class="column is-5 is-hidden-mobile register-image-sidebar">
-              <img src="img/auth-register-banner.jpg" alt="Registrazione Gallerist" />
+              <img src="https://i.pinimg.com/736x/e2/73/8c/e2738cf1574d64810a0d3ebcba5c8248.jpg" alt="Registrazione Gallerist" />
             </div>
 
             <div class="column is-7 register-form-scroll">
@@ -120,7 +120,7 @@
                 <div class="field mt-4">
                   <label class="label">Numero di Telefono</label>
                   <div class="control">
-                    <input class="input {if isset($errori.telefono)}is-danger{/if}" type="tel" id="telefono" name="telefono" value="{if isset($vecchi_dati.telefono)}{$vecchi_dati.telefono}{/if}" required pattern="[0-9]{9,11}" placeholder="3331234567">
+                  <input class="input {if isset($errori.telefono)}is-danger{/if}" type="tel" id="telefono" name="telefono" value="{if isset($vecchi_dati.telefono)}{$vecchi_dati.telefono}{/if}" required pattern="[0-9]{ldelim}9,11{rdelim}" placeholder="3331234567">
                   </div>
                   <p id="error-telefono" class="help is-danger is-hidden">Inserisci un numero di telefono valido (9-11 cifre, solo numeri).</p>
                   {if isset($errori.telefono)}<p class="help is-danger">{$errori.telefono}</p>{/if}
@@ -199,7 +199,7 @@
                 <div class="has-text-centered mt-4">
                   <p class="has-text-grey">
                     Hai già un account? 
-                    <a href="login.php" class="has-text-link has-text-weight-bold">Accedi qui</a>
+                    <a href="/Gallerist/utente/login" class="has-text-link has-text-weight-bold">Accedi qui</a>
                   </p>
                 </div>
 
@@ -214,5 +214,5 @@
   </div>
 </section>
 
-<script src="js/registrazione.js"></script>
+<script src="/Gallerist/js/registrazione.js"></script>
 {/block}
