@@ -22,7 +22,7 @@
               <p class="subtitle is-6 has-text-grey">Inserisci le tue credenziali per accedere</p>
             </div>
 
-            <form method="POST" action="processa_login.php">
+            <form method="POST" action="/Gallerist/Utente/verifica">
               
               <div class="field">
                 <label class="label">Email</label>

@@ -12,8 +12,8 @@ require_once __DIR__ . '/../Entity/EArtista.php';
 class FArtista {
 
     private static string $class  = "FArtista";
-    private static string $table  = "ARTISTA";
-    private static string $values = "(:email_utente, :biografia, :stile_artistico, :carta_identita, :stato_validazione)";
+    private static string $table  = "artista";
+    private static string $values = "(:id_utente, :biografia, :stile_artistico, :carta_identita, :stato_validazione)";
 
     public function __construct() {}
 
@@ -22,7 +22,7 @@ class FArtista {
      * Usato da FDataBase::storeDB() per la sola tabella ARTISTA.
      */
     public static function bind($stmt, EArtista $artista): void {
-        $stmt->bindValue(':email_utente',      $artista->getEmail(),            PDO::PARAM_STR);
+        $stmt->bindValue(':id_utente',      $artista->getId(),            PDO::PARAM_STR);
         $stmt->bindValue(':biografia',         $artista->getBiografia(),        PDO::PARAM_STR);
         $stmt->bindValue(':stile_artistico',   $artista->getStileArtistico(),   PDO::PARAM_STR);
         $stmt->bindValue(':carta_identita',    $artista->getCartaIdentita(),    PDO::PARAM_STR);
@@ -58,7 +58,7 @@ class FArtista {
             error_log("FArtista::store - Inserimento in UTENTE fallito.");
             return null;
         }
-
+        $artista->setId((int)$idGenerato);
         // 2. Inserimento in ARTISTA (campi specifici della sottoclasse)
         $db     = FDataBase::getInstance();
         $result = $db->storeDB(static::$class, $artista);

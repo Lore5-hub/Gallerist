@@ -24,7 +24,7 @@ class USession {
         return self::$instance;
     }
 
-    public function impostaValore(string $chiave, mixed $valore): void {
+    public function setValue(string $chiave, mixed $valore): void {
         $_SESSION[$chiave] = $valore;
     }
 

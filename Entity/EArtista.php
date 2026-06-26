@@ -11,7 +11,7 @@ class EArtista extends EUtente {
     private string $stileArtistico;
     private string $cartaIdentita; // Es. URL o nome file del documento
     private string $statoValidazione;
-
+    private int $id=0;
      public const STATO_IN_ATTESA = "In attesa di validazione";  /* attivo e bannato sono in utente */
 
     
@@ -50,5 +50,11 @@ class EArtista extends EUtente {
             throw new \InvalidArgumentException("Stato non valido: $stato");
         }
     $this->statoValidazione = $stato;
+    }
+    public function setId(int $id) {
+    $this->id = $id;
+}
+public function getId(): int {
+        return $this->id;
     }
 }   

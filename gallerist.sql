@@ -195,10 +195,15 @@ CREATE TABLE `utente` (
   `id` int(11) NOT NULL,
   `nome` varchar(50) NOT NULL,
   `cognome` varchar(50) NOT NULL,
+  `nickname` varchar(50) NOT NULL,                -- 🟢 Aggiunta qui
+  `data_nascita` date NOT NULL,                   -- 🟢 Aggiunta qui
+  `indirizzo` varchar(255) DEFAULT NULL,          -- 🟢 Aggiunta qui
+  `telefono` varchar(20) DEFAULT NULL,            -- 🟢 Aggiunta qui
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `immagine_profilo` varchar(255) DEFAULT NULL,   -- 🟢 Aggiunta qui
   `ruolo` enum('Utente registrato','Artista','Amministratore') NOT NULL,
-  `statoAccount` enum('Attivo','Bannato','In attesa di validazione') DEFAULT 'Attivo'
+  `stato_account` enum('Attivo','Bannato','In attesa di validazione') DEFAULT 'Attivo' -- 🟢 Corretta in snake_case
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

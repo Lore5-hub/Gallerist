@@ -121,7 +121,7 @@ class VCatalogo
             );
         }
 
-        $this->smarty->display('catalogo.tpl');
+        $this->smarty->display('Catalogo.tpl');
     }
 
     // =========================================================================

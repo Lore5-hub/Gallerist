@@ -41,26 +41,31 @@ class CCatalogo {
      * @param string $ordinamento  'recenti' | 'prezzo_asc' | 'prezzo_desc'
      */
     public function filtraCatalogo(
-        string $parolaChiave = '',
-        string $categoria    = '',
-        string $ordinamento  = 'recenti'
-    ): void {
-        $ordinamentiValidi = ['recenti', 'prezzo_asc', 'prezzo_desc'];
-        $parametriPuliti   = [
-            'parola_chiave' => trim($parolaChiave),
-            'categoria'     => trim($categoria),
-            'ordinamento'   => in_array(trim($ordinamento), $ordinamentiValidi, true)
-                                    ? trim($ordinamento)
-                                    : 'recenti',
-        ];
+    string $parolaChiave = '',
+    string $categoria    = '',
+    string $ordinamento  = 'recenti'
+): void {
+    
+    // 🟢 LA MODIFICA: Se i dati arrivano dalla barra URL (?categoria=... o ?parola_chiave=...)
+    // li prendiamo da $_GET, altrimenti teniamo il valore di default passato dal Front Controller.
+    $parolaChiave = isset($_GET['parola_chiave']) ? $_GET['parola_chiave'] : $parolaChiave;
+    $categoria    = isset($_GET['categoria'])    ? $_GET['categoria']    : $categoria;
+    $ordinamento  = isset($_GET['ordinamento'])  ? $_GET['ordinamento']  : $ordinamento;
 
-        // Metodo custom di dominio: non astraibile dal Manager (vedi nota architetturale)
-        $opereFiltrate = FOpera::ricercaFiltrata($parametriPuliti) ?? [];
-        $categorie     = FCategoria::loadAll() ?? [];
+    // ... Tutto il resto del tuo codice rimane identico ed è perfetto!
+    $ordinamentiValidi = ['recenti', 'prezzo_asc', 'prezzo_desc'];
+    $parametriPuliti   = [
+        'parola_chiave' => trim($parolaChiave),
+        'categoria'     => trim($categoria),
+        'ordinamento'   => in_array(trim($ordinamento), $ordinamentiValidi, true) ? trim($ordinamento) : 'recenti',
+    ];
 
-        $view = new VCatalogo();
-        $view->mostraRisultatiFiltrati($opereFiltrate, $categorie, $parametriPuliti);
-    }
+    $opereFiltrate = FOpera::ricercaFiltrata($parametriPuliti) ?? [];
+    $categorie     = FCategoria::loadAll() ?? [];
+
+    $view = new VCatalogo();
+    $view->mostraRisultatiFiltrati($opereFiltrate, $categorie, $parametriPuliti);
+}
 
     /**
      * Operazione di sistema (Step 3): L'utente clicca su un'opera per vederne la scheda di dettaglio.

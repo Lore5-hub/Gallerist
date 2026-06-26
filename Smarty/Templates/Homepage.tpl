@@ -12,10 +12,10 @@
       </p>
       <div class="columns is-centered mt-5">
         <div class="column is-6">
-          <form action="/Gallerist/catalogo/" method="GET">
+          <form action="/Gallerist/catalogo/filtraCatalogo" method="GET">
             <div class="field has-addons">
               <div class="control is-expanded has-icons-left">
-                <input class="input is-medium" type="text" name="ricerca" placeholder="Cerca un'opera, un artista o una tecnica...">
+                <input class="input is-medium" type="text" name="parola_chiave" placeholder="Cerca un'opera, un artista o una tecnica...">
                 <span class="icon is-small is-left">
                   <i class="fas fa-search"></i>
                 </span>
@@ -43,7 +43,7 @@
     <div class="tile is-ancestor">
       <!-- Categoria Principale Grande -->
       <div class="tile is-parent is-8">
-        <a href="Gallerist/catalogo/filtraCatalogo(pittura)" class="tile is-child box p-0 is-clipped home-category-tile is-main">
+        <a href="/Gallerist/Catalogo/filtraCatalogo?categoria=pittura" class="tile is-child box p-0 is-clipped home-category-tile is-main">
           <img src="https://wips.plug.it/cips/paginegiallecasa/cms/2025/01/pittura-effetti-2.jpg" alt="Pittura" class="home-category-tile-img">
           <div class="is-overlay is-flex is-align-items-flex-end p-5 home-category-tile-overlay">
             <h3 class="title is-2 has-text-white">Pittura</h3>
@@ -54,7 +54,7 @@
       <!-- Colonne Laterali Piccole -->
       <div class="tile is-vertical is-4">
         <div class="tile is-parent">
-          <a href="catalogo.php?categoria=scultura" class="tile is-child box p-0 is-clipped home-category-tile is-sub">
+          <a href="/Gallerist/Catalogo/filtraCatalogo?categoria=scultura" class="tile is-child box p-0 is-clipped home-category-tile is-sub">
             <img src="https://www.datocms-assets.com/65765/1674835845-venere-di-roma.jpg?ar64=Nzo1&auto=format%2Ccompress&fit=crop" alt="Scultura" class="home-category-tile-img">
             <div class="is-overlay is-flex is-align-items-flex-end p-4 home-category-tile-overlay">
               <h3 class="title is-4 has-text-white">Scultura</h3>
@@ -63,7 +63,7 @@
         </div>
         
         <div class="tile is-parent">
-          <a href="catalogo.php?categoria=fotografia" class="tile is-child box p-0 is-clipped home-category-tile is-sub">
+          <a href="/Gallerist/Catalogo/filtraCatalogo?categoria=fotografia" class="tile is-child box p-0 is-clipped home-category-tile is-sub">
             <img src="https://mundodasfotos.com.br/wp-content/uploads/2024/11/melhores-cameras-fotograficas-para-iniciantes-768x404.png" alt="Fotografia" class="home-category-tile-img">
             <div class="is-overlay is-flex is-align-items-flex-end p-4 home-category-tile-overlay">
               <h3 class="title is-4 has-text-white">Fotografia</h3>

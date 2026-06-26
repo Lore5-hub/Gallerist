@@ -5,7 +5,7 @@ class CUtente
     // Questo è il metodo chiamato dall'URL /Gallerist/utente/login
     public function login() 
     {
-        // 1. Se l'utente ha appena inviato il form di login (richiesta POST)
+        // Se l'utente ha appena inviato il form di login (richiesta POST)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
@@ -14,9 +14,8 @@ class CUtente
             // Se sono corrette, salvi l'utente in $_SESSION ed effettui un redirect alla homepage
         } 
         
-        // 2. Se l'utente ha solo cliccato sull'omino (richiesta GET)
-        // mostri semplicemente la pagina con il form di login
-        $vUtente = new VUtente(); // La View dell'utente
+        // Se l'utente ha solo cliccato sull'omino (richiesta GET)
+        $vUtente = new VUtente(); 
         $vUtente->mostraFormLogin();
     }
 
@@ -26,4 +25,309 @@ class CUtente
         $vUtente = new VUtente();
         $vUtente->mostraFormRegistrazione();
     }
+
+    public function verifica() {
+        // 1. Controlliamo se l'utente ha cliccato sul pulsante "Accedi" (Richiesta POST)
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            
+            // Recuperiamo e puliamo i dati inviati dal form
+            $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+            $password = isset($_POST['password']) ? trim($_POST['password']) : '';
+            
+            // 2. Interroghiamo il Database (Livello Foundation) per verificare le credenziali
+            $utente = FUtente::verificaCredenziali($email, $password); 
+            
+            if ($utente !== null) {
+                // 🟢 CREDENZIALI CORRETTE!
+                
+                // Salviamo i dati dell'utente nella sessione
+                $sessione = USession::getInstance();
+                $sessione->setValue('utente_loggato', $utente);
+                
+                // ✨ FIX: Controlliamo il ruolo usando la stringa esatta dell'ENUM del DB ('Amministratore')
+                if ($utente->getRuolo() === 'Amministratore') {
+                    header('Location: /Gallerist/Admin/dashboard');
+                } else {
+                    header('Location: /Gallerist/catalogo/esploraCatalogo');
+                }
+                exit; 
+                
+            } else {
+                // 🔴 CREDENZIALI ERRATE!
+                $vUtente = new VUtente();
+                $vUtente->smarty->assign('errore_login', true);
+                $vUtente->smarty->assign('email_inserita', $email); 
+                $vUtente->smarty->display('Login.tpl');
+            }
+            
+        } else {
+            // 🔵 RICHIESTA GET
+            $vUtente = new VUtente();
+            $vUtente->smarty->display('Login.tpl');
+        }
+    }
+
+    public function verificaRegistrazione() {
+
+        // Controlliamo prima di tutto se la richiesta è un POST
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+           
+
+            $vUtente = new VUtente();
+
+
+
+            // ✨ FIX: Spostato qui dentro il controllo del ruolo per evitare errori in GET
+
+            $ruoloPost = $_POST['ruolo'] ?? '';
+
+            if ($ruoloPost === 'utente') {
+
+                $ruoloDB = 'Utente registrato';
+
+            } elseif ($ruoloPost === 'artista') {
+
+                $ruoloDB = 'Artista';
+
+            } else {
+
+                $ruoloDB = 'Utente registrato';
+
+            }
+
+
+
+            // 1. Recupero e pulizia dei dati testuali dal $_POST
+
+            $nome             = isset($_POST['nome']) ? trim($_POST['nome']) : '';
+
+            $cognome          = isset($_POST['cognome']) ? trim($_POST['cognome']) : '';
+
+            $indirizzo        = isset($_POST['indirizzo']) ? trim($_POST['indirizzo']) : '';
+
+            $nickname         = isset($_POST['nickname']) ? trim($_POST['nickname']) : '';
+
+            $telefono         = isset($_POST['telefono']) ? trim($_POST['telefono']) : '';
+
+            $email            = isset($_POST['email']) ? trim($_POST['email']) : '';
+
+            $password_chiaro  = isset($_POST['password']) ? trim($_POST['password']) : '';
+
+            $data_nascita_str = isset($_POST['data_nascita']) ? trim($_POST['data_nascita']) : '';
+
+
+
+            // Controllo di sicurezza: l'email è già presente nel DB?
+
+            if (FUtente::esisteEmail($email)) {
+
+               
+
+                $vUtente->smarty->assign('errore_registrazione', true);
+
+                $vUtente->smarty->assign('messaggio_errore', 'Questa email è già registrata nel sistema.');
+
+                $vUtente->smarty->display('Registrazione.tpl');
+
+                return;
+
+            }
+
+
+
+            // Conversione della stringa data in oggetto DateTimeImmutable
+
+            try {
+
+                $dataDiNascita = new DateTimeImmutable($data_nascita_str);
+
+            } catch (Exception $e) {
+
+                $dataDiNascita = new DateTimeImmutable();
+
+            }
+
+
+
+            // Hashing sicuro della password prima di salvarla
+
+            $passwordHash = password_hash($password_chiaro, PASSWORD_DEFAULT);
+
+
+
+            // 2. Gestione del caricamento dell'immagine del profilo (File Upload)
+
+            $immagineProfilo = null;
+
+            if (isset($_FILES['immagine_profilo']) && $_FILES['immagine_profilo']['error'] === UPLOAD_ERR_OK) {
+
+                $fileTmpPath = $_FILES['immagine_profilo']['tmp_name'];
+
+                $fileName = $_FILES['immagine_profilo']['name'];
+
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+
+
+                $estensioniPermesse = ['jpg', 'jpeg', 'png', 'webp'];
+
+                if (in_array($fileExtension, $estensioniPermesse)) {
+
+                    $nuovoNomeFile = md5(time() . $fileName) . '.' . $fileExtension;
+
+                    $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/profilo/';
+
+                   
+
+                    if (!is_dir($uploadFileDir)) {
+
+                        mkdir($uploadFileDir, 0755, true);
+
+                    }
+
+
+
+                    $destPath = $uploadFileDir . $nuovoNomeFile;
+
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+
+                        $immagineProfilo = '/Gallerist/uploads/profilo/' . $nuovoNomeFile;
+
+                    }
+
+                }
+
+            }
+
+
+
+            // 3. Creazione dell'entità EUtente e salvataggio nel database
+
+            try {
+
+                $statoIniziale = EUtente::STATO_ATTIVO;
+
+              if ($ruoloDB === 'Artista') {
+                    // 🟢 GESTIONE ARTISTA: Recuperiamo i campi extra definiti nel form HTML
+                    $biografia = isset($_POST['biografia']) ? trim($_POST['biografia']) : '';
+                    $stile     = isset($_POST['stile']) ? trim($_POST['stile']) : '';
+                    
+                    // Recupero stringhe o percorsi dei file per i campi aggiuntivi
+                    $portfolio = isset($_POST['portfolio']) ? trim($_POST['portfolio']) : '';
+                    $documento = isset($_POST['documento_identita']) ? trim($_POST['documento_identita']) : '';
+                    $statoValidazione = 'IN_ATTESA'; // Stato di default coerentemente con l'entità EArtista
+
+                    // Istanziamo l'entità specifica EArtista rispettando l'ordine di creaEntitaDaArray
+                    $nuovoArtista = new EArtista(
+                        0,
+                        $nome,
+                        $cognome,
+                        $dataDiNascita,
+                        $indirizzo,
+                        $nickname,
+                        $telefono,
+                        $email,
+                        $passwordHash,
+                        $immagineProfilo,
+                        $statoIniziale,
+                        $biografia,
+                        $stile,
+                        $documento, // mapped to carta_identita
+                        $statoValidazione
+                    );
+
+                    // Scrittura persistente sequenziale (UTENTE + ARTISTA) tramite FArtista
+                    $risultato = FArtista::store($nuovoArtista);
+
+                } else {
+
+                // ✨ FIX: Chiuso correttamente il costruttore passando la variabile $ruoloDB al posto di quella commentata!
+
+                $nuovoUtente = new EUtente(
+
+                    0,
+
+                    $nome,
+
+                    $cognome,
+
+                    $dataDiNascita,
+
+                    $indirizzo,
+
+                    $nickname,
+
+                    $telefono,
+
+                    $email,
+
+                    $passwordHash,
+
+                    $immagineProfilo,
+
+                    $statoIniziale,
+
+                    $ruoloDB
+
+                );
+
+
+
+                // Scrittura persistente nel Database tramite il Foundation Layer
+
+                $risultato = FUtente::store($nuovoUtente);}
+
+
+
+                if ($risultato !== null) {
+
+                    // 🟢 REGISTRAZIONE AVVENUTA CON SUCCESSO!
+                   if ($ruoloDB === 'Artista') {
+                        // ✨ Per l'artista attiviamo il banner "in attesa" che hai nel .tpl
+                        $vUtente->smarty->assign('stato_registrazione', 'attesa');
+                    } else {
+                    $vUtente->smarty->assign('stato_registrazione', 'successo');}
+
+                } else {
+
+                    $vUtente->smarty->assign('errore_registrazione', true);
+
+                    $vUtente->smarty->assign('messaggio_errore', 'Errore critico durante il salvataggio nel database.');
+
+                }
+
+
+
+            } catch (\InvalidArgumentException $e) {
+
+                $vUtente->smarty->assign('errore_registrazione', true);
+
+                $vUtente->smarty->assign('messaggio_errore', $e->getMessage());
+
+            }
+
+           
+
+            // Ricarichiamo la pagina mostrando i banner di successo o di errore
+
+            $vUtente->smarty->display('Registrazione.tpl');
+
+           
+
+        } else {
+
+            // Richiesta GET: form pulito
+
+            $vUtente = new VUtente();
+
+            $vUtente->smarty->display('Registrazione.tpl');
+
+        }
+
+    }
+
+
 }

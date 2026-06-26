@@ -2,7 +2,7 @@
 
 class VUtente 
 {
-    private $smarty;
+    public $smarty;
 
     public function __construct() 
     {

@@ -11,8 +11,8 @@ require_once __DIR__ . '/../Entity/EUtente.php';
 class FUtente {
 
     private static string $class  = "FUtente";
-    private static string $table  = "UTENTE";
-    private static string $values = "(:id, :nome, :cognome, :data_nascita, :indirizzo, :nickname, :telefono, :email, :password, :immagine_profilo, :stato_account)";
+    private static string $table  = "utente";
+    private static string $values = "(:id, :nome, :cognome, :data_nascita, :indirizzo, :nickname, :telefono, :email, :password, :immagine_profilo, :stato_account, :ruolo)";
 
     public function __construct() {}
 
@@ -30,11 +30,12 @@ class FUtente {
         $stmt->bindValue(':id',              $id === 0 ? null : $id,        $id === 0 ? PDO::PARAM_NULL : PDO::PARAM_INT);
         $stmt->bindValue(':nome',            $utente->getNome(),             PDO::PARAM_STR);
         $stmt->bindValue(':cognome',         $utente->getCognome(),          PDO::PARAM_STR);
-        $stmt->bindValue(':data_nascita',    $utente->getDataDiNascita(),    PDO::PARAM_STR);
+        $stmt->bindValue(':data_nascita',    $utente->getDataDiNascita()->format('Y-m-d'),    PDO::PARAM_STR);
         $stmt->bindValue(':indirizzo',       $utente->getIndirizzo(),        PDO::PARAM_STR);
         $stmt->bindValue(':nickname',        $utente->getNickname(),         PDO::PARAM_STR);
         $stmt->bindValue(':telefono',        $utente->getTelefono(),         PDO::PARAM_STR);
         $stmt->bindValue(':email',           $utente->getEmail(),            PDO::PARAM_STR);
+         $stmt->bindValue(':ruolo',           $utente->getRuolo(),            PDO::PARAM_STR);
         $stmt->bindValue(':password',        $utente->getPassword(),         PDO::PARAM_STR); // Arriva già hashata dal Control
         $img = $utente->getImmagineProfilo();
         $stmt->bindValue(':immagine_profilo', $img, $img === null ? PDO::PARAM_NULL : PDO::PARAM_STR); // gestisce il nullable
@@ -125,19 +126,53 @@ class FUtente {
      * Costruisce un'istanza di EUtente a partire da un array associativo del DB.
      */
     private static function creaEntitaDaArray(array $row): EUtente {
-        return new EUtente(
-            (int) $row['id'],
-            $row['nome'],
-            $row['cognome'],
-            $row['data_nascita'],
-            $row['indirizzo'],
-            $row['nickname'],
-            $row['telefono'],
-            $row['email'],
-            $row['password'],
-            $row['immagine_profilo'] ?? null,
-            $row['stato_account']    ?? EUtente::STATO_ATTIVO
-        );
+    return new EUtente(
+        (int) $row['id'],
+        $row['nome'],
+        $row['cognome'],
+        new DateTimeImmutable($row['data_nascita']), // 💡 Corretto: trasforma la stringa in oggetto DateTime
+        $row['indirizzo'],
+        $row['nickname'],
+        $row['telefono'],
+        $row['email'],
+        $row['password'],
+        $row['immagine_profilo'] ?? null,
+        $row['stato_account']    ?? EUtente::STATO_ATTIVO,
+        $row['ruolo']            ?? EUtente::RUOLO_USER // 💡 Passa il ruolo letto dal database
+    );
+}
+    /**
+ * Incontra l'utente nel DB tramite email e ne verifica la password.
+ * @param string $email
+ * @param string $password Password in chiaro inserita nel form
+ * @return EUtente|null L'oggetto Utente se corretto, altrimenti null
+ */
+public static function verificaCredenziali(string $email, string $password): ?EUtente {
+    // 1. Cerchiamo se esiste un utente con questa email
+    $utente = self::loadByField('email', $email);
+
+    // Se loadByField dovesse restituire un array (es. più risultati), prendiamo il primo
+    if (is_array($utente)) {
+        $utente = !empty($utente) ? $utente[0] : null;
     }
+
+    // 2. Se l'utente esiste, verifichiamo la password
+    if ($utente instanceof EUtente) {
+        // password_verify confronta la stringa in chiaro con l'hash memorizzato nel DB
+        if (password_verify($password, $utente->getPassword())) {
+            return $utente;
+        }
+    }
+
+    // Credenziali errate o utente inesistente
+    return null;
+}
+/**
+ * Scorciatoia per caricare un utente direttamente dal suo ID.
+ */
+public static function load(int $id): ?EUtente {
+    $utente = self::loadByField('id', $id);
+    return ($utente instanceof EUtente) ? $utente : null;
+}
 }
 ?>

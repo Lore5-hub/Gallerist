@@ -5,20 +5,26 @@
  */
 class EUtente {
     // Attributi dedotti dal diagramma ER
-    private ?int $id = null; // ID univoco dell'utente, generato dal DB
+    private ?int $id = null; 
     private string $nome;
     private string $cognome;
-    private DateTimeImmutable $dataDiNascita;  /*da modificare il tipo di dato creando la classe per la data in una cartella tipo utility/ */
+    private DateTimeImmutable $dataDiNascita;  
     private string $indirizzo;
     private string $nickname;
     private string $telefono;
     private string $email;
     private string $password;
-    private ?string $immagineProfilo; /*nullable così il foundation layer può distinguere facilmente "nessuna immagine impostata" da "path vuoto". */
-    private string $statoAccount; // Es. "Attivo" o "Bannato"
-    
+    private ?string $immagineProfilo; 
+    private string $statoAccount; 
+    private string $ruolo; // 🟢 NUOVO ATTRIBUTO
+
+    // Costanti per lo Stato Account
     public const STATO_ATTIVO  = "Attivo";
     public const STATO_BANNATO = "Bannato";
+
+    // 🟢 COSTANTI PER I RUOLI
+    public const RUOLO_USER  = "Utente registrato";
+    public const RUOLO_ADMIN = "admin";
 
     /**
      * Costruttore della classe.
@@ -26,7 +32,9 @@ class EUtente {
     public function __construct(
         int $id, string $nome, string $cognome, DateTimeImmutable $dataDiNascita, 
         string $indirizzo, string $nickname, string $telefono, string $email, 
-        string $password, ?string $immagineProfilo = null, string $statoAccount = self::STATO_ATTIVO
+        string $password, ?string $immagineProfilo = null, 
+        string $statoAccount = self::STATO_ATTIVO, 
+        string $ruolo = self::RUOLO_USER // 🟢 Nuovo parametro (default su 'user')
     ) {
         $this->id = $id;
         $this->nome = $nome;
@@ -34,14 +42,13 @@ class EUtente {
         $this->dataDiNascita = $dataDiNascita;
         $this->indirizzo = $indirizzo;
         $this->nickname = $nickname;
-        $this->setTelefono($telefono); // Utilizza il setter per validare il formato del telefono
+        $this->setTelefono($telefono); 
         $this->email = $email;
-        $this->password = $password; // Nota: In un sistema reale andrebbe hashata, ma nel dominio concettuale è una stringa.
+        $this->password = $password; 
         $this->immagineProfilo = $immagineProfilo;
         $this->statoAccount = $statoAccount;
+        $this->setRuolo($ruolo); // 🟢 Utilizza il setter per validare il ruolo
     }
-
-
 
     // --- GETTER & SETTER ---
     public function getId(): int { return $this->id; }
@@ -66,7 +73,7 @@ class EUtente {
             throw new \InvalidArgumentException("Numero di telefono non valido. Formato atteso: +39 3471234567");
         }
         $this->telefono = $telefono;
-}
+    }
 
     public function getEmail(): string { return $this->email; }
     public function setEmail(string $email): void { $this->email = $email; }
@@ -84,6 +91,16 @@ class EUtente {
             throw new \InvalidArgumentException("Stato non valido: $stato");
         }
         $this->statoAccount = $stato;
+    }
+
+    // 🟢 NUOVI GETTER & SETTER PER IL RUOLO
+    public function getRuolo(): string { return $this->ruolo; }
+    public function setRuolo(string $ruolo): void {
+        $ruoliValidi = [self::RUOLO_USER, self::RUOLO_ADMIN];
+        if (!in_array($ruolo, $ruoliValidi)) {
+            throw new \InvalidArgumentException("Ruolo non valido: $ruolo");
+        }
+        $this->ruolo = $ruolo;
     }
 }
 ?>
