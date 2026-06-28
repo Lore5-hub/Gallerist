@@ -6,16 +6,29 @@
 
     <div class="is-flex is-justify-content-space-between is-align-items-center mb-6">
       <div>
-        <h1 class="title is-3 mb-1">Gestione Piattaforma</h1>
+        <h1 class="title is-3 mb-1 has-text-black">Gestione Piattaforma</h1>
         <p class="subtitle is-6 has-text-grey">Dashboard operativa e controllo attività</p>
       </div>
       
-      <a href="admin_statistiche.php" class="button is-info is-medium">
+      <a href="/Gallerist/Admin/statistiche" class="button is-info is-medium">
         <span class="icon"><i class="fas fa-chart-bar"></i></span>
         <span>Visualizza Statistiche</span>
       </a>
     </div>
-
+{if isset($verifica)}
+  {if $verifica == 'successo'}
+    <div class="notification is-success is-light mb-4">
+      <button class="delete" onclick="this.parentElement.remove()"></button>
+      <span class="icon mr-2"><i class="fas fa-check-circle"></i></span>
+      Artista verificato e approvato con successo.
+    </div>
+  {else}
+    <div class="notification is-danger is-light mb-4">
+      <button class="delete" onclick="this.parentElement.remove()"></button>
+      Errore durante la verifica. Riprova.
+    </div>
+  {/if}
+{/if}
     <div class="columns is-multiline is-mobile mb-6">
       
       <div class="column is-one-fifth-desktop is-half-tablet">
@@ -80,7 +93,7 @@
           
           <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <h2 class="title is-5 mb-0"><i class="fas fa-user-clock has-text-warning mr-2"></i> Utenti in attesa di verifica</h2>
-            <a href="admin_verifica_utenti.php" class="button is-small is-link is-outlined">Vedi tutti</a>
+            <a href="/Gallerist/Admin/verificaArtista" class="button is-small is-link is-outlined">Vedi tutti</a>
           </div>
 
           <div class="table-container">
@@ -100,7 +113,7 @@
                     <td>{$utente.data_registrazione|date_format:"%d/%m/%Y"}</td>
                     <td><span class="tag is-warning is-light">In attesa</span></td>
                     <td class="has-text-right">
-                      <a href="verifica_utente.php?id={$utente.id}" class="button is-small is-success">
+                      <a href="/Gallerist/Admin/verificaArtista?id={$utente.id}" class="button is-small is-success">
                         <span class="icon"><i class="fas fa-check"></i></span>
                         <span>Verifica</span>
                       </a>
@@ -156,7 +169,7 @@
             </table>
           </div>
           
-          <a href="admin_categorie.php" class="button is-small is-fullwidth is-info is-outlined">Gestisci tutte</a>
+          <a href="/Gallerist/Admin/gestisciCategorie" class="button is-small is-fullwidth is-info is-outlined">Gestisci tutte</a>
 
         </div>
       </div>

@@ -88,14 +88,15 @@ class FArtista {
      *   FArtista::loadByField('stato_validazione', 'IN_ATTESA', 'a') // campo di ARTISTA
      */
     public static function loadByField(string $field, mixed $id, string $alias = 'u'): mixed {
-        $query = "SELECT u.*, 
-                         a.biografia, 
-                         a.stile_artistico, 
-                         a.carta_identita, 
-                         a.stato_validazione
-                  FROM " . FUtente::getTable() . " u
-                  INNER JOIN " . static::$table . " a ON a.email_utente = u.email
-                  WHERE " . $alias . "." . $field . " = :id";
+       $query = "SELECT u.*, 
+                 a.biografia, 
+                 a.stileArtistico  AS stile_artistico,
+                 a.carta_identita, 
+                 a.stato_validazione
+          FROM " . FUtente::getTable() . " u
+          INNER JOIN " . static::$table . " a ON a.idUtente = u.id
+          WHERE " . $alias . "." . $field . " = :id";
+          
 
         $db     = FDataBase::getInstance();
         $result = $db->queryDB($query, [':id' => $id]);
@@ -152,19 +153,19 @@ class FArtista {
      *
      * FIX: aggiunto stato_account mancante, che EArtista eredita da EUtente.
      */
-    private static function creaEntitaDaArray(array $row): EArtista {
+    private static function creaEntitaDaArray(array $row): EArtista { 
         return new EArtista(
             (int) $row['id'],
             $row['nome'],
             $row['cognome'],
-            $row['data_nascita'],
+            new DateTimeImmutable($row['data_nascita']),
             $row['indirizzo'],
             $row['nickname'],
             $row['telefono'],
             $row['email'],
             $row['password'],
             $row['immagine_profilo']  ?? null,
-            $row['stato_account']     ?? EUtente::STATO_ATTIVO,  // FIX: campo mancante
+           // $row['stato_account']     ?? EUtente::STATO_ATTIVO,  // FIX: campo mancante
             $row['biografia'],
             $row['stile_artistico'],
             $row['carta_identita'],

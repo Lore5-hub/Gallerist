@@ -39,6 +39,13 @@ class CUtente
             $utente = FUtente::verificaCredenziali($email, $password); 
             
             if ($utente !== null) {
+    // ✅ Se è un artista, ricaricalo come EArtista
+    if ($utente->getRuolo() === EUtente::RUOLO_ARTISTA) {
+        $artista = FPersistentManager::load('EArtista', 'id', $utente->getId());
+        if ($artista instanceof EArtista) {
+            $utente = $artista;
+        }
+    }
                 // 🟢 CREDENZIALI CORRETTE!
                 
                 // Salviamo i dati dell'utente nella sessione
@@ -216,8 +223,8 @@ class CUtente
                     $stile     = isset($_POST['stile']) ? trim($_POST['stile']) : '';
                     
                     // Recupero stringhe o percorsi dei file per i campi aggiuntivi
-                    $portfolio = isset($_POST['portfolio']) ? trim($_POST['portfolio']) : '';
-                    $documento = isset($_POST['documento_identita']) ? trim($_POST['documento_identita']) : '';
+                    $portfolio = $_FILES['portfolio']['name'] ?? '';
+                    $documento = $_FILES['documento_identita']['name'] ?? '';
                     $statoValidazione = 'IN_ATTESA'; // Stato di default coerentemente con l'entità EArtista
 
                     // Istanziamo l'entità specifica EArtista rispettando l'ordine di creaEntitaDaArray
@@ -232,7 +239,7 @@ class CUtente
                         $email,
                         $passwordHash,
                         $immagineProfilo,
-                        $statoIniziale,
+                        
                         $biografia,
                         $stile,
                         $documento, // mapped to carta_identita
@@ -328,6 +335,75 @@ class CUtente
         }
 
     }
+/**
+ * Mostra il profilo/dashboard dell'artista loggato.
+ * Risponde all'URL: /Gallerist/utente/profilo
+ */
+public function profilo() {
+    $sessione = USession::getInstance();
 
+    // Solo utenti loggati
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $utente = $sessione->getValore('utente_loggato');
+
+    // Solo artisti
+    if ($utente->getRuolo() !== EUtente::RUOLO_ARTISTA) {
+        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        exit;
+    }
+
+    $artistaId = $utente->getId();
+
+    // Opere dell'artista
+    $mieOpere = FOpera::loadByArtista($artistaId, -1) ?? [];
+
+    // Recensioni ricevute (tramite le opere dell'artista)
+    $recensioni = FPersistentManager::load('ERecensione', 'idAutore', $artistaId) ?? [];
+    if (!is_array($recensioni)) {
+        $recensioni = [$recensioni];
+    }
+    if (count($recensioni) > 0) {
+    $somma = array_reduce($recensioni, function($carry, $r) {
+        return $carry + $r->getValutazione();
+    }, 0);
+    $utente->setValutazioneMedia(round($somma / count($recensioni), 1));
+}
+    // Statistiche
+    $pubblicate  = 0;
+    $inVendita   = 0;
+    $vendute     = 0;
+    $guadagni    = 0.0;
+
+    foreach ($mieOpere as $opera) {
+        $stato = $opera->getStato();
+        if ($stato === 'pubblicata')  $pubblicate++;
+        if ($stato === 'in_vendita')  { $pubblicate++; $inVendita++; }
+        if ($stato === 'Venduta')     { $vendute++; $guadagni += (float)$opera->getPrezzo(); }
+    }
+
+    $statistiche = [
+        'pubblicate'       => $pubblicate,
+        'in_vendita'       => $inVendita,
+        'interazioni'      => count($recensioni),
+        'numero_recensioni' => count($recensioni),
+        'guadagni'         => $guadagni,
+    ];
+
+    $vUtente = new VUtente();
+    $vUtente->smarty->assign('utente',     $utente);
+    $vUtente->smarty->assign('mie_opere',  $mieOpere);
+    $vUtente->smarty->assign('recensioni', $recensioni);
+    $vUtente->smarty->assign('statistiche', $statistiche);
+    $vUtente->smarty->display('DashboardArtista.tpl');
+}
+public function logout() {
+    USession::getInstance()->distruggi();
+    header('Location: /Gallerist/utente/login');
+    exit;
+}
 
 }

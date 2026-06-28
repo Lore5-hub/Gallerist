@@ -27,13 +27,39 @@
                         </a>
 
                         <div class="navbar-dropdown is-right">
-                            <a href="/Gallerist/utente/login" class="navbar-item has-text-light">
-                                Accedi
-                            </a>
-                            <a href="/Gallerist/utente/registrazione" class="navbar-item has-text-light">
-                                Registrati
-                            </a>
-                        </div>
+    {if isset($utente_loggato) && $utente_loggato !== null}
+        {* Utente loggato *}
+        <div class="navbar-item has-text-light">
+            <strong>@{$utente_loggato->getNickname()}</strong>
+        </div>
+        <hr class="navbar-divider">
+        {if $utente_loggato->getRuolo() == 'Amministratore'}
+            <a href="/Gallerist/Admin/dashboard" class="navbar-item has-text-light">
+                <span class="icon mr-1"><i class="fas fa-cog"></i></span> Dashboard Admin
+            </a>
+        {elseif $utente_loggato->getRuolo() == 'Artista'}
+    <a href="/Gallerist/utente/profilo" class="navbar-item has-text-light">
+        <span class="icon mr-1"><i class="fas fa-palette"></i></span> Il mio profilo
+    </a>
+        {else}
+            <a href="/Gallerist/utente/profilo" class="navbar-item has-text-light">
+                <span class="icon mr-1"><i class="fas fa-user"></i></span> Il mio profilo
+            </a>
+        {/if}
+        <hr class="navbar-divider">
+        <a href="/Gallerist/utente/logout" class="navbar-item has-text-danger">
+            <span class="icon mr-1"><i class="fas fa-sign-out-alt"></i></span> Logout
+        </a>
+    {else}
+        {* Utente non loggato *}
+        <a href="/Gallerist/utente/login" class="navbar-item has-text-light">
+            Accedi
+        </a>
+        <a href="/Gallerist/utente/registrazione" class="navbar-item has-text-light">
+            Registrati
+        </a>
+    {/if}
+</div>
                     </div>
                 </div>
             </div>

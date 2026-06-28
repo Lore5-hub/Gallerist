@@ -8,6 +8,8 @@ class StartSmarty{
         $smarty->setCompileDir('Smarty/TemplatesC/');
         $smarty->setConfigDir('Smarty/Configs/');
         $smarty->setCacheDir('Smarty/Cache/');
+         $sessione = USession::getInstance();
+    $smarty->assign('utente_loggato', $sessione->getValore('utente_loggato'));
         return $smarty;
     }
 }

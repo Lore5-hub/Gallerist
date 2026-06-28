@@ -35,7 +35,7 @@
   <div class="container">
     <div class="is-flex is-justify-content-space-between is-align-items-flex-end mb-5">
       <h2 class="title is-3 mb-0">Esplora per Categorie</h2>
-      <a href="Gallerist/catalogo/esploracatalogo" class="button is-outlined is-link">
+      <a href="/Gallerist/catalogo/esploracatalogo" class="button is-outlined is-link">
         Esplora Catalogo <i class="fas fa-arrow-right ml-2"></i>
       </a>
     </div>

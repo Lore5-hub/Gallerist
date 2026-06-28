@@ -39,7 +39,7 @@
               <i class="fas fa-pencil-alt"></i>
             </a>
             <p class="is-size-6 pl-4 has-text-justified">
-              {$utente->getDescrizione()|default:"<em>Nessuna descrizione inserita. Clicca la matita per aggiungere la tua biografia.</em>"}
+              {$utente->getBiografia()|default:"<em>Nessuna descrizione inserita. Clicca la matita per aggiungere la tua biografia.</em>"}
             </p>
           </div>
         </div>

@@ -64,5 +64,25 @@ class FPersistentManager {
     private static function getFClassFromName(string $Eclass): string {
         return 'F' . substr($Eclass, 1);
     }
+    public static function getArtistiInAttesa(): array {
+    $risultato = FArtista::loadByField('stato_validazione', 'IN_ATTESA', 'a');
+    if ($risultato === null)              return [];
+    if ($risultato instanceof EArtista)   return [$risultato];
+    return $risultato;
+}
+
+public static function getArtistiAttivi(): array {
+    $risultato = FArtista::loadByField('stato_validazione', 'APPROVATO', 'a');
+    if ($risultato === null)              return [];
+    if ($risultato instanceof EArtista)   return [$risultato];
+    return $risultato;
+}
+
+public static function getUtentiStandard(): array {
+    $risultato = FUtente::loadByField('ruolo', 'Utente registrato');
+    if ($risultato === null)             return [];
+    if ($risultato instanceof EUtente)   return [$risultato];
+    return $risultato;
+}
 }
 ?>

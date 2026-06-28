@@ -11,7 +11,8 @@ class EArtista extends EUtente {
     private string $stileArtistico;
     private string $cartaIdentita; // Es. URL o nome file del documento
     private string $statoValidazione;
-    private int $id=0;
+    private string $nazionalita = '';
+    private float  $valutazioneMedia = 0.0;
      public const STATO_IN_ATTESA = "In attesa di validazione";  /* attivo e bannato sono in utente */
 
     
@@ -23,13 +24,14 @@ class EArtista extends EUtente {
         int $id, string $nome, string $cognome, DateTimeImmutable $dataDiNascita, 
         string $indirizzo, string $nickname, string $telefono, string $email, 
         string $password, ?string $immagineProfilo,
-        string $biografia, string $stileArtistico, string $cartaIdentita, string $statoValidazione = self::STATO_IN_ATTESA
+        string $biografia, string $stileArtistico, string $cartaIdentita, string $statoValidazione = self::STATO_IN_ATTESA, string $nazionalita = ''
     ) {
-        parent::__construct($id, $nome, $cognome, $dataDiNascita, $indirizzo, $nickname, $telefono, $email, $password, $immagineProfilo);
+        parent::__construct($id, $nome, $cognome, $dataDiNascita, $indirizzo, $nickname, $telefono, $email, $password, $immagineProfilo,  EUtente::STATO_ATTIVO, EUtente::RUOLO_ARTISTA);
         $this->biografia = $biografia;
         $this->stileArtistico = $stileArtistico;
         $this->cartaIdentita = $cartaIdentita;
-        $this->statoValidazione = $statoValidazione; // Come da Use Case 1b
+        $this->statoValidazione = $statoValidazione; 
+        $this->nazionalita      = $nazionalita;// Come da Use Case 1b
     }
 
    
@@ -51,10 +53,10 @@ class EArtista extends EUtente {
         }
     $this->statoValidazione = $stato;
     }
-    public function setId(int $id) {
-    $this->id = $id;
-}
-public function getId(): int {
-        return $this->id;
-    }
+    public function getNazionalita(): string { return $this->nazionalita; }
+public function setNazionalita(string $nazionalita): void { $this->nazionalita = $nazionalita; }
+
+public function getValutazioneMedia(): float { return $this->valutazioneMedia; }
+public function setValutazioneMedia(float $media): void { $this->valutazioneMedia = $media; }
+    
 }   

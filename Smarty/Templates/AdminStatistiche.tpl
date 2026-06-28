@@ -4,25 +4,28 @@
   <div class="container is-fluid"> <div class="is-flex is-justify-content-space-between is-align-items-center mb-6">
       
       <div>
-        <h1 class="title is-3 mb-1">Interazioni con il sito</h1>
+        <h1 class="title is-3 mb-1 has-text-black">Interazioni con il sito</h1>
         <p class="subtitle is-6 has-text-grey">Panoramica generale delle performance della piattaforma</p>
       </div>
       
-      <div class="field mb-0">
-        <div class="control has-icons-left">
-          <div class="select is-info">
-            <select name="periodo" onchange="this.form.submit()">
-              <option value="7">Ultimi 7 giorni</option>
-              <option value="30" selected>Ultimi 30 giorni</option>
-              <option value="90">Ultimi 3 mesi</option>
-              <option value="365">Ultimo anno</option>
-            </select>
-          </div>
-          <span class="icon is-small is-left has-text-info">
-            <i class="fas fa-calendar-alt"></i>
-          </span>
-        </div>
+      <!-- DOPO (corretto — select dentro un form) -->
+<form method="GET" action="/Gallerist/Admin/statistiche">
+  <div class="field mb-0">
+    <div class="control has-icons-left">
+      <div class="select is-info">
+        <select name="periodo" onchange="this.form.submit()">
+          <option value="7"   {if $giorni == 7}selected{/if}>Ultimi 7 giorni</option>
+          <option value="30"  {if $giorni == 30}selected{/if}>Ultimi 30 giorni</option>
+          <option value="90"  {if $giorni == 90}selected{/if}>Ultimi 3 mesi</option>
+          <option value="365" {if $giorni == 365}selected{/if}>Ultimo anno</option>
+        </select>
       </div>
+      <span class="icon is-small is-left has-text-info">
+        <i class="fas fa-calendar-alt"></i>
+      </span>
+    </div>
+  </div>
+</form>
 
     </div>
 
@@ -193,4 +196,15 @@
 
   </div>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labels   = {$label_grafici};
+  const visite   = {$dati_visite};
+  const pagine   = {$dati_pagine};
+  const guadagni = {$dati_guadagni};
+
+  new Chart(document.getElementById('chartVisite'),   { type: 'line', data: { labels, datasets: [{ label: 'Visite', data: visite,   borderColor: '#3273dc', tension: 0.3 }] } });
+  new Chart(document.getElementById('chartPagine'),   { type: 'line', data: { labels, datasets: [{ label: 'Pagine', data: pagine,   borderColor: '#3298dc', tension: 0.3 }] } });
+  new Chart(document.getElementById('chartGuadagni'), { type: 'bar',  data: { labels, datasets: [{ label: '€',      data: guadagni, backgroundColor: '#48c774' }] } });
+</script>
 {/block}

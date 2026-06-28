@@ -19,12 +19,13 @@ class EUtente {
     private string $ruolo; // 🟢 NUOVO ATTRIBUTO
 
     // Costanti per lo Stato Account
-    public const STATO_ATTIVO  = "Attivo";
+    public const STATO_ATTIVO  = "attivo";
     public const STATO_BANNATO = "Bannato";
 
     // 🟢 COSTANTI PER I RUOLI
     public const RUOLO_USER  = "Utente registrato";
-    public const RUOLO_ADMIN = "admin";
+    public const RUOLO_ADMIN = "Amministratore";
+    public const RUOLO_ARTISTA = 'Artista';
 
     /**
      * Costruttore della classe.
@@ -52,6 +53,7 @@ class EUtente {
 
     // --- GETTER & SETTER ---
     public function getId(): int { return $this->id; }
+    public function setId(int $id): void { $this->id = $id; }
     public function getNome(): string { return $this->nome; }
     public function setNome(string $nome): void { $this->nome = $nome; }
 
@@ -96,7 +98,7 @@ class EUtente {
     // 🟢 NUOVI GETTER & SETTER PER IL RUOLO
     public function getRuolo(): string { return $this->ruolo; }
     public function setRuolo(string $ruolo): void {
-        $ruoliValidi = [self::RUOLO_USER, self::RUOLO_ADMIN];
+        $ruoliValidi = [self::RUOLO_USER, self::RUOLO_ARTISTA, self::RUOLO_ADMIN];
         if (!in_array($ruolo, $ruoliValidi)) {
             throw new \InvalidArgumentException("Ruolo non valido: $ruolo");
         }
