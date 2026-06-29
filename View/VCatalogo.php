@@ -149,7 +149,7 @@ class VCatalogo
      */
     public function mostraSchedaDettaglio(EOpera $opera, array $altreOpere, bool $isLogged=false): void
     {
-        if ($isLogged()) {
+        if ($isLogged) {
             $this->smarty->assign('userlogged', 'loggato');
         }
 
@@ -182,7 +182,7 @@ class VCatalogo
         $this->smarty->assign('altreOpere',         $altreOpere);
         $this->smarty->assign('copertineAltreOpere', $this->codificaCopertine($altreOpere));
 
-        $this->smarty->display('dettaglio_opera.tpl');
+        $this->smarty->display('DettaglioOpera.tpl');
     }
 
     // =========================================================================
@@ -289,7 +289,7 @@ class VCatalogo
                 ? 'default_avatar.png'
                 : 'default_opera.png';
 
-            $percorso = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/Smarty/immagini/' . $nomeDefault;
+            $percorso = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/img/' . $nomeDefault;
             $b64      = base64_encode(file_get_contents($percorso));
             $mime     = 'image/png';
         }

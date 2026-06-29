@@ -19,7 +19,11 @@
   <div class="column is-7">
     
     <figure class="image is-fullwidth artwork-detail-wrapper mb-2">
-  <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" />
+  {if $immaginiOpera|@count > 0}
+    <img src="data:{$immaginiOpera[0].type};base64,{$immaginiOpera[0].pic64}" alt="{$opera->getTitolo()}" />
+{else}
+    <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}" />
+{/if}
 </figure>
     
     <div class="has-text-centered mb-5">
@@ -44,29 +48,27 @@
     <h1 class="title is-2 mb-2">{$opera->getTitolo()}</h1>
     
     <h2 class="subtitle is-4 mt-0">
-      di <a href="profilo_artista.php?id={$opera->getAutore()->getId()}" class="has-text-link">{$opera->getAutore()->getNome()}</a>
+      di <a href="profilo_artista.php?id={$opera->getArtista()->getId()}" class="has-text-link">{$opera->getArtista()->getNome()}</a>
     </h2>
 
     <div class="tags are-medium mt-4">
-      <span class="tag is-info is-light">{$opera->getCategoria()}</span>
+      <span class="tag is-info is-light">{$opera->getCategoria()->getNome()}</span>
       <span class="tag is-light">Dimensioni: {$opera->getDimensioni()}</span>
     </div>
 
     <div class="block mt-5">
-      <p class="is-size-3 has-text-weight-bold">€ {$opera->getPrezzo()|number_format:2:',':'.'}</p>
+      <p class="is-size-3 has-text-weight-bold">€ {$opera->getPrezzo()->getValore()|number_format:2:',':'.'}</p>
     </div>
 
     <div class="field mt-5">
-      {if $opera->isDisponibile()}
-        <form method="POST" action="checkout.php" class="mb-3">
-          <input type="hidden" name="id_opera" value="{$opera->getId()}">
-          <button type="submit" class="button is-black is-large is-fullwidth">Acquista Ora</button>
-        </form>
-        
-        <button id="btn-apri-offerta" class="button is-white is-large is-fullwidth has-border">Fai un'offerta</button>
-      {else}
-        <button class="button is-large is-fullwidth" disabled>Opera Venduta</button>
-      {/if}
+      {if $opera->getStatoOpera()->isVendibile()}
+        <form method="POST" action="/Gallerist/compravendita/avviaAcquisto/{$opera->getId()}" class="mb-3">
+    <button type="submit" class="button is-black is-large is-fullwidth">Acquista Ora</button>
+</form>
+    <button id="btn-apri-offerta" class="button is-white is-large is-fullwidth has-border">Fai un'offerta</button>
+{else}
+    <button class="button is-large is-fullwidth" disabled>Opera non disponibile</button>
+{/if}
     </div>
 
   </div> </div> <hr class="dropdown-divider my-6">
@@ -81,8 +83,7 @@
     </header>
     
     <section class="modal-card-body">
-      <form id="form-offerta" method="POST" action="invia_offerta.php">
-        <input type="hidden" name="id_opera" value="{$opera->getId()}">
+      <form id="form-offerta" method="POST" action="/Gallerist/compravendita/avviaPropostaOfferta/{$opera->getId()}">
         
         <div class="field">
           <label class="label">La tua offerta (€)</label>
@@ -113,7 +114,7 @@
     <div class="column is-8 is-offset-2">
       <h3 class="title is-3">Recensioni degli utenti</h3>
       
-      {foreach from=$opera->getRecensioni() item=recensione}
+      {foreach from=$commenti item=recensione}
         <div class="box mb-4 artwork-review-box">
           <p class="has-text-weight-bold">{$recensione->getNomeUtente()} <span class="has-text-grey is-size-7 ml-2">{$recensione->getData()|date_format:"%d/%m/%Y"}</span></p>
           <p class="mt-2">{$recensione->getTesto()}</p>
@@ -123,7 +124,7 @@
       {/foreach}
 
       <div class="mt-6">
-        {include file="form_recensione.tpl"}
+        {include file="FormRecensione.tpl"}
       </div>
     </div>
   </div>
@@ -133,7 +134,7 @@
 
 
 <section class="section px-0">
-  <h3 class="title is-3 mb-5">Altro di {$opera->getAutore()->getNome()}</h3>
+  <h3 class="title is-3 mb-5">Altro di {$opera->getArtista()->getNome()}</h3>
   
   <div class="columns is-multiline">
     {foreach from=$altre_opere item=altra_opera}
@@ -141,14 +142,14 @@
         <div class="card h-full artwork-card">
   <div class="card-image">
     <figure class="image is-4by3">
-      <img src="{$altra_opera->getUrlImmagine()}" alt="..." class="artwork-img">
+      <img src="/Gallerist/img/default_opera.png" alt="{$altra_opera->getTitolo()}" class="artwork-img">
     </figure>
   </div>
           <div class="card-content">
             <p class="title is-5 mb-1">{$altra_opera->getTitolo()}</p>
             <p class="subtitle is-6 mb-3 has-text-grey">{$altra_opera->getDimensioni()}</p>
-            <p class="is-size-5 has-text-weight-bold">€ {$altra_opera->getPrezzo()|number_format:2:',':'.'}</p>
-            <a href="dettaglio_opera.php?id={$altra_opera->getId()}" class="button is-small is-outlined is-fullwidth mt-3">Vedi dettagli</a>
+            <p class="is-size-5 has-text-weight-bold">€ {$altra_opera->getPrezzo()->getValore()|number_format:2:',':'.'}</p>
+            <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$altra_opera->getId()}" class="button is-small is-outlined is-fullwidth mt-3">Vedi dettagli</a>
           </div>
         </div>
       </div>
@@ -159,5 +160,5 @@
     {/foreach}
   </div>
 </section>
-<script src="js/dettaglioOpera.js"></script>
+<script src="/Gallerist/js/dettaglioOpera.js"></script>
 {/block}

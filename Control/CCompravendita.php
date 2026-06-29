@@ -14,38 +14,36 @@ class CCompravendita {
      * @param int $idOpera Identificativo dell'opera da comprare
      */
     public function avviaAcquisto(int $idOpera): void {
-        $view = new VCompravendita();
+    $view = new VCompravendita();
 
-        // 1. Verifica sessione: UC3 richiede un utente loggato
-        $emailUtente = USession::getInstance()->getValore('utente_loggato');
-        if ($emailUtente === null) {
-            // Salva la destinazione originale in sessione per il redirect post-login
-            USession::getInstance()->impostaValore('redirect_dopo_login', "/Gallerist/Compravendita/avviaAcquisto/$idOpera");
-            header('Location: /Gallerist/Accesso/login');
-            exit;
-        }
-
-        // 2. Caricamento utente e opera — CRUD standard: transitano dal Manager
-        $utente = FPersistentManager::load('EUtente', 'email', $emailUtente);
-        $opera  = FPersistentManager::load('EOpera', 'id', $idOpera);
-
-        if ($utente === null || $opera === null) {
-            $view->mostraErrore('opera_non_trovata');
-            return;
-        }
-
-        // 3. Verifica che l'opera sia effettivamente acquistabile
-        if (!($opera->getStatoOpera() instanceof EStatoInVendita)) {
-            $view->mostraErrore('opera_non_disponibile');
-            return;
-        }
-
-        // 4. Prezzo di spedizione predefinito wrappato in EPrezzo per coerenza col dominio
-        $prezzoSpedizione = new EPrezzo(5.00);
-
-        // 5. Mostra modulo di riepilogo con indirizzo precompilato dai dati del profilo
-        $view->mostraRiepilogoOrdine($utente, $opera, $prezzoSpedizione);
+    // 1. Verifica sessione
+    $utente = USession::getInstance()->getValore('utente_loggato');
+    if ($utente === null) {
+        USession::getInstance()->setValue('redirect_dopo_login', "/Gallerist/compravendita/avviaAcquisto/$idOpera");
+        header('Location: /Gallerist/utente/login');
+        exit;
     }
+
+    // 2. Carica solo l'opera dal DB — l'utente è già in sessione
+    $opera = FPersistentManager::load('EOpera', 'id', $idOpera);
+
+    if ($opera === null) {
+        $view->mostraErrore('opera_non_trovata');
+        return;
+    }
+
+    // 3. Verifica che l'opera sia acquistabile
+    if (!($opera->getStatoOpera() instanceof EStatoInVendita)) {
+        $view->mostraErrore('opera_non_disponibile');
+        return;
+    }
+
+    // 4. Prezzo spedizione
+    $prezzoSpedizione = new EPrezzo(5.00);
+
+    // 5. Mostra riepilogo
+    $view->mostraRiepilogoOrdine($utente, $opera, $prezzoSpedizione);
+}
 
     /**
      * Operazione di sistema (Step 2): L'utente conferma il pagamento dell'acquisto diretto.

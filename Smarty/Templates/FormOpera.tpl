@@ -1,6 +1,6 @@
 {extends file='layout.tpl'}
 {block name=content}
-<form method="POST" action="aggiungi_opera.php" enctype="multipart/form-data">
+<form method="POST" action="/Gallerist/gestioneProfiloPortfolio/salvaOpera" enctype="multipart/form-data">
   
   <div class="columns is-variable is-6 mt-4">
     

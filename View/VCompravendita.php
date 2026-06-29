@@ -54,9 +54,9 @@ class VCompravendita
         EPrezzo $prezzoSpedizione
     ): void {
         // UC3 richiede login: verifichiamo centralmente prima di mostrare dati sensibili
-        if (CUtente::isLogged()) {
-            $this->smarty->assign('userlogged', 'loggato');
-        }
+        if (USession::getInstance()->esisteValore('utente_loggato')) {
+    $this->smarty->assign('userlogged', 'loggato');
+}
 
         // Dati dell'acquirente per precompilare il form di spedizione
         $this->smarty->assign('acquirente', $utente);
@@ -84,7 +84,7 @@ class VCompravendita
         );
         $this->smarty->assign('totaleOrdine', $totale);
 
-        $this->smarty->display('riepilogo_ordine.tpl');
+        $this->smarty->display('RiepilogoOrdine.tpl');
     }
 
     // =========================================================================
@@ -332,7 +332,7 @@ class VCompravendita
                 ? 'default_avatar.png'
                 : 'default_opera.png';
 
-            $percorso = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/Smarty/immagini/' . $nomeDefault;
+            $percorso = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/img/' . $nomeDefault;
             $b64      = base64_encode(file_get_contents($percorso));
             $mime     = 'image/png';
         }

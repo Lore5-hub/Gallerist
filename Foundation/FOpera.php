@@ -222,7 +222,7 @@ class FOpera {
                          u.nickname AS artista_nickname
                   FROM " . static::$table . " o
                   INNER JOIN UTENTE u ON o.idArtista = u.id
-                  WHERE o.stato = 'pubblicata'
+                  WHERE o.stato IN ('pubblicata', 'in_vendita')
                   ORDER BY o.id DESC
                   LIMIT " . (int) $limite;
 
@@ -302,7 +302,7 @@ class FOpera {
                          u.nickname AS artista_nickname
                   FROM " . static::$table . " o
                   INNER JOIN UTENTE u ON o.idArtista = u.id
-                  WHERE o.stato = 'pubblicata'";
+                  WHERE o.stato IN ('pubblicata','in_vendita')";
 
         // Filtro per parola chiave su titolo e descrizione
         if (!empty($parametri['parola_chiave'])) {
@@ -358,7 +358,7 @@ class FOpera {
             (int) $row['idArtista'],
             $row['artista_nome'],
             $row['artista_cognome'],
-            '',             // data_nascita: non estratta in questa query
+             new DateTimeImmutable('1990-01-01'),
             '',             // indirizzo: non estratto in questa query
             $row['artista_nickname'],
             '',             // telefono: non estratto in questa query
@@ -371,22 +371,26 @@ class FOpera {
             '',             // carta_identita: non estratta in questa query
             EArtista::STATO_IN_ATTESA
         );
-
+        $statoOpera = match($row['stato']) {
+    'in_vendita' => new EStatoInVendita(),
+    'Venduta'    => new EStatoVenduto(),
+    default      => new EStatoInserito(),
+};
         $opera = new EOpera(
+            (int) $row['id'],
             $row['titolo'],
             (int)   $row['anno'],
-            $row['tecnica'],
-            (float) $row['larghezza'],
-            (float) $row['altezza'],
-            (float) $row['profondita'],
-            $row['unitaMisura'],
+            new ETecnica(0, $row['tecnica']),
+            $row['dimensioni'],
+            
             $row['descrizione'],
-            $row['categoria'],
-            (float) $row['prezzo'],
-            $row['stato'],
-            $artista
+            
+            new EPrezzo((float) $row['prezzo'], 'EUR'),
+            $statoOpera,
+            $artista,
+             new ECategoria($row['categoria'])
         );
-        $opera->setId((int) $row['id']);
+        //$opera->setId((int) $row['id']);
         return $opera;
     }
 }

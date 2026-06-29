@@ -102,7 +102,7 @@
         </div>
       </div>
       <div class="level-right">
-        <a href="aggiungi_opera.php" class="button is-success is-medium">
+        <a href="/Gallerist/gestioneProfiloPortfolio/mostraFormOpera" class="button is-success is-medium">
           <span class="icon"><i class="fas fa-plus"></i></span>
           <span>Nuova Opera</span>
         </a>

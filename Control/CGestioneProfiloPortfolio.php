@@ -172,5 +172,125 @@ class CGestioneProfiloPortfolio {
         $view = new VHomepage();
         $view->mostraHomeConMessaggio("Account eliminato con successo."); //[cite: 74]
     }
+    /**
+ * Mostra il form per aggiungere una nuova opera.
+ * Risponde all'URL: /Gallerist/gestioneProfiloPortfolio/mostraFormOpera
+ */
+public function mostraFormOpera(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $utente = $sessione->getValore('utente_loggato');
+    if ($utente->getRuolo() !== EUtente::RUOLO_ARTISTA) {
+        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        exit;
+    }
+
+    $vUtente = new VUtente();
+    $vUtente->smarty->display('FormOpera.tpl');
+}
+
+/**
+ * Processa il form e salva la nuova opera nel DB.
+ * Risponde all'URL: /Gallerist/gestioneProfiloPortfolio/salvaOpera
+ */
+public function salvaOpera(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $artista = $sessione->getValore('utente_loggato');
+    if ($artista->getRuolo() !== EUtente::RUOLO_ARTISTA) {
+        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        exit;
+    }
+
+    // Raccolta dati dal form
+    $titolo      = trim($_POST['titolo']      ?? '');
+    $anno        = (int)($_POST['anno']       ?? 0);
+    $tecnica     = trim($_POST['tecnica']     ?? '');
+    $larghezza   = (float)($_POST['larghezza']  ?? 0);
+    $altezza     = (float)($_POST['altezza']    ?? 0);
+    $profondita  = (float)($_POST['profondita'] ?? 0);
+    $unitaMisura = trim($_POST['unita_misura'] ?? 'cm');
+    $descrizione = trim($_POST['descrizione'] ?? '');
+    $categoria   = trim($_POST['categoria']   ?? '');
+    $tags        = trim($_POST['tags']        ?? '');
+    $inVendita   = isset($_POST['in_vendita']);
+    $prezzo      = (float)($_POST['prezzo']   ?? 0);
+
+    // Dimensioni come stringa unica
+    $dimensioni = $larghezza . 'x' . $altezza . ' ' . $unitaMisura;
+
+    // Stato opera
+    $statoOpera = $inVendita ? new EStatoInVendita() : new EStatoInserito();
+    $prezzoObj  = new EPrezzo($inVendita ? $prezzo : 0, 'EUR');
+
+    // Crea oggetto opera
+    $opera = new EOpera(
+        0,
+        $titolo,
+        $anno,
+        new ETecnica(0, $tecnica),
+        $dimensioni,
+        $descrizione,
+        $prezzoObj,
+        $statoOpera,
+        $artista,
+        new ECategoria($categoria)
+    );
+
+    // Salva nel DB
+    $idOpera = FPersistentManager::store($opera);
+
+    if ($idOpera === null) {
+        $vUtente = new VUtente();
+        $vUtente->smarty->assign('errori', ['generale' => 'Errore nel salvataggio dell\'opera.']);
+        $vUtente->smarty->display('FormOpera.tpl');
+        return;
+    }
+
+    // Gestione upload immagini
+    if (isset($_FILES['immagini_opera']) && !empty($_FILES['immagini_opera']['name'][0])) {
+        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/opere/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        foreach ($_FILES['immagini_opera']['tmp_name'] as $index => $tmpPath) {
+            if ($_FILES['immagini_opera']['error'][$index] === UPLOAD_ERR_OK) {
+                $estensione   = strtolower(pathinfo($_FILES['immagini_opera']['name'][$index], PATHINFO_EXTENSION));
+                $nomeFile     = md5(time() . $index) . '.' . $estensione;
+                $percorsoDest = $uploadDir . $nomeFile;
+
+                if (move_uploaded_file($tmpPath, $percorsoDest)) {
+                    $immagine = new EImmagine(0, $nomeFile);
+                    FImmagine::store($immagine, (int)$idOpera);
+                }
+            }
+        }
+    }
+
+    // Salva tag se presenti
+    if (!empty($tags)) {
+        foreach (explode(',', $tags) as $nomeTag) {
+            $nomeTag = trim($nomeTag);
+            if (!empty($nomeTag)) {
+                $tag = new ETag(0, $nomeTag);
+                FTag::store($tag, (int)$idOpera);
+            }
+        }
+    }
+
+    header('Location: /Gallerist/utente/profilo?opera=aggiunta');
+    exit;
+}
 }
 ?>

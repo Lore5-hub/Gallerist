@@ -1,8 +1,6 @@
 {extends file='layout.tpl'}
 {block name=content}
-<form method="POST" action="processa_pagamento.php">
-  
-  <input type="hidden" name="id_opera" value="{$ordine->getOpera()->getId()}">
+<form method="POST" action="/Gallerist/compravendita/confermaAcquisto/{$opera->getId()}">
 
   <div class="columns is-variable is-6 mt-4">
     
@@ -12,49 +10,52 @@
       <div class="box">
         
         <div class="is-flex is-align-items-center mb-5">
-          <h3 class="title is-4 mb-0 mr-3">{$ordine->getOpera()->getAutore()->getNome()}</h3>
+          <h3 class="title is-4 mb-0 mr-3">{$artista->getNome()}</h3>
           <span class="tag is-warning is-light is-medium">
             <span class="icon is-small mr-1"><i class="fas fa-star"></i></span>
-            <strong>{$ordine->getOpera()->getAutore()->getValutazioneMedia()|number_format:1:',':'.'}</strong>
+            <strong>{$artista->getValutazioneMedia()|number_format:1:',':'.'}</strong>
           </span>
         </div>
 
         <article class="media">
           <figure class="media-left">
             <p class="image is-128x128 box p-1 is-shadowless checkout-artwork-box">
-              <img src="{$ordine->getOpera()->getUrlImmagine()}" alt="Immagine dell'opera" class="checkout-artwork-img">
+              {if $copertina}
+                <img src="data:{$copertina.type};base64,{$copertina.pic64}" alt="Immagine dell'opera" class="checkout-artwork-img">
+              {else}
+                <img src="/Gallerist/img/default_opera.png" alt="Immagine dell'opera" class="checkout-artwork-img">
+              {/if}
             </p>
           </figure>
           
           <div class="media-content is-align-self-center">
             <div class="content">
-              <p class="title is-5 mb-2">{$ordine->getOpera()->getTitolo()}</p>
-              <p class="subtitle is-6 has-text-grey mb-3">{$ordine->getOpera()->getCategoria()}</p>
-              
+              <p class="title is-5 mb-2">{$opera->getTitolo()}</p>
+              <p class="subtitle is-6 has-text-grey mb-3">{$opera->getCategoria()->getNome()}</p>
               <p class="is-size-6 mb-1">
-                <span class="icon is-small has-text-grey mr-1"><i class="fas fa-ruler-combined"></i></span> 
-                {$ordine->getOpera()->getDimensioni()}
+                <span class="icon is-small has-text-grey mr-1"><i class="fas fa-ruler-combined"></i></span>
+                {$opera->getDimensioni()}
               </p>
               <p class="is-size-6">
-                <span class="icon is-small has-text-warning mr-1"><i class="fas fa-star"></i></span> 
-                {$ordine->getOpera()->getValutazioneMedia()|number_format:1:',':'.'} / 5 (Valutazione Opera)
+                <span class="icon is-small has-text-warning mr-1"><i class="fas fa-star"></i></span>
+                {$opera->getValutazioneMedia()|number_format:1:',':'.'} / 5 (Valutazione Opera)
               </p>
             </div>
           </div>
         </article>
         
       </div>
-    </div> 
+    </div>
     
     <div class="column is-5">
       
       <h3 class="title is-5 mb-3">Indirizzo di Spedizione</h3>
       <div class="box is-flex is-justify-content-space-between is-align-items-center has-background-light">
         <div>
-          <p class="has-text-weight-bold">{$ordine->getUtente()->getNome()} {$ordine->getUtente()->getCognome()}</p>
-          <p class="is-size-6 has-text-grey">{$ordine->getUtente()->getIndirizzo()}</p>
+          <p class="has-text-weight-bold">{$acquirente->getNome()} {$acquirente->getCognome()}</p>
+          <p class="is-size-6 has-text-grey">{$acquirente->getIndirizzo()}</p>
         </div>
-        <a href="modifica_profilo.php" class="button is-small is-ghost" title="Modifica Indirizzo">
+        <a href="/Gallerist/utente/profilo" class="button is-small is-ghost" title="Modifica Indirizzo">
           <span class="icon has-text-grey"><i class="fas fa-pencil-alt fa-lg"></i></span>
         </a>
       </div>
@@ -82,12 +83,12 @@
       <div class="box">
         <div class="level is-mobile mb-2">
           <div class="level-left"><p class="has-text-grey">Totale articolo</p></div>
-          <div class="level-right"><p class="has-text-weight-bold">€ {$ordine->getOpera()->getPrezzo()|number_format:2:',':'.'}</p></div>
+          <div class="level-right"><p class="has-text-weight-bold">€ {$prezzoArticolo->getValore()|number_format:2:',':'.'}</p></div>
         </div>
         
         <div class="level is-mobile mb-2">
           <div class="level-left"><p class="has-text-grey">Spedizione</p></div>
-          <div class="level-right"><p class="has-text-weight-bold has-text-success">Gratis</p></div>
+          <div class="level-right"><p class="has-text-weight-bold">€ {$prezzoSpedizione->getValore()|number_format:2:',':'.'}</p></div>
         </div>
         
         <hr class="my-3">
@@ -95,7 +96,7 @@
         <div class="level is-mobile">
           <div class="level-left"><p class="title is-4 mb-0">Totale</p></div>
           <div class="level-right">
-            <p class="title is-3 has-text-primary mb-0">€ {$ordine->getOpera()->getPrezzo()|number_format:2:',':'.'}</p>
+            <p class="title is-3 has-text-primary mb-0">€ {$totaleOrdine->getValore()|number_format:2:',':'.'}</p>
           </div>
         </div>
       </div>
@@ -108,7 +109,7 @@
         <i class="fas fa-shield-alt"></i> Transazione sicura e crittografata
       </p>
       
-    </div> 
+    </div>
     
   </div>
 </form>

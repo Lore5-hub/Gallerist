@@ -71,11 +71,16 @@ class EUtente {
 
     public function getTelefono(): string { return $this->telefono; }
     public function setTelefono(string $telefono): void {
-        if (!preg_match('/^\+\d{1,3} \d{9,10}$/', $telefono)) {
-            throw new \InvalidArgumentException("Numero di telefono non valido. Formato atteso: +39 3471234567");
-        }
-        $this->telefono = $telefono;
+    // ✅ Accetta stringa vuota (telefono non disponibile)
+    if ($telefono === '') {
+        $this->telefono = '';
+        return;
     }
+    if (!preg_match('/^\+\d{1,3} \d{9,10}$/', $telefono)) {
+        throw new \InvalidArgumentException("Numero di telefono non valido. Formato atteso: +39 3471234567");
+    }
+    $this->telefono = $telefono;
+}
 
     public function getEmail(): string { return $this->email; }
     public function setEmail(string $email): void { $this->email = $email; }

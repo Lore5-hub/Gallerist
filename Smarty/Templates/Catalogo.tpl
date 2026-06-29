@@ -65,25 +65,31 @@
             
             <div class="card-image">
               <figure class="image is-4by3">
-                <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" class="artwork-img">
+               {if $opera->getImmagini()|@count > 0}
+    {assign var='immagini' value=$opera->getImmagini()}
+    {assign var='prima' value=$immagini[0]}
+    <img src="/Gallerist/uploads/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="artwork-img">
+{else}
+    <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}" class="artwork-img">
+{/if}
               </figure>
             </div>
             
             <div class="card-content is-flex-grow-1">
               <p class="title is-5 mb-1">{$opera->getTitolo()}</p>
-              <p class="subtitle is-6 mb-3">di <a href="profilo.php?id={$opera->getAutore()->getId()}">{$opera->getAutore()->getNome()}</a></p>
+              <p class="subtitle is-6 mb-3">di <a href="/Gallerist/catalogo/dettaglio/{$opera->getId()}">{$opera->getArtista()->getNome()}</a></p>
               
               <div class="tags">
                 <span class="tag is-light">{$opera->getDimensioni()}</span>
               </div>
               
               <p class="is-size-4 has-text-weight-bold mt-4">
-                € {$opera->getPrezzo()|number_format:2:',':'.'}
+                € {$opera->getPrezzo()->getValore()|number_format:2:',':'.'}
               </p>
             </div>
             
             <footer class="card-footer">
-              <a href="dettaglio_opera.php?id={$opera->getId()}" class="card-footer-item has-background-light has-text-dark has-text-weight-bold">
+              <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$opera->getId()}" class="card-footer-item has-background-light has-text-dark has-text-weight-bold">
                 Vedi Dettagli
               </a>
             </footer>
