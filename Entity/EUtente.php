@@ -109,5 +109,8 @@ class EUtente {
         }
         $this->ruolo = $ruolo;
     }
+    public function isArtista(): bool {
+    return $this->ruolo === self::RUOLO_ARTISTA;
+}
 }
 ?>

@@ -43,19 +43,29 @@ $sessione->eliminaValore('flash_verifica');
     $artisitInAttesa = FPersistentManager::getArtistiInAttesa();
     $artistiAttivi   = FPersistentManager::getArtistiAttivi();
     $utentiStandard  = FPersistentManager::getUtentiStandard();
-
+    $segnalazioniList = FPersistentManager::getSegnalazioniAperte();
     $dashboard = [
         'utenti_totali'       => count($utentiStandard) + count($artistiAttivi),
         'utenti_perc'         => 5,   // mock
         'utenti_attesa'       => count($artisitInAttesa),
         'artisti_attivi'      => count($artistiAttivi),
         'artisti_perc'        => 8,   // mock
-        'segnalazioni_aperte' => 0,   // mock — da implementare
+        'segnalazioni_aperte' => count($segnalazioniList),
         'segnalazioni_perc'   => 3,   // mock
         'commenti_segnalati'  => 0,   // mock
         'commenti_perc'       => 2,   // mock
     ];
-
+    $segnalazioniArray = [];
+foreach ($segnalazioniList as $seg) {
+    $segnalazioniArray[] = [
+        'id'                  => $seg->getId(),
+        'tipo'                => $seg->getTipoTarget(),
+        'contenuto'           => $seg->getMotivo(),
+        'autore_segnalazione' => $seg->getIdSegnalatore(), // id, non nickname — da migliorare
+        'data'                => $seg->getDataSegnalazione()->format('Y-m-d'),
+        'stato'               => 'Aperta',
+    ];
+}
     // Converte gli oggetti EArtista in array per il {foreach} di Smarty
     $utentiInAttesaArray = [];
     foreach ($artisitInAttesa as $artista) {
@@ -70,7 +80,7 @@ $sessione->eliminaValore('flash_verifica');
     $vAdmin->smarty->assign('dashboard',        $dashboard);
     $vAdmin->smarty->assign('utenti_in_attesa', $utentiInAttesaArray);
     $vAdmin->smarty->assign('categorie',        []);   // da implementare
-    $vAdmin->smarty->assign('segnalazioni',     []);   // da implementare
+    $vAdmin->smarty->assign('segnalazioni', $segnalazioniArray);
     $vAdmin->smarty->assign('bannati',          []);   // da implementare
     $vAdmin->smarty->assign('nome_admin',       USession::getInstance()->getValore('utente_loggato')->getNickname());
     $vAdmin->smarty->assign('verifica', $_GET['verifica'] ?? null);
@@ -267,5 +277,109 @@ public function verificaArtista() {
 $sessione->setValue('flash_verifica', $ok ? 'successo' : 'errore');
 header('Location: /Gallerist/Admin/dashboard');
 exit;
+}
+/**
+ * Mostra la pagina di validazione di un artista.
+ * Risponde all'URL: /Gallerist/Admin/mostraValidazione?id=X
+ */
+public function mostraValidazione() {
+    if (!self::checkAdmin()) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    if ($id === 0) {
+        header('Location: /Gallerist/Admin/dashboard');
+        exit;
+    }
+
+    $artista = FPersistentManager::load('EArtista', 'id', $id);
+    if (!$artista instanceof EArtista) {
+        header('Location: /Gallerist/Admin/dashboard');
+        exit;
+    }
+
+    // Costruisce l'array che il template si aspetta
+    $utente = [
+        'id'                 => $artista->getId(),
+        'nome'               => $artista->getNome(),
+        'cognome'            => $artista->getCognome(),
+        'email'              => $artista->getEmail(),
+        'nickname'           => $artista->getNickname(),
+        'telefono'           => $artista->getTelefono(),
+        'indirizzo'          => $artista->getIndirizzo(),
+        'data_nascita'       => $artista->getDataDiNascita()->format('Y-m-d'),
+        'data_registrazione' => $artista->getDataDiNascita()->format('Y-m-d'), // non abbiamo data reg separata
+        'biografia'          => $artista->getBiografia(),
+        'stile_artistico'    => $artista->getStileArtistico(),
+        'localita'           => $artista->getIndirizzo(),
+        'carta_identita'     => $artista->getCartaIdentita(),
+        'data_documento'     => date('Y-m-d'), // mock
+        'note_admin'         => '',
+    ];
+
+    $vAdmin = new VAdmin();
+    $vAdmin->smarty->assign('utente',          $utente);
+    $vAdmin->smarty->assign('opere_portfolio', []); // mock — nessun portfolio caricato
+    $vAdmin->smarty->display('AdminValidazione.tpl');
+}
+/**
+ * Mostra il dettaglio di una segnalazione.
+ * Risponde all'URL: /Gallerist/Admin/mostraSegnalazione?id=X
+ */
+public function mostraSegnalazione() {
+    if (!self::checkAdmin()) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    if ($id === 0) {
+        header('Location: /Gallerist/Admin/dashboard');
+        exit;
+    }
+
+    $seg = FPersistentManager::load('ESegnalazione', 'id', $id);
+    if (!$seg instanceof ESegnalazione) {
+        header('Location: /Gallerist/Admin/dashboard');
+        exit;
+    }
+
+    // Carica l'utente segnalato
+    $utenteSegnalato = FPersistentManager::load('EUtente', 'id', $seg->getIdTarget());
+    
+    // Carica l'utente segnalante per mostrare il nickname
+    $utenteSegnalante = FPersistentManager::load('EUtente', 'id', $seg->getIdSegnalatore());
+
+    $segnalazione = [
+        'id'                  => $seg->getId(),
+        'tipo_oggetto'        => $seg->getTipoTarget(),
+        'autore_segnalazione' => $utenteSegnalante ? $utenteSegnalante->getNickname() : $seg->getIdSegnalatore(),
+        'data_invio'          => $seg->getDataSegnalazione()->format('Y-m-d H:i:s'),
+        'stato'               => $seg->getStato()->getNomeStato(),
+        'motivo_principale'   => $seg->getMotivo(),
+        'dettagli_aggiuntivi' => $seg->getNotaOpzionale(),
+        'titolo_opera'        => '',   // mock
+        'testo_incriminato'   => '',   // mock
+        'url_anteprima_opera' => '/Gallerist/img/default_opera.png',
+        'id_opera'            => 0,    // mock
+        'categoria_opera'     => '',   // mock
+    ];
+
+    $autoreContenuto = [
+        'id'                    => $utenteSegnalato ? $utenteSegnalato->getId() : 0,
+        'nickname'              => $utenteSegnalato ? $utenteSegnalato->getNickname() : 'N/D',
+        'data_registrazione'    => $utenteSegnalato ? $utenteSegnalato->getDataDiNascita()->format('Y-m-d') : '',
+        'stato'                 => $utenteSegnalato ? $utenteSegnalato->getStatoAccount() : '',
+        'segnalazioni_ricevute' => 0,  // mock
+        'commenti_pubblicati'   => 0,  // mock
+    ];
+
+    $vAdmin = new VAdmin();
+    $vAdmin->smarty->assign('segnalazione',               $segnalazione);
+    $vAdmin->smarty->assign('autore_contenuto',           $autoreContenuto);
+    $vAdmin->smarty->assign('storico_segnalazioni_utente', []);
+    $vAdmin->smarty->display('AdminSegnalazioni.tpl');
 }
 }

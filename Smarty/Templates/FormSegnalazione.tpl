@@ -5,19 +5,19 @@
     <span class="icon mr-2"><i class="fas fa-exclamation-triangle"></i></span>Invia una Segnalazione
   </h4>
   
-  <form method="POST" action="gestione_segnalazione.php">
+  <form method="POST" action="/Gallerist/gestioneInterazioni/inviaSegnalazione">
+  <input type="hidden" name="id_segnalato" value="{$utente->getId()}">
     
     <div class="field">
       <label class="label">Cosa vuoi segnalare?</label>
       <div class="control">
         <div class="select is-fullwidth">
           <select name="tipo_segnalazione" required>
-            <option value="" disabled selected>Seleziona una categoria...</option>
-            <option value="opera">Un'opera specifica</option>
-            <option value="account">Qualcosa su questo account</option>
-            <option value="illegale">Segnala come illegale</option>
-            <option value="messaggi">Messaggi recenti</option>
-          </select>
+    <option value="" disabled selected>Seleziona una categoria...</option>
+    <option value="Profilo">Profilo utente</option>
+    <option value="Opera">Un'opera specifica</option>
+    <option value="Commento">Commento inappropriato</option>
+</select>
         </div>
       </div>
     </div>

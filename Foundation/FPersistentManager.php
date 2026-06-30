@@ -84,5 +84,11 @@ public static function getUtentiStandard(): array {
     if ($risultato instanceof EUtente)   return [$risultato];
     return $risultato;
 }
+public static function getSegnalazioniAperte(): array {
+    $risultato = FSegnalazione::loadByField('stato', 'Aperta');
+    if ($risultato === null)                    return [];
+    if ($risultato instanceof ESegnalazione)    return [$risultato];
+    return $risultato;
+}
 }
 ?>

@@ -296,5 +296,13 @@ class VCatalogo
 
         return [$mime, $b64];
     }
+    /**
+ * Mostra il profilo pubblico di un artista.
+ */
+public function mostraProfiloPubblico(EArtista $artista, array $opere): void {
+    $this->smarty->assign('utente', $artista);
+    $this->smarty->assign('opere',  $opere);
+    $this->smarty->display('ProfiloPubblico.tpl');
+}
 }
 ?>

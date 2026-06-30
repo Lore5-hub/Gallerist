@@ -8,19 +8,20 @@ class FSegnalazione {
 
     private static $class = "FSegnalazione";
     private static $table = "segnalazione";
-    private static $values = "(:id, :tipoOggetto, :motivo, :nota, :stato, :data)";
+    private static $values = "(:id, :motivo, :descrizione, :dataSegnalazione, :stato, :tipoOggetto, :idOggettoSegnalato, :idSegnalatore)";
+
 
     public function __construct() {}
 
     public static function bind($stmt, ESegnalazione $segnalazione) {
-        $stmt->bindValue(':id', NULL, PDO::PARAM_INT);
-        $stmt->bindValue(':tipoOggetto', $segnalazione->getTipoOggetto(), PDO::PARAM_STR);
-        $stmt->bindValue(':motivo', $segnalazione->getMotivo(), PDO::PARAM_STR);
-        $stmt->bindValue(':nota', $segnalazione->getNotaOpzionale(), PDO::PARAM_STR);
-        
-        // Salviamo sul database il nome testuale della classe dello Stato (State Pattern)
-        $stmt->bindValue(':stato', get_class($segnalazione->getStato()), PDO::PARAM_STR);
-        $stmt->bindValue(':data', $segnalazione->getDataSegnalazione()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindValue(':id',                NULL,                                        PDO::PARAM_INT);
+    $stmt->bindValue(':motivo',            $segnalazione->getMotivo(),                  PDO::PARAM_STR);
+    $stmt->bindValue(':descrizione',       $segnalazione->getNotaOpzionale(),           PDO::PARAM_STR);
+    $stmt->bindValue(':dataSegnalazione',  $segnalazione->getDataSegnalazione()->format('Y-m-d'), PDO::PARAM_STR);
+    $stmt->bindValue(':stato', $segnalazione->getStato()->getNomeStato(), PDO::PARAM_STR);
+    $stmt->bindValue(':tipoOggetto',       $segnalazione->getTipoTarget(),              PDO::PARAM_STR);
+    $stmt->bindValue(':idOggettoSegnalato',$segnalazione->getIdTarget(),                PDO::PARAM_INT);
+    $stmt->bindValue(':idSegnalatore',     $segnalazione->getIdSegnalatore(),           PDO::PARAM_INT);
     }
 
     public static function getClass() { return static::$class; }
@@ -40,24 +41,42 @@ public static function loadByField($field, $id) {
         return null;
     }
 
-    if (!is_array($result[0])) {
+    if (!isset($result[0]) || !is_array($result[0])) {
         // Singolo record
-        $classeStato  = $result['stato']; // es. "EStatoNuova"
-        $statoOggetto = new $classeStato();
+        $statoOggetto = match($result['stato']) {
+            'Aperta'     => new EStatoNuova(),
+            'Archiviata' => new EStatoArchiviata(),
+            'Risolta'    => new EStatoRisolta(),
+            default      => new EStatoNuova(),
+        };
         return new ESegnalazione(
-            $result['id'], $result['tipoOggetto'], $result['motivo'],
-            $result['nota'], $statoOggetto, $result['data']
+            (int) $result['id'],
+            $result['motivo'],
+            $result['descrizione'] ?? '',          // ← era 'nota'
+            new DateTimeImmutable($result['dataSegnalazione']), // ← era 'data'
+            $result['tipoOggetto'],
+            (int) $result['idOggettoSegnalato'],
+            (int) $result['idSegnalatore']
         );
     }
 
     // Record multipli
     $segnalazioni = [];
     foreach ($result as $row) {
-        $classeStato  = $row['stato'];
-        $statoOggetto = new $classeStato();
+        $statoOggetto = match($row['stato']) {
+            'Aperta'     => new EStatoNuova(),
+            'Archiviata' => new EStatoArchiviata(),
+            'Risolta'    => new EStatoRisolta(),
+            default      => new EStatoNuova(),
+        };
         $segnalazioni[] = new ESegnalazione(
-            $row['id'], $row['tipoOggetto'], $row['motivo'],
-            $row['nota'], $statoOggetto, $row['data']
+            (int) $row['id'],
+            $row['motivo'],
+            $row['descrizione'] ?? '',             // ← era 'nota'
+            new DateTimeImmutable($row['dataSegnalazione']), // ← era 'data'
+            $row['tipoOggetto'],
+            (int) $row['idOggettoSegnalato'],
+            (int) $row['idSegnalatore']
         );
     }
     return $segnalazioni;

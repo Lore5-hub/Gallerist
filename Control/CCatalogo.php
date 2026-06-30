@@ -138,5 +138,19 @@ class CCatalogo {
         // Diciamo a Smarty di renderizzare il file del template della homepage
         $smarty->display('homepage.tpl');
     }
+ public function visualizzaProfiloArtista(int $idArtista): void {
+    $artista = FPersistentManager::load('EArtista', 'id', $idArtista);
+
+    if (!$artista instanceof EArtista) {
+        $view = new VCatalogo();
+        $view->mostraErrore('utente_non_trovato');
+        return;
+    }
+
+    $opere = FOpera::loadByArtista($idArtista, -1) ?? [];
+
+    $view = new VCatalogo();
+    $view->mostraProfiloPubblico($artista, $opere);
+}
 }
 ?>

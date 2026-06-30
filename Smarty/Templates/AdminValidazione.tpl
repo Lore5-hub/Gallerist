@@ -14,12 +14,12 @@
       
       <div class="buttons">
         <!-- Torna alla Dashboard (sezione utenti in attesa) -->
-        <a href="admin_dashboard.php" class="button is-light">
+        <a href="/Gallerist/Admin/dashboard" class="button is-light">
           <span class="icon"><i class="fas fa-arrow-left"></i></span>
           <span>Torna indietro</span>
         </a>
         <!-- Approva e Attiva -->
-        <a href="approva_utente.php?id={$utente.id}" class="button is-success">
+        <a href="/Gallerist/Admin/verificaArtista?id={$utente.id}" class="button is-success">
           <span class="icon"><i class="fas fa-user-check"></i></span>
           <span>Approva e attiva</span>
         </a>

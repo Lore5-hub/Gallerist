@@ -35,8 +35,8 @@
                 </div>
               {/if}
 
-              <form method="POST" action="/Gallerist/utente/verificaRegistrazione" enctype="multipart/form-data">
-                
+              <form method="POST" action="/Gallerist/utente/verificaRegistrazione" enctype="multipart/form-data">          
+                 
                 <div class="field mb-5">
                   <label class="label">Tipo di Account <span class="has-text-danger">*</span></label>
                   <div class="control">

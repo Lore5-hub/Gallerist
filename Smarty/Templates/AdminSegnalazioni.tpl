@@ -1,6 +1,6 @@
 {extends file='layout.tpl'}
 {block name=content}
-<form method="POST" action="processa_moderazione.php">
+<form method="POST" action="/Gallerist/Admin/processaModerazione">
   <input type="hidden" name="id_segnalazione" value="{$segnalazione.id}">
   <input type="hidden" name="id_utente_segnalato" value="{$autore_contenuto.id}">
 
@@ -279,7 +279,7 @@
           <!-- Pulsanti di Conferma / Annulla (Subito sotto il riquadro sanzioni) -->
           <div class="columns is-mobile">
             <div class="column is-6">
-              <a href="admin_dashboard.php" class="button is-light is-fullwidth">Annulla</a>
+              <a href="/Gallerist/Admin/dashboard" class="button is-light is-fullwidth">Annulla</a>
             </div>
             <div class="column is-6">
               <button type="submit" class="button is-success is-fullwidth has-text-weight-bold">Conferma azione</button>

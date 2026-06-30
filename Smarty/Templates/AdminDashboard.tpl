@@ -113,7 +113,10 @@
                     <td>{$utente.data_registrazione|date_format:"%d/%m/%Y"}</td>
                     <td><span class="tag is-warning is-light">In attesa</span></td>
                     <td class="has-text-right">
-                      <a href="/Gallerist/Admin/verificaArtista?id={$utente.id}" class="button is-small is-success">
+                      <a href="/Gallerist/Admin/mostraValidazione?id={$utente.id}" class="button is-small is-info">
+    <span class="icon"><i class="fas fa-eye"></i></span>
+    <span>Verifica</span>
+</a>
                         <span class="icon"><i class="fas fa-check"></i></span>
                         <span>Verifica</span>
                       </a>
@@ -213,7 +216,7 @@
                       {/if}
                     </td>
                     <td class="has-text-right">
-                      <a href="adminSegnalazioni.php?id={$segnalazione.id}" class="button is-small is-link is-light" title="Vedi Dettaglio">
+                      <a href="/Gallerist/Admin/mostraSegnalazione?id={$segnalazione.id}" class="button is-small is-link is-light" title="Vedi Dettaglio">
                         <span class="icon"><i class="fas fa-eye"></i></span>
                       </a>
                     </td>

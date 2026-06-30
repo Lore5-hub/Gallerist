@@ -10,4 +10,5 @@ class EStatoRisolta extends EStatoSegnalazione {
         $this->provvedimentoPreso = $provvedimento;
     }
     public function getProvvedimentoPreso(): string { return $this->provvedimentoPreso; }
+    public function getNomeStato(): string { return 'Risolta'; }
 }

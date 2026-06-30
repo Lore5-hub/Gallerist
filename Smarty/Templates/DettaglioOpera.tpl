@@ -48,7 +48,7 @@
     <h1 class="title is-2 mb-2">{$opera->getTitolo()}</h1>
     
     <h2 class="subtitle is-4 mt-0">
-      di <a href="profilo_artista.php?id={$opera->getArtista()->getId()}" class="has-text-link">{$opera->getArtista()->getNome()}</a>
+      di <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$opera->getArtista()->getId()}" class="has-text-link">{$opera->getArtista()->getNome()}</a>
     </h2>
 
     <div class="tags are-medium mt-4">

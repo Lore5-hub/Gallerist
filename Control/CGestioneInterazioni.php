@@ -91,42 +91,38 @@ class CGestioneInterazioni {
      * - 'categoria': string (il caso specifico selezionato per categoria) [cite: 56]
      * - 'nota': string (nota facoltativa inserita dall'utente) [cite: 56]
      */
-    public function inserisciSegnalazione(array $datiSegnalazione): void {
-        // 1. Identificazione dell'utente segnalante tramite la sessione attiva 
-        if (!FSession::isLogged()) {
-            header('Location: /login');
-            exit;
-        }
-        
-        $idUtenteSessione = FSession::getId();
-        $nuovaSegnalazione = null;
-        
-        // 2. Controllo del tipo di target per la logica di business
-        if ($datiSegnalazione['tipo_target'] === 'opera') {
-            // L'utente sta segnalando un'opera d'arte inappropriata o con copyright violato
-            $nuovaSegnalazione = new ESegnalazioneOpera(
-                $datiSegnalazione['categoria'], 
-                $datiSegnalazione['nota'], 
-                $datiSegnalazione['id_target'], 
-                $idUtenteSessione
-            );
-        } else {
-            // L'utente sta segnalando un profilo utente/artista per comportamenti scorretti [cite: 53, 54]
-            $nuovaSegnalazione = new ESegnalazioneUtente(
-                $datiSegnalazione['categoria'], 
-                $datiSegnalazione['nota'], 
-                $datiSegnalazione['id_target'], 
-                $idUtenteSessione
-            );
-        }
-        
-        // 3. Persistenza nel database tramite lo strato Foundation
-        // Entrambe le segnalazioni finiranno nel pannello di moderazione dell'amministratore [cite: 57, 95, 96]
-        FSegnalazione::store($nuovaSegnalazione);
-        
-        // 4. Feedback visivo di presa in carico e reindirizzamento 
-        $view = new VInterazioni();
-        $view->mostraConfermaInvioSegnalazione();
+    public function inviaSegnalazione(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
     }
+
+    $segnalante  = $sessione->getValore('utente_loggato');
+    $idSegnalato = (int)($_POST['id_segnalato']     ?? 0);
+    $tipo        = trim($_POST['tipo_segnalazione'] ?? '');
+    $descrizione = trim($_POST['descrizione']        ?? '');
+
+    if ($idSegnalato === 0 || empty($tipo) || empty($descrizione)) {
+        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        exit;
+    }
+
+    $segnalazione = new ESegnalazione(
+        0,                          // id → AUTO_INCREMENT
+        $descrizione,               // motivo
+        '',                         // notaOpzionale
+        new DateTimeImmutable(),    // dataSegnalazione
+        $tipo,                      // tipoTarget
+        $idSegnalato,               // idTarget
+        $segnalante->getId()        // idSegnalatore
+    );
+
+    FPersistentManager::store($segnalazione);
+
+    header('Location: /Gallerist/catalogo/visualizzaProfiloArtista/' . $idSegnalato . '?segnalazione=inviata');
+    exit;
+}
 }
 ?>

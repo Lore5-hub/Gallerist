@@ -6,7 +6,7 @@
     <article class="media">
       <figure class="media-left">
         <p class="image is-96x96">
-          <img class="is-rounded public-profile-avatar" src="{$utente->getUrlImmagineProfilo()|default:'img/default-avatar.png'}" alt="Profilo" />
+          <img class="is-rounded public-profile-avatar" src="{$utente->getImmagineProfilo()|default:'img/default-avatar.png'}" alt="Profilo" />
         </p>
       </figure>
       <div class="media-content">
@@ -25,7 +25,7 @@
             {/if}
           </p>
           
-          <p class="is-size-7 has-text-grey">Membro dal {$utente->getDataIscrizione()|date_format:"%Y"}</p>
+          <p class="is-size-7 has-text-grey">Membro dal {$utente->getDataDiNascita()|date_format:"%Y"}</p>
         </div>
       </div>
     </article>
@@ -37,11 +37,11 @@
 
   </div>
 
-  {if $utente->isArtista() && $utente->getDescrizione()}
+  {if $utente->isArtista() && $utente->getBiografia()}
     <hr>
     <div class="content mt-4">
       <h3 class="title is-5">Biografia</h3>
-      <p class="has-text-justified">{$utente->getDescrizione()}</p>
+      <p class="has-text-justified">{$utente->getBiografia()}</p>
     </div>
   {/if}
 </div>
@@ -53,12 +53,18 @@
   <div class="columns is-multiline">
     {foreach from=$opere item=opera}
       <div class="column is-4">
-        <a href="dettaglio_opera.php?id={$opera->getId()}">
+        <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$opera->getId()}">
           <div class="card is-shadowless" style="background: transparent;">
             
             <div class="card-image box p-1 is-relative portfolio-card-img-box">
               <figure class="image is-4by3">
-                <img src="{$opera->getUrlImmagine()}" alt="{$opera->getTitolo()}" class="portfolio-card-img">
+                {assign var='immagini' value=$opera->getImmagini()}
+{if $immagini|@count > 0}
+    {assign var='prima' value=$immagini[0]}
+    <img src="/Gallerist/uploads/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="portfolio-card-img">
+{else}
+    <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}" class="portfolio-card-img">
+{/if}
               </figure>
               
               <div class="is-overlay is-flex is-align-items-flex-end p-2">
@@ -109,5 +115,5 @@
   </div>
 </div>
 
-<script src="js/profiloPubblico.js"></script>
+<script src="/Gallerist/js/profiloPubblico.js"></script>
 {/block}
