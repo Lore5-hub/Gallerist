@@ -14,6 +14,12 @@
             {$errore_login}
           </div>
           {/if}
+          {if isset($messaggio_errore_login)}
+    <div class="notification is-warning is-light mb-4">
+        <button class="delete" onclick="this.parentElement.remove()"></button>
+        {$messaggio_errore_login}
+    </div>
+{/if}
 
           <div class="box p-6 auth-box">
             

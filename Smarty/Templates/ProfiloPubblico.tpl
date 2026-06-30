@@ -30,10 +30,12 @@
       </div>
     </article>
 
+    {if isset($utente_loggato) && $utente_loggato->getId() != $utente->getId()}
     <button class="button is-danger is-outlined is-small" id="btn-apri-segnalazione">
-      <span class="icon"><i class="fas fa-flag"></i></span>
-      <span>Segnala Profilo</span>
+        <span class="icon"><i class="fas fa-flag"></i></span>
+        <span>Segnala Profilo</span>
     </button>
+{/if}
 
   </div>
 

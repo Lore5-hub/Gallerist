@@ -46,6 +46,13 @@ class CUtente
             $utente = $artista;
         }
     }
+    if ($utente instanceof EArtista && $utente->getStatoValidazione() === 'IN_ATTESA') {
+        $vUtente = new VUtente();
+        $vUtente->smarty->assign('errore_login', true);
+        $vUtente->smarty->assign('messaggio_errore_login', 'Il tuo account è in attesa di validazione da parte dell\'amministratore.');
+        $vUtente->smarty->display('Login.tpl');
+        return;
+    }
                 // 🟢 CREDENZIALI CORRETTE!
                 
                 // Salviamo i dati dell'utente nella sessione
@@ -351,10 +358,9 @@ public function profilo() {
     $utente = $sessione->getValore('utente_loggato');
 
     // Solo artisti
-    if ($utente->getRuolo() !== EUtente::RUOLO_ARTISTA) {
-        header('Location: /Gallerist/catalogo/esploraCatalogo');
-        exit;
-    }
+    if ($utente->getRuolo() === EUtente::RUOLO_ARTISTA) {
+        
+    
 
     $artistaId = $utente->getId();
 
@@ -399,7 +405,13 @@ public function profilo() {
     $vUtente->smarty->assign('recensioni', $recensioni);
     $vUtente->smarty->assign('statistiche', $statistiche);
     $vUtente->smarty->display('DashboardArtista.tpl');
-}
+} else {
+        // ✅ Utente normale → mostra profilo pubblico
+        $vUtente = new VUtente();
+        $vUtente->smarty->assign('utente', $utente);
+        $vUtente->smarty->assign('opere',  []);
+        $vUtente->smarty->display('ProfiloPubblico.tpl');
+    }}
 public function logout() {
     USession::getInstance()->distruggi();
     header('Location: /Gallerist/utente/login');

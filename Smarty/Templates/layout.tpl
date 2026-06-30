@@ -41,7 +41,7 @@
     <a href="/Gallerist/utente/profilo" class="navbar-item has-text-light">
         <span class="icon mr-1"><i class="fas fa-palette"></i></span> Il mio profilo
     </a>
-        {else}
+        {elseif $utente_loggato->getRuolo() == 'Utente registrato'}
             <a href="/Gallerist/utente/profilo" class="navbar-item has-text-light">
                 <span class="icon mr-1"><i class="fas fa-user"></i></span> Il mio profilo
             </a>

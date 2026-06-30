@@ -112,5 +112,6 @@ class EUtente {
     public function isArtista(): bool {
     return $this->ruolo === self::RUOLO_ARTISTA;
 }
+public function getNazionalita(): string { return ''; }
 }
 ?>
