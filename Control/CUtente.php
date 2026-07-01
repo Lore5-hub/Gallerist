@@ -46,6 +46,13 @@ class CUtente
             $utente = $artista;
         }
     }
+     if ($utente->getStatoAccount() === EUtente::STATO_BANNATO) {
+        $vUtente = new VUtente();
+        $vUtente->smarty->assign('errore_login', true);
+        $vUtente->smarty->assign('messaggio_errore_login', 'Il tuo account è stato sospeso. Contatta l\'amministratore per maggiori informazioni.');
+        $vUtente->smarty->display('Login.tpl');
+        return;
+    }
     if ($utente instanceof EArtista && $utente->getStatoValidazione() === 'IN_ATTESA') {
         $vUtente = new VUtente();
         $vUtente->smarty->assign('errore_login', true);
@@ -216,7 +223,28 @@ class CUtente
 
             }
 
+            // Dopo il codice dell'immagine profilo, aggiungi:
+$documento = '';
+if (isset($_FILES['documento_identita']) && $_FILES['documento_identita']['error'] === UPLOAD_ERR_OK) {
+    $fileTmpPath  = $_FILES['documento_identita']['tmp_name'];
+    $fileName     = $_FILES['documento_identita']['name'];
+    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
+    $estensioniPermesse = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+    if (in_array($fileExtension, $estensioniPermesse)) {
+        $nuovoNomeFile = md5(time() . $fileName) . '.' . $fileExtension;
+        $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/documenti/';
+
+        if (!is_dir($uploadFileDir)) {
+            mkdir($uploadFileDir, 0755, true);
+        }
+
+        $destPath = $uploadFileDir . $nuovoNomeFile;
+        if (move_uploaded_file($fileTmpPath, $destPath)) {
+            $documento = $nuovoNomeFile;
+        } 
+    }
+}
 
             // 3. Creazione dell'entità EUtente e salvataggio nel database
 
@@ -231,7 +259,7 @@ class CUtente
                     
                     // Recupero stringhe o percorsi dei file per i campi aggiuntivi
                     $portfolio = $_FILES['portfolio']['name'] ?? '';
-                    $documento = $_FILES['documento_identita']['name'] ?? '';
+                    //$documento = $_FILES['documento_identita']['name'] ?? '';
                     $statoValidazione = 'IN_ATTESA'; // Stato di default coerentemente con l'entità EArtista
 
                     // Istanziamo l'entità specifica EArtista rispettando l'ordine di creaEntitaDaArray
@@ -368,7 +396,7 @@ public function profilo() {
     $mieOpere = FOpera::loadByArtista($artistaId, -1) ?? [];
 
     // Recensioni ricevute (tramite le opere dell'artista)
-    $recensioni = FPersistentManager::load('ERecensione', 'idAutore', $artistaId) ?? [];
+    $recensioni = FPersistentManager::load('ECommento', 'idAutore', $artistaId) ?? [];
     if (!is_array($recensioni)) {
         $recensioni = [$recensioni];
     }
@@ -385,10 +413,10 @@ public function profilo() {
     $guadagni    = 0.0;
 
     foreach ($mieOpere as $opera) {
-        $stato = $opera->getStato();
-        if ($stato === 'pubblicata')  $pubblicate++;
-        if ($stato === 'in_vendita')  { $pubblicate++; $inVendita++; }
-        if ($stato === 'Venduta')     { $vendute++; $guadagni += (float)$opera->getPrezzo(); }
+        $stato = $opera->getStatoOpera()->getNomeStato();
+if ($stato === 'pubblicata') $pubblicate++;
+if ($stato === 'in_vendita') { $pubblicate++; $inVendita++; }
+if ($stato === 'Venduta')    $guadagni += (float)$opera->getPrezzo()->getValore();
     }
 
     $statistiche = [

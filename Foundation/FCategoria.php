@@ -20,7 +20,7 @@ class FCategoria {
 
     private static string $class  = "FCategoria";
     private static string $table  = "CATEGORIA";
-    private static string $values = "(:nome)";
+    private static string $values = "(:id,:nome,:descrizione)";
 
     public function __construct() {}
 
@@ -29,7 +29,9 @@ class FCategoria {
      * Chiamato internamente da FDataBase::storeDB().
      */
     public static function bind($stmt, ECategoria $categoria): void {
+        $stmt->bindValue(':id',          NULL,                      PDO::PARAM_NULL);
         $stmt->bindValue(':nome', $categoria->getNome(), PDO::PARAM_STR);
+        $stmt->bindValue(':descrizione', $categoria->getDescrizione() ?? '', PDO::PARAM_STR);
     }
 
     public static function getClass(): string  { return static::$class; }
@@ -125,5 +127,13 @@ class FCategoria {
     private static function creaEntitaDaArray(array $row): ECategoria {
         return new ECategoria($row['nome']);
     }
+    public static function getIdByNome(string $nome): int {
+    $db     = FDataBase::getInstance();
+    $result = $db->queryDB(
+        "SELECT id FROM categoria WHERE nome = :nome",
+        [':nome' => $nome]
+    );
+    return !empty($result) ? (int)$result[0]['id'] : 0;
+}
 }
 ?>

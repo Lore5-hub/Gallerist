@@ -323,21 +323,30 @@ class VCompravendita
      * @return array              [string $mimeType, string $base64Data]
      */
     private function codificaImmagine($immagine, string $tipoDefault): array
-    {
-        if (isset($immagine) && $immagine !== null) {
-            $b64  = base64_encode($immagine->getData());
+{
+    if (isset($immagine) && $immagine !== null) {
+        $dati = $immagine->getData();
+        if ($dati !== null) {
+            $b64  = base64_encode($dati);
             $mime = $immagine->getType();
         } else {
-            $nomeDefault = ($tipoDefault === 'avatar')
-                ? 'default_avatar.png'
-                : 'default_opera.png';
-
-            $percorso = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/img/' . $nomeDefault;
-            $b64      = base64_encode(file_get_contents($percorso));
-            $mime     = 'image/png';
+            $percorso  = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/img/default_opera.png';
+            $contenuto = file_get_contents($percorso);
+            $b64       = base64_encode($contenuto !== false ? $contenuto : '');
+            $mime      = 'image/png';
         }
+    } else {
+        $nomeDefault = ($tipoDefault === 'avatar')
+            ? 'default_avatar.png'
+            : 'default_opera.png';
 
-        return [$mime, $b64];
+        $percorso  = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/img/' . $nomeDefault;
+        $contenuto = file_get_contents($percorso);
+        $b64       = base64_encode($contenuto !== false ? $contenuto : '');
+        $mime      = 'image/png';
     }
+
+    return [$mime, $b64];
+}
 }
 ?>

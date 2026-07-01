@@ -30,12 +30,23 @@
       </div>
     </article>
 
-    {if isset($utente_loggato) && $utente_loggato->getId() != $utente->getId()}
-    <button class="button is-danger is-outlined is-small" id="btn-apri-segnalazione">
-        <span class="icon"><i class="fas fa-flag"></i></span>
-        <span>Segnala Profilo</span>
-    </button>
-{/if}
+    <div>
+    {if $utente->getStatoAccount() == 'Bannato'}
+        <div class="notification is-danger is-light mb-2">
+            <span class="icon"><i class="fas fa-ban"></i></span>
+            Questo account è stato sospeso.
+        </div>
+    {/if}
+
+    {if isset($utente_loggato) && $utente_loggato->getId() != $utente->getId() 
+        && $utente_loggato->getRuolo() != 'Amministratore'
+        && $utente->getStatoAccount() != 'Bannato'}
+        <button class="button is-danger is-outlined is-small" id="btn-apri-segnalazione">
+            <span class="icon"><i class="fas fa-flag"></i></span>
+            <span>Segnala Profilo</span>
+        </button>
+    {/if}
+</div>
 
   </div>
 

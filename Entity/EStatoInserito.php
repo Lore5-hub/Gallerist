@@ -17,4 +17,6 @@ class EStatoInserito extends EStatoOpera {
     {
         return true;
     }
+    public function getNomeStato(): string { return 'pubblicata'; }
+
 }

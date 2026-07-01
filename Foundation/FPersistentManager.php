@@ -90,5 +90,36 @@ public static function getSegnalazioniAperte(): array {
     if ($risultato instanceof ESegnalazione)    return [$risultato];
     return $risultato;
 }
+public static function getProvvedimentiAttivi(): array {
+    $db = FDataBase::getInstance();
+    $result = $db->queryDB(
+        "SELECT p.*, u.nickname, u.email 
+         FROM provvedimento p 
+         INNER JOIN utente u ON u.id = p.idUtenteSanzionato
+         ORDER BY p.dataInizio DESC",
+        []
+    );
+    return $result ?? [];
+}
+
+public static function getCategorieTutte(): array {
+    $db = FDataBase::getInstance();
+    $result = $db->queryDB(
+        "SELECT c.nome, c.descrizione, COUNT(o.id) as num_opere
+         FROM categoria c
+         LEFT JOIN opera o ON o.categoria = c.nome
+         GROUP BY c.nome, c.descrizione
+         ORDER BY c.nome ASC",
+        []
+    );
+    return $result ?? [];
+}
+
+public static function getSegnalazioniTutte(): array {
+    $risultato = FSegnalazione::loadByField('stato', 'Aperta');
+    if ($risultato === null)                 return [];
+    if ($risultato instanceof ESegnalazione) return [$risultato];
+    return $risultato;
+}
 }
 ?>

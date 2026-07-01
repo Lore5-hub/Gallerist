@@ -134,7 +134,7 @@
                 {if $opera->isVenduta()}
                   <span class="has-text-danger"><i class="fas fa-gavel"></i> Venduta</span>
                 {elseif $opera->isInVendita()}
-                  <span class="has-text-success"><i class="fas fa-tag"></i> In vendita: € {$opera->getPrezzo()}</span>
+                  <span class="has-text-success"><i class="fas fa-tag"></i> In vendita: € {$opera->getPrezzo()->getValore()|number_format:2:',':'.'}</span>
                 {else}
                   <span><i class="fas fa-eye-slash"></i> Non in vendita</span>
                 {/if}
@@ -157,39 +157,22 @@
         <article class="media mb-5 artist-review-article">
           <figure class="media-left">
             <p class="image is-48x48">
-              <img class="is-rounded" src="{$recensione->getUtente()->getUrlImmagineProfilo()|default:'img/default-avatar.png'}">
+              <img class="is-rounded" src="{$recensione->getAutore()->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}">
             </p>
           </figure>
           <div class="media-content">
             <div class="content">
               <p>
-                <strong>{$recensione->getUtente()->getNome()}</strong> 
+                <strong>{$recensione->getAutore()->getNome()}</strong> 
                 <span class="has-text-warning ml-2">
                   <i class="fas fa-star"></i> {$recensione->getValutazione()}
                 </span>
                 <br>
-                {$recensione->getCommento()}
+                {$recensione->getTesto()}
               </p>
             </div>
             
-            {if $recensione->getRisposta()}
-              <div class="notification is-light ml-4 p-3 mt-2">
-                <strong>La tua risposta:</strong><br>
-                {$recensione->getRisposta()}
-              </div>
-            {else}
-              <form method="POST" action="rispondi_recensione.php" class="mt-2">
-                <input type="hidden" name="id_recensione" value="{$recensione->getId()}">
-                <div class="field has-addons">
-                  <div class="control is-expanded">
-                    <input class="input is-small" type="text" name="testo_risposta" placeholder="Rispondi a questa recensione..." required>
-                  </div>
-                  <div class="control">
-                    <button type="submit" class="button is-info is-small">Rispondi</button>
-                  </div>
-                </div>
-              </form>
-            {/if}
+            
             
           </div>
         </article>

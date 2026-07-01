@@ -1,9 +1,8 @@
-{extends file='layout.tpl'}
-{block name=content}
+
 <div class="box has-background-light artwork-review-form">
   <h4 class="title is-4 mb-4 has-text-black">Lascia una recensione</h4>
   
-  <form method="POST" action="salva_recensione.php">
+  <form method="POST" action="/Gallerist/gestioneInterazioni/salvaRecensione">
     
     <input type="hidden" name="id_opera" value="{$opera->getId()}">
 
@@ -58,4 +57,3 @@
 
   </form>
 </div>
-{/block}

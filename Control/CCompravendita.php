@@ -23,7 +23,10 @@ class CCompravendita {
         header('Location: /Gallerist/utente/login');
         exit;
     }
-
+    if ($utente->getRuolo() === EUtente::RUOLO_ADMIN) {
+    header('Location: /Gallerist/Admin/dashboard');
+    exit;
+}
     // 2. Carica solo l'opera dal DB — l'utente è già in sessione
     $opera = FPersistentManager::load('EOpera', 'id', $idOpera);
 

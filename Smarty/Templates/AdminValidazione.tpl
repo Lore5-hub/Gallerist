@@ -198,11 +198,20 @@
   <div class="modal-background" id="chiudi-modal-bg"></div>
   <div class="modal-content">
     <p class="image">
-      <!-- Immagine composita fronte/retro caricata dal backend -->
-      <img src="..." alt="Documento Identità Fronte Retro" class="admin-validation-doc-preview">
+        {if $utente.carta_identita}
+            <div class="has-text-centered p-4">
+                <a href="/Gallerist/uploads/documenti/{$utente.carta_identita}" 
+                   target="_blank" class="button is-info is-medium">
+                    <span class="icon"><i class="fas fa-file-alt"></i></span>
+                    <span>Apri documento</span>
+                </a>
+            </div>
+        {else}
+            <p class="has-text-centered has-text-grey p-4">Nessun documento caricato.</p>
+        {/if}
     </p>
-  </div>
+</div>
   <button class="modal-close is-large" aria-label="close" id="chiudi-modal-btn"></button>
 </div>
-<script src="js/adminValidazione.js"></script>
+<script src="/Gallerist/js/adminValidazione.js"></script>
 {/block}

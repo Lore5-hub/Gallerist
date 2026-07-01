@@ -124,5 +124,50 @@ class CGestioneInterazioni {
     header('Location: /Gallerist/catalogo/visualizzaProfiloArtista/' . $idSegnalato . '?segnalazione=inviata');
     exit;
 }
+public function salvaRecensione(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $utente     = $sessione->getValore('utente_loggato');
+    if ($utente->getRuolo() === EUtente::RUOLO_ADMIN) {
+    header('Location: /Gallerist/Admin/dashboard');
+    exit;
+}
+    $idOpera    = (int)($_POST['id_opera']    ?? 0);
+    $valutazione = (int)($_POST['valutazione'] ?? 0);
+    $commento   = trim($_POST['commento']     ?? '');
+
+    if ($idOpera === 0 || $valutazione < 1 || $valutazione > 5 || empty($commento)) {
+        header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera);
+        exit;
+    }
+
+    // Carica opera e utente come oggetti
+    $opera   = FPersistentManager::load('EOpera', 'id', $idOpera);
+    $autore  = FPersistentManager::load('EUtente', 'id', $utente->getId());
+
+    if (!$opera instanceof EOpera || !$autore instanceof EUtente) {
+        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        exit;
+    }
+
+    $recensione = new ECommento(
+        0,
+        $commento,
+        $valutazione,
+        new DateTimeImmutable(),
+        $autore,
+        $opera
+    );
+
+    FPersistentManager::store($recensione);
+
+    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?recensione=aggiunta');
+    exit;
+}
 }
 ?>

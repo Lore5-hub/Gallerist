@@ -89,10 +89,12 @@
             </div>
 
             <!-- Il pulsante per vedere l'opera nel contesto del sito c'è sempre -->
-            <a href="dettaglio_opera.php?id={$segnalazione.id_opera}" target="_blank" class="button is-small is-link is-light is-fullwidth mt-3">
-              <span class="icon"><i class="fas fa-external-link-alt"></i></span>
-              <span>Visualizza l'opera sul sito</span>
-            </a>
+            {if $segnalazione.id_opera > 0}
+    <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$segnalazione.id_opera}" target="_blank" class="button is-small is-link is-light is-fullwidth mt-3">
+        <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+        <span>Visualizza l'opera sul sito</span>
+    </a>
+{/if}
           </div>
         </div>
 

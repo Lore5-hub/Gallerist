@@ -29,6 +29,13 @@
     </div>
   {/if}
 {/if}
+{if isset($moderazione) && $moderazione == 'completata'}
+    <div class="notification is-success is-light mb-4">
+        <button class="delete" onclick="this.parentElement.remove()"></button>
+        <span class="icon mr-2"><i class="fas fa-check-circle"></i></span>
+        Azione di moderazione applicata con successo.
+    </div>
+{/if}
     <div class="columns is-multiline is-mobile mb-6">
       
       <div class="column is-one-fifth-desktop is-half-tablet">
@@ -93,7 +100,7 @@
           
           <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <h2 class="title is-5 mb-0"><i class="fas fa-user-clock has-text-warning mr-2"></i> Utenti in attesa di verifica</h2>
-            <a href="/Gallerist/Admin/verificaArtista" class="button is-small is-link is-outlined">Vedi tutti</a>
+            <button class="button is-small is-link is-outlined" id="btn-vedi-tutti-attesa">Vedi tutti</button>
           </div>
 
           <div class="table-container">
@@ -139,7 +146,7 @@
           
           <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <h2 class="title is-5 mb-0"><i class="fas fa-tags has-text-info mr-2"></i> Categorie Artisti</h2>
-            <button class="button is-small is-success" title="Aggiungi Categoria">
+            <button class="button is-small is-success" onclick="document.getElementById('modal-categoria').classList.add('is-active')" title="Aggiungi Categoria">
               <span class="icon"><i class="fas fa-plus"></i></span>
             </button>
           </div>
@@ -159,13 +166,18 @@
                     <td><strong>{$categoria.nome}</strong></td>
                     <td>{$categoria.num_opere}</td>
                     <td class="has-text-right">
-                      <a href="#" class="button is-small is-ghost has-text-info px-1" title="Modifica">
-                        <i class="fas fa-pencil-alt"></i>
-                      </a>
-                      <a href="#" class="button is-small is-ghost has-text-danger px-1" title="Rimuovi">
-                        <i class="fas fa-trash"></i>
-                      </a>
-                    </td>
+    <a href="/Gallerist/Admin/gestisciCategorie" class="button is-small is-ghost has-text-info px-1" title="Modifica">
+        <i class="fas fa-pencil-alt"></i>
+    </a>
+    <form method="POST" action="/Gallerist/Admin/eliminaCategoria" style="display:inline;"
+          onsubmit="return confirm('Eliminare la categoria {$categoria.nome}?');">
+        <input type="hidden" name="nome" value="{$categoria.nome}">
+        <button type="submit" class="button is-small is-ghost has-text-danger px-1" title="Rimuovi"
+                {if $categoria.num_opere > 0}disabled title="Ha opere associate"{/if}>
+            <i class="fas fa-trash"></i>
+        </button>
+    </form>
+</td>
                   </tr>
                 {/foreach}
               </tbody>
@@ -186,7 +198,7 @@
           
           <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <h2 class="title is-5 mb-0"><i class="fas fa-flag has-text-danger mr-2"></i> Segnalazioni Recenti</h2>
-            <a href="admin_segnalazioni.php" class="button is-small is-link is-outlined">Vedi tutte</a>
+            <a href="/Gallerist/Admin/tutteSegnalazioni" class="button is-small is-link is-outlined">Vedi tutte</a>
           </div>
 
           <div class="table-container">
@@ -238,7 +250,7 @@
           
           <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <h2 class="title is-5 mb-0"><i class="fas fa-ban has-text-danger mr-2"></i> Utenti Bannati</h2>
-            <a href="admin_bannati.php" class="button is-small is-link is-outlined">Vedi tutti</a>
+            <a href="/Gallerist/Admin/bannati" class="button is-small is-link is-outlined">Vedi tutti</a>
           </div>
 
           <div class="table-container">
@@ -277,5 +289,62 @@
 
   </div>
 </section>
+<div id="modal-attesa" class="modal">
+  <div class="modal-background" onclick="this.parentElement.classList.remove('is-active')"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Tutti gli artisti in attesa</p>
+      <button class="delete" onclick="this.closest('.modal').classList.remove('is-active')"></button>
+    </header>
+    <section class="modal-card-body">
+      <table class="table is-fullwidth is-striped">
+        <thead><tr><th>Nickname</th><th>Data</th><th>Azione</th></tr></thead>
+        <tbody>
+          {foreach from=$utenti_in_attesa item=utente}
+            <tr>
+              <td><strong>@{$utente.nickname}</strong></td>
+              <td>{$utente.data_registrazione|date_format:"%d/%m/%Y"}</td>
+              <td><a href="/Gallerist/Admin/mostraValidazione?id={$utente.id}" class="button is-small is-success">Verifica</a></td>
+            </tr>
+          {foreachelse}
+            <tr><td colspan="3" class="has-text-centered has-text-grey">Nessun artista in attesa.</td></tr>
+          {/foreach}
+        </tbody>
+      </table>
+    </section>
+  </div>
+</div>
+
+<script>
+document.getElementById('btn-vedi-tutti-attesa').addEventListener('click', () => {
+    document.getElementById('modal-attesa').classList.add('is-active');
+});
+</script>
+<div id="modal-categoria" class="modal">
+  <div class="modal-background" onclick="this.parentElement.classList.remove('is-active')"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Aggiungi Categoria</p>
+      <button class="delete" onclick="this.closest('.modal').classList.remove('is-active')"></button>
+    </header>
+    <section class="modal-card-body">
+      <form method="POST" action="/Gallerist/Admin/aggiungiCategoria">
+        <div class="field">
+          <label class="label">Nome Categoria</label>
+          <div class="control">
+            <input class="input" type="text" name="nome" placeholder="Es. Arte Digitale" required>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Descrizione</label>
+          <div class="control">
+            <textarea class="textarea" name="descrizione" placeholder="Descrizione della categoria..."></textarea>
+          </div>
+        </div>
+        <button type="submit" class="button is-success is-fullwidth mt-3">Aggiungi</button>
+      </form>
+    </section>
+  </div>
+</div>
               {/block}
   

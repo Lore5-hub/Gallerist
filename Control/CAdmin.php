@@ -39,6 +39,8 @@ class CAdmin {
  $sessione  = USession::getInstance();
 $verifica  = $sessione->getValore('flash_verifica');
 $sessione->eliminaValore('flash_verifica');
+$sessione->setValue('flash_moderazione', $_GET['moderazione'] ?? null);
+
     // ✅ Control parla SOLO con FPersistentManager
     $artisitInAttesa = FPersistentManager::getArtistiInAttesa();
     $artistiAttivi   = FPersistentManager::getArtistiAttivi();
@@ -75,16 +77,29 @@ foreach ($segnalazioniList as $seg) {
             'data_registrazione' => $artista->getDataDiNascita()->format('Y-m-d'),
         ];
     }
-
+    $provvedimenti = FPersistentManager::getProvvedimentiAttivi();
+    $bannatiArray = [];
+foreach ($provvedimenti as $prov) {
+    $bannatiArray[] = [
+        'utente' => $prov['nickname'],
+        'motivo' => $prov['motivo'],
+        'tipo'   => $prov['tipoBan'],
+        'inizio' => $prov['dataInizio'],
+        'fine'   => $prov['dataFine'],
+    ];
+}
     $vAdmin = new VAdmin();
     $vAdmin->smarty->assign('dashboard',        $dashboard);
     $vAdmin->smarty->assign('utenti_in_attesa', $utentiInAttesaArray);
-    $vAdmin->smarty->assign('categorie',        []);   // da implementare
+    $vAdmin->smarty->assign('bannati',          $bannatiArray);
+    $categorie = FPersistentManager::getCategorieTutte();
+
     $vAdmin->smarty->assign('segnalazioni', $segnalazioniArray);
-    $vAdmin->smarty->assign('bannati',          []);   // da implementare
     $vAdmin->smarty->assign('nome_admin',       USession::getInstance()->getValore('utente_loggato')->getNickname());
     $vAdmin->smarty->assign('verifica', $_GET['verifica'] ?? null);
     $vAdmin->smarty->assign('verifica', $verifica);
+    $vAdmin->smarty->assign('moderazione', $_GET['moderazione'] ?? null);
+    $vAdmin->smarty->assign('categorie', $categorie);
     $vAdmin->smarty->display('AdminDashboard.tpl');
 }
 
@@ -189,7 +204,7 @@ public function statistiche() {
         ['nome' => 'Home',            'url' => '/Gallerist/',                          'visualizzazioni' => (int)(750 * $fattore)],
         ['nome' => 'Login',           'url' => '/Gallerist/Utente/login',              'visualizzazioni' => (int)(430 * $fattore)],
         ['nome' => 'Registrazione',   'url' => '/Gallerist/Utente/registrazione',      'visualizzazioni' => (int)(310 * $fattore)],
-        ['nome' => 'Dettaglio Opera', 'url' => '/Gallerist/catalogo/dettaglio',        'visualizzazioni' => (int)(280 * $fattore)],
+        ['nome' => 'Dettaglio Opera', 'url' => '/Gallerist/catalogo/visualizzaDettagliOpera/1',        'visualizzazioni' => (int)(280 * $fattore)],
     ];
 
     // ---------------------------------------------------------------
@@ -314,9 +329,10 @@ public function mostraValidazione() {
         'biografia'          => $artista->getBiografia(),
         'stile_artistico'    => $artista->getStileArtistico(),
         'localita'           => $artista->getIndirizzo(),
-        'carta_identita'     => $artista->getCartaIdentita(),
         'data_documento'     => date('Y-m-d'), // mock
         'note_admin'         => '',
+        'carta_identita' => $artista->getCartaIdentita(),
+        'url_documento'  => '/Gallerist/uploads/documenti/' . $artista->getCartaIdentita(),
     ];
 
     $vAdmin = new VAdmin();
@@ -346,11 +362,29 @@ public function mostraSegnalazione() {
         exit;
     }
 
-    // Carica l'utente segnalato
-    $utenteSegnalato = FPersistentManager::load('EUtente', 'id', $seg->getIdTarget());
-    
-    // Carica l'utente segnalante per mostrare il nickname
+    $utenteSegnalato  = FPersistentManager::load('EUtente', 'id', $seg->getIdTarget());
     $utenteSegnalante = FPersistentManager::load('EUtente', 'id', $seg->getIdSegnalatore());
+
+    // Storico segnalazioni reale
+    $db = FDataBase::getInstance();
+    $storicoResult = $db->queryDB(
+        "SELECT s.dataSegnalazione as data, s.tipoOggetto as tipo,
+                s.motivo, s.stato as stato_azione
+         FROM segnalazione s
+         WHERE s.idOggettoSegnalato = :id
+         ORDER BY s.dataSegnalazione DESC",
+        [':id' => $seg->getIdTarget()]
+    );
+
+    $storico = [];
+    foreach ($storicoResult ?? [] as $row) {
+        $storico[] = [
+            'data'         => $row['data'],
+            'tipo'         => $row['tipo'],
+            'motivo'       => $row['motivo'],
+            'stato_azione' => $row['stato_azione'],
+        ];
+    }
 
     $segnalazione = [
         'id'                  => $seg->getId(),
@@ -360,11 +394,11 @@ public function mostraSegnalazione() {
         'stato'               => $seg->getStato()->getNomeStato(),
         'motivo_principale'   => $seg->getMotivo(),
         'dettagli_aggiuntivi' => $seg->getNotaOpzionale(),
-        'titolo_opera'        => '',   // mock
-        'testo_incriminato'   => '',   // mock
+        'titolo_opera'        => '',
+        'testo_incriminato'   => '',
         'url_anteprima_opera' => '/Gallerist/img/default_opera.png',
-        'id_opera'            => 0,    // mock
-        'categoria_opera'     => '',   // mock
+        'id_opera'            => 0,
+        'categoria_opera'     => '',
     ];
 
     $autoreContenuto = [
@@ -372,14 +406,175 @@ public function mostraSegnalazione() {
         'nickname'              => $utenteSegnalato ? $utenteSegnalato->getNickname() : 'N/D',
         'data_registrazione'    => $utenteSegnalato ? $utenteSegnalato->getDataDiNascita()->format('Y-m-d') : '',
         'stato'                 => $utenteSegnalato ? $utenteSegnalato->getStatoAccount() : '',
-        'segnalazioni_ricevute' => 0,  // mock
-        'commenti_pubblicati'   => 0,  // mock
+        'segnalazioni_ricevute' => count($storico), // ← reale
+        'commenti_pubblicati'   => 0,               // mock
     ];
 
     $vAdmin = new VAdmin();
-    $vAdmin->smarty->assign('segnalazione',               $segnalazione);
-    $vAdmin->smarty->assign('autore_contenuto',           $autoreContenuto);
-    $vAdmin->smarty->assign('storico_segnalazioni_utente', []);
+    $vAdmin->smarty->assign('segnalazione',                $segnalazione);
+    $vAdmin->smarty->assign('autore_contenuto',            $autoreContenuto);
+    $vAdmin->smarty->assign('storico_segnalazioni_utente', $storico);
     $vAdmin->smarty->display('AdminSegnalazioni.tpl');
+}
+
+/**
+ * Mostra la lista di tutti gli utenti bannati/provvedimenti.
+ * Risponde all'URL: /Gallerist/Admin/bannati
+ */
+public function bannati() {
+    if (!self::checkAdmin()) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $provvedimenti = FPersistentManager::getProvvedimentiAttivi();
+
+    $vAdmin = new VAdmin();
+    $vAdmin->smarty->assign('provvedimenti', $provvedimenti);
+    $vAdmin->smarty->display('AdminBannati.tpl');
+}
+
+/**
+ * Mostra e gestisce le categorie.
+ * Risponde all'URL: /Gallerist/Admin/gestisciCategorie
+ */
+public function gestisciCategorie() {
+    if (!self::checkAdmin()) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    // Gestione POST per aggiunta categoria
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $nome        = trim($_POST['nome']        ?? '');
+        $descrizione = trim($_POST['descrizione'] ?? '');
+
+        if (!empty($nome)) {
+            $categoria = new ECategoria($nome);
+            FPersistentManager::store($categoria);
+        }
+        header('Location: /Gallerist/Admin/gestisciCategorie');
+        exit;
+    }
+
+    $categorie = FPersistentManager::getCategorieTutte();
+
+    $vAdmin = new VAdmin();
+    $vAdmin->smarty->assign('categorie', $categorie);
+    $vAdmin->smarty->display('AdminCategorie.tpl');
+}
+
+/**
+ * Mostra tutte le segnalazioni.
+ * Risponde all'URL: /Gallerist/Admin/tutteSegnalazioni
+ */
+public function tutteSegnalazioni() {
+    if (!self::checkAdmin()) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $segnalazioniList = FPersistentManager::getSegnalazioniTutte();
+
+    $segnalazioniArray = [];
+    foreach ($segnalazioniList as $seg) {
+        $segnalazioniArray[] = [
+            'id'      => $seg->getId(),
+            'tipo'    => $seg->getTipoTarget(),
+            'motivo'  => $seg->getMotivo(),
+            'data'    => $seg->getDataSegnalazione()->format('Y-m-d'),
+            'stato'   => $seg->getStato()->getNomeStato(),
+            'autore'  => $seg->getIdSegnalatore(),
+        ];
+    }
+
+    $vAdmin = new VAdmin();
+    $vAdmin->smarty->assign('segnalazioni', $segnalazioniArray);
+    $vAdmin->smarty->display('AdminListaSegnalazioni.tpl');
+}
+public function eliminaCategoria() {
+    if (!self::checkAdmin()) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $nome = trim($_POST['nome'] ?? '');
+    if (!empty($nome)) {
+        FPersistentManager::delete('ECategoria', 'nome', $nome);
+    }
+
+    header('Location: /Gallerist/Admin/gestisciCategorie');
+    exit;
+}
+/**
+ * Processa l'azione di moderazione su una segnalazione.
+ * Risponde all'URL: /Gallerist/Admin/processaModerazione
+ */
+public function processaModerazione() {
+    if (!self::checkAdmin()) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $idSegnalazione  = (int)($_POST['id_segnalazione']    ?? 0);
+    $idUtente        = (int)($_POST['id_utente_segnalato'] ?? 0);
+    $azione          = trim($_POST['azione_moderazione']   ?? 'nessuna');
+    $tipoBan         = trim($_POST['tipo_ban']             ?? 'temporaneo');
+    $durataBan       = (int)($_POST['durata_ban']          ?? 1);
+    $nota            = trim($_POST['nota_moderazione']     ?? '');
+    $rimuoviContenuto = isset($_POST['rimuovi_e_avvisa']);
+
+    // 1. Applica il ban se richiesto
+    if ($azione === 'ban' && $idUtente > 0) {
+        $dataInizio = date('Y-m-d');
+        $dataFine   = $durataBan > 0 
+            ? date('Y-m-d', strtotime("+{$durataBan} days")) 
+            : null;
+
+        $db = FDataBase::getInstance();
+        $db->queryDB(
+            "INSERT INTO provvedimento (tipoBan, dataInizio, dataFine, motivo, idUtenteSanzionato)
+             VALUES (:tipo, :inizio, :fine, :motivo, :id)",
+            [
+                ':tipo'   => $tipoBan,
+                ':inizio' => $dataInizio,
+                ':fine'   => $dataFine,
+                ':motivo' => $nota,
+                ':id'     => $idUtente,
+            ]
+        );
+
+        // Aggiorna stato account utente a Bannato
+        FPersistentManager::update('EUtente', 'stato_account', EUtente::STATO_BANNATO, 'id', $idUtente);
+    }
+
+    // 2. Aggiorna stato segnalazione ad Archiviata
+    if ($idSegnalazione > 0) {
+        $db = FDataBase::getInstance();
+        $db->queryDB(
+            "UPDATE segnalazione SET stato = 'Archiviata' WHERE id = :id",
+            [':id' => $idSegnalazione]
+        );
+    }
+
+    header('Location: /Gallerist/Admin/dashboard?moderazione=completata');
+    exit;
+}
+public function aggiungiCategoria() {
+    if (!self::checkAdmin()) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $nome        = trim($_POST['nome']        ?? '');
+    $descrizione = trim($_POST['descrizione'] ?? '');
+
+    if (!empty($nome)) {
+        $categoria = new ECategoria($nome, $descrizione);
+        FPersistentManager::store($categoria);
+    }
+
+    header('Location: /Gallerist/Admin/dashboard');
+    exit;
 }
 }

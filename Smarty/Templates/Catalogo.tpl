@@ -14,9 +14,9 @@
             <div class="select is-fullwidth">
               <select name="categoria">
                 <option value="">Tutte le categorie</option>
-                <option value="pittura">Pittura</option>
-                <option value="scultura">Scultura</option>
-                <option value="fotografia">Fotografia</option>
+                <option value="Pittura">Pittura</option>
+                <option value="Scultura">Scultura</option>
+                <option value="Fotografia">Fotografia</option>
               </select>
             </div>
           </div>
@@ -33,7 +33,7 @@
           <label class="label">Ordina per</label>
           <div class="control">
             <div class="select is-fullwidth">
-              <select name="ordine">
+              <select name="ordinamento">
                 <option value="recenti">Più recenti</option>
                 <option value="prezzo_asc">Prezzo: Crescente</option>
                 <option value="prezzo_desc">Prezzo: Decrescente</option>
@@ -77,7 +77,7 @@
             
             <div class="card-content is-flex-grow-1">
               <p class="title is-5 mb-1">{$opera->getTitolo()}</p>
-              <p class="subtitle is-6 mb-3">di <a href="/Gallerist/catalogo/dettaglio/{$opera->getId()}">{$opera->getArtista()->getNome()}</a></p>
+              <p class="subtitle is-6 mb-3">di <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$opera->getArtista()->getId()}">{$opera->getArtista()->getNome()}</a></p>
               
               <div class="tags">
                 <span class="tag is-light">{$opera->getDimensioni()}</span>

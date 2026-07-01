@@ -152,43 +152,51 @@ class FRecensione {
      *             EUtente $autore, EOpera $opera)
      */
     private static function creaRecensioneDaArray(array $row): ERecensione {
-        $autore = new EUtente(
-            (int) $row['autore_id'],
-            $row['autore_nome'],
-            $row['autore_cognome'],
-            '', '', // dataNascita, indirizzo: non estratti
-            $row['autore_nickname'],
-            '',     // telefono: non estratto
-            $row['autore_email'],
-            '',     // password: mai esposta
-            null,
-            EUtente::STATO_ATTIVO
-        );
+    $autore = new EUtente(
+        (int) $row['autore_id'],
+        $row['autore_nome'],
+        $row['autore_cognome'],
+        new DateTimeImmutable('1990-01-01'), // ← fix
+        '',
+        $row['autore_nickname'],
+        '+39 0000000000', // ← placeholder valido
+        $row['autore_email'],
+        '',
+        null,
+        EUtente::STATO_ATTIVO,
+        EUtente::RUOLO_USER
+    );
 
-        $artistaPlaceholder = new EArtista(
-            (int) $row['opera_idArtista'],
-            '', '', '', '', '', '', '', '', null,
-            EUtente::STATO_ATTIVO, '', '', '',
-            EArtista::STATO_IN_ATTESA
-        );
+    $artistaPlaceholder = new EArtista(
+        (int) $row['opera_idArtista'],
+        '', '',
+        new DateTimeImmutable('1990-01-01'), // ← fix
+        '', '', '+39 0000000000', '', '', null,
+        '', '', '',
+        EArtista::STATO_IN_ATTESA
+    );
 
-        $opera = new EOpera(
-            $row['opera_titolo'],
-            0, '', 0.0, 0.0, 0.0, '', '', '',
-            (float) $row['opera_prezzo'],
-            $row['opera_stato'],
-            $artistaPlaceholder
-        );
-        $opera->setId((int) $row['opera_id']);
+    $opera = new EOpera(
+        (int) $row['opera_id'],
+        $row['opera_titolo'],
+        0,
+        new ETecnica(0, ''),
+        '',
+        '',
+        new EPrezzo((float) $row['opera_prezzo'], 'EUR'),
+        null,
+        $artistaPlaceholder,
+        new ECategoria('')
+    );
 
-        return new ERecensione(
-            (int) $row['id'],
-            $row['testo'],
-            (int) $row['valutazione'],
-            new DateTimeImmutable($row['dataPubblicazione']),
-            $autore,
-            $opera
-        );
-    }
+    return new ERecensione(
+        (int) $row['id'],
+        $row['testo'],
+        (int) $row['valutazione'],
+        new DateTimeImmutable($row['dataPubblicazione']),
+        $autore,
+        $opera
+    );
+}
 }
 ?>

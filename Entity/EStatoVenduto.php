@@ -7,5 +7,6 @@ class EStatoVenduto extends EStatoOpera {
     public function isVendibile(): bool { return false; }
     // Un'opera venduta è storicizzata e non può essere modificata dall'artista
     public function puoEssereModificata(): bool { return false; } 
+    public function getNomeStato(): string { return 'Venduta'; }
 }
 ?>

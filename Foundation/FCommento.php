@@ -8,7 +8,7 @@ class FCommento {
 
     private static $class = "FCommento";
     private static $table = "commento";
-    private static $values = "(:id, :testo, :valutazione, :data, :idAutore, :idOpera)";
+    private static $values = "(:id, :testo, :valutazione, :dataPubblicazione, :idAutore, :idOpera)";
 
     public function __construct() {}
 
@@ -16,7 +16,7 @@ class FCommento {
         $stmt->bindValue(':id', NULL, PDO::PARAM_INT);
         $stmt->bindValue(':testo', $commento->getTesto(), PDO::PARAM_STR);
         $stmt->bindValue(':valutazione', $commento->getValutazione(), PDO::PARAM_INT);
-        $stmt->bindValue(':data', $commento->getData()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindValue(':dataPubblicazione', $commento->getData()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
         // Estraiamo gli ID dagli oggetti associati
         $stmt->bindValue(':idAutore', $commento->getAutore()->getId(), PDO::PARAM_INT);
         $stmt->bindValue(':idOpera', $commento->getOpera()->getId(), PDO::PARAM_INT);
@@ -44,13 +44,13 @@ public static function loadByField($field, $id) {
         return null;
     }
 
-    if (!is_array($result[0])) {
+    if (!isset($result[0]) || !is_array($result[0])) {
         // Singolo record
         $autore = FUtente::loadByField("id", $result["idAutore"]);
         $opera  = FOpera::loadByField("id", $result["idOpera"]);
         return new ECommento(
             $result['id'], $result['testo'], $result['valutazione'],
-            $result['data'], $autore, $opera
+            new DateTimeImmutable($result['dataPubblicazione']), $autore, $opera
         );
     }
 
@@ -61,7 +61,7 @@ public static function loadByField($field, $id) {
         $opera  = FOpera::loadByField("id", $row["idOpera"]);
         $commenti[] = new ECommento(
             $row['id'], $row['testo'], $row['valutazione'],
-            $row['data'], $autore, $opera
+            new DateTimeImmutable($row['dataPubblicazione']), $autore, $opera
         );
     }
     return $commenti;

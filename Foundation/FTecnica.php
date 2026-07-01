@@ -57,5 +57,13 @@ class FTecnica extends FDataBase
 		}
 		return new ETecnica($row['id'], $row['nome'], $row['descrizione']);
 	}
+	public static function getIdByNome(string $nome): int {
+    $db     = FDataBase::getInstance();
+    $result = $db->queryDB(
+        "SELECT id FROM tecnica WHERE nome = :nome",
+        [':nome' => $nome]
+    );
+    return !empty($result) ? (int)$result[0]['id'] : 0;
+}
 }
 ?>

@@ -85,11 +85,17 @@
     <div class="columns is-multiline">
       {foreach from=$opere_popolari item=opera}
         <div class="column is-3-desktop is-6-tablet">
-          <a href="dettaglio_opera.php?id={$opera->getId()}">
+          <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$opera->getId()}">
             <div class="card is-shadowless home-popular-card">
               <div class="card-image box p-1 home-popular-img-box">
                 <figure class="image is-4by3">
-                  <img src="{$opera->getUrlImmagine()}" alt="Opera: {$opera->getId()}">
+                  {assign var='immagini' value=$opera->getImmagini()}
+{if $immagini|@count > 0}
+    {assign var='prima' value=$immagini[0]}
+    <img src="/Gallerist/uploads/{$prima->getUrlFile()}" alt="Opera: {$opera->getId()}">
+{else}
+    <img src="/Gallerist/img/default_opera.png" alt="Opera: {$opera->getId()}">
+{/if}
                 </figure>
               </div>
             </div>

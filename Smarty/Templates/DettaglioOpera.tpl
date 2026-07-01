@@ -61,12 +61,13 @@
     </div>
 
     <div class="field mt-5">
-      {if $opera->getStatoOpera()->isVendibile()}
-        <form method="POST" action="/Gallerist/compravendita/avviaAcquisto/{$opera->getId()}" class="mb-3">
-    <button type="submit" class="button is-black is-large is-fullwidth">Acquista Ora</button>
-</form>
+      {* Acquisto e offerta — solo per utenti non admin *}
+{if $opera->getStatoOpera()->isVendibile() && (!isset($utente_loggato) || $utente_loggato->getRuolo() != 'Amministratore')}
+    <form method="POST" action="/Gallerist/compravendita/avviaAcquisto/{$opera->getId()}" class="mb-3">
+        <button type="submit" class="button is-black is-large is-fullwidth">Acquista Ora</button>
+    </form>
     <button id="btn-apri-offerta" class="button is-white is-large is-fullwidth has-border">Fai un'offerta</button>
-{else}
+{elseif !$opera->getStatoOpera()->isVendibile()}
     <button class="button is-large is-fullwidth" disabled>Opera non disponibile</button>
 {/if}
     </div>
@@ -116,16 +117,18 @@
       
       {foreach from=$commenti item=recensione}
         <div class="box mb-4 artwork-review-box">
-          <p class="has-text-weight-bold">{$recensione->getNomeUtente()} <span class="has-text-grey is-size-7 ml-2">{$recensione->getData()|date_format:"%d/%m/%Y"}</span></p>
+          <p class="has-text-weight-bold">{$recensione->getAutore()->getNome()} {$recensione->getAutore()->getCognome()} <span class="has-text-grey is-size-7 ml-2">{$recensione->getData()|date_format:"%d/%m/%Y"}</span></p>
           <p class="mt-2">{$recensione->getTesto()}</p>
         </div>
       {foreachelse}
         <p class="has-text-grey">Nessuna recensione presente per quest'opera.</p>
       {/foreach}
 
-      <div class="mt-6">
+      {if !isset($utente_loggato) || $utente_loggato->getRuolo() != 'Amministratore'}
+    <div class="mt-6">
         {include file="FormRecensione.tpl"}
-      </div>
+    </div>
+{/if}
     </div>
   </div>
 </section>

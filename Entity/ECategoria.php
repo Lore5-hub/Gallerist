@@ -8,12 +8,17 @@
  */
 class ECategoria {
     private string $nome;
-
-    public function __construct(string $nome) {
+    private string $descrizione; // Descrizione opzionale della categoria
+   
+    public function __construct(string $nome, string $descrizione = '') {
         $this->nome = $nome;
+        $this->descrizione = $descrizione;
     }
 
     public function getNome(): string { return $this->nome; }
     public function setNome(string $nome): void { $this->nome = $nome; }
+
+    public function getDescrizione(): string { return $this->descrizione; }
+    
 }
 ?>

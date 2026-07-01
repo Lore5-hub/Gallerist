@@ -13,8 +13,9 @@
         <div class="container">
             <div class="navbar-brand">
                 <a class="navbar-item has-text-weight-bold is-size-4" href="/Gallerist/">
-                    Gallerist
-                </a>
+    <span class="icon mr-2"><i class="fas fa-home"></i></span>
+    Gallerist
+</a>
             </div>
 
             <div class="navbar-menu">

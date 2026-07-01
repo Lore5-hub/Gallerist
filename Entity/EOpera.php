@@ -20,7 +20,14 @@ class EOpera {
     private string $dimensioni;
     private string $descrizione;
     private EPrezzo $prezzo;
-    private EStatoOpera $statoOpera; // Es. "In vendita", "Venduta", "Riservata"
+    private EStatoOpera $statoOpera; 
+    // Es. "In vendita", "Venduta", "Riservata"
+    private float $larghezza   = 0.0;
+private float $altezza     = 0.0;
+private float $profondita  = 0.0;
+private string $unitaMisura = 'cm';
+private int $idCategoria   = 0;
+private int $idTecnica     = 0;
 
     // Associazioni dirette ed aggregazioni di tipo strutturato (Slide 13 del PPT 10)
     private EArtista $artista;
@@ -30,22 +37,29 @@ class EOpera {
     private array $commenti = []; // Contiene oggetti di tipo ECommento
     
     public function __construct(
-        int $id, string $titolo, int $anno, ETecnica $tecnica, string $dimensioni,
-        string $descrizione, EPrezzo $prezzo, EStatoOpera $statoOpera = null,
-        EArtista $artista, ECategoria $categoria
-    ) {
-        $this->id = $id;
-        $this->titolo = $titolo;
-        $this->anno = $anno;
-        $this->tecnica = $tecnica;
-        $this->dimensioni = $dimensioni;
-        $this->descrizione = $descrizione;
-        $this->prezzo = $prezzo;
-        $this->artista = $artista;
-        $this->categoria = $categoria;
-        // Di default l'opera nasce come semplicemente inserita (esposta)
-        $this->statoOpera = $statoOpera ?? new EStatoInserito();
-    }
+    int $id, string $titolo, int $anno, ETecnica $tecnica, string $dimensioni,
+    string $descrizione, EPrezzo $prezzo, EStatoOpera $statoOpera = null,
+    EArtista $artista, ECategoria $categoria,
+    float $larghezza = 0.0, float $altezza = 0.0, float $profondita = 0.0,
+    string $unitaMisura = 'cm', int $idCategoria = 0, int $idTecnica = 0
+) {
+    $this->id          = $id;
+    $this->titolo      = $titolo;
+    $this->anno        = $anno;
+    $this->tecnica     = $tecnica;
+    $this->dimensioni  = $dimensioni;
+    $this->descrizione = $descrizione;
+    $this->prezzo      = $prezzo;
+    $this->artista     = $artista;
+    $this->categoria   = $categoria;
+    $this->statoOpera  = $statoOpera ?? new EStatoInserito();
+    $this->larghezza   = $larghezza;
+    $this->altezza     = $altezza;
+    $this->profondita  = $profondita;
+    $this->unitaMisura = $unitaMisura;
+    $this->idCategoria = $idCategoria;
+    $this->idTecnica   = $idTecnica;
+}
     /**
      * Calcola dinamicamente la valutazione media ciclando sulle recensioni associate.
      * Sostituisce l'attributo statico rimosso su indicazione del professore.
@@ -60,7 +74,13 @@ class EOpera {
         }
         return round($somma / count($this->commenti), 2);
     }
+public function isVenduta(): bool {
+    return $this->statoOpera instanceof EStatoVenduto;
+}
 
+public function isInVendita(): bool {
+    return $this->statoOpera instanceof EStatoInVendita;
+}
     // --- GETTER & SETTER ---
     public function getId(): int { return $this->id; }
     public function setId(int $id): void { $this->id = $id; }
@@ -93,5 +113,22 @@ class EOpera {
 
     public function getCommenti(): array { return $this->commenti; }
     public function addCommento(ECommento $commento): void { $this->commenti[] = $commento; }
+    public function getLarghezza(): float   { return $this->larghezza; }
+public function setLarghezza(float $v): void { $this->larghezza = $v; }
+
+public function getAltezza(): float     { return $this->altezza; }
+public function setAltezza(float $v): void { $this->altezza = $v; }
+
+public function getProfondita(): float  { return $this->profondita; }
+public function setProfondita(float $v): void { $this->profondita = $v; }
+
+public function getUnitaMisura(): string { return $this->unitaMisura; }
+public function setUnitaMisura(string $v): void { $this->unitaMisura = $v; }
+
+public function getIdCategoria(): int  { return $this->idCategoria; }
+public function setIdCategoria(int $v): void { $this->idCategoria = $v; }
+
+public function getIdTecnica(): int    { return $this->idTecnica; }
+public function setIdTecnica(int $v): void { $this->idTecnica = $v; }
 }
 ?>

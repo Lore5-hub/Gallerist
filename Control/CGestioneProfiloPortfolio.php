@@ -233,19 +233,26 @@ public function salvaOpera(): void {
     $statoOpera = $inVendita ? new EStatoInVendita() : new EStatoInserito();
     $prezzoObj  = new EPrezzo($inVendita ? $prezzo : 0, 'EUR');
 
-    // Crea oggetto opera
-    $opera = new EOpera(
-        0,
-        $titolo,
-        $anno,
-        new ETecnica(0, $tecnica),
-        $dimensioni,
-        $descrizione,
-        $prezzoObj,
-        $statoOpera,
-        $artista,
-        new ECategoria($categoria)
-    );
+    // Recupera gli ID reali da DB
+$idCategoria = FCategoria::getIdByNome($categoria);
+$idTecnica   = FTecnica::getIdByNome($tecnica);
+
+$opera = new EOpera(
+    0, $titolo, $anno,
+    new ETecnica(0, $tecnica),
+    $dimensioni,
+    $descrizione,
+    $prezzoObj,
+    $statoOpera,
+    $artista,
+    new ECategoria($categoria),
+    $larghezza,
+    $altezza,
+    $profondita,
+    $unitaMisura,
+    $idCategoria, // ← reale
+    $idTecnica    // ← reale
+);
 
     // Salva nel DB
     $idOpera = FPersistentManager::store($opera);

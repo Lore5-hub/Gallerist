@@ -47,11 +47,20 @@ class EImmagine {
      * @return string|null Contenuto binario del file, oppure null se il file non esiste.
      */
     public function getData(): ?string {
-        if (!file_exists($this->urlFile)) {
-            return null;
-        }
+    // Prova prima il path assoluto, poi relativo
+    $pathAssoluto = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/opere/' . basename($this->urlFile);
+    
+    if (file_exists($pathAssoluto)) {
+        return file_get_contents($pathAssoluto);
+    }
+    
+    // Fallback path relativo
+    if (file_exists($this->urlFile)) {
         return file_get_contents($this->urlFile);
     }
+    
+    return null;
+}
 
     /**
      * Restituisce il MIME type dell'immagine ricavato dall'estensione del file.

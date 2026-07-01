@@ -13,7 +13,7 @@ class FOpera {
 
     private static string $class  = "FOpera";
     private static string $table  = "opera";
-    private static string $values = "(:id, :titolo, :anno, :tecnica, :larghezza, :altezza, :profondita, :unitaMisura, :descrizione, :categoria, :prezzo, :stato, :idArtista)";
+    private static string $values = "(:id, :titolo, :anno, :dimensioni, :descrizione, :prezzo, :statoOpera, :idArtista, :idCategoria, :idTecnica, :categoria, :tecnica, :stato, :larghezza, :altezza, :profondita, :unitaMisura)";
 
     public function __construct() {}
 
@@ -25,21 +25,25 @@ class FOpera {
      * e id esplicito (es. ripristino dati), coerente con FUtente e FArtista.
      */
     public static function bind($stmt, EOpera $opera): void {
-        $id = $opera->getId();
-        $stmt->bindValue(':id',          $id === 0 ? null : $id,         $id === 0 ? PDO::PARAM_NULL : PDO::PARAM_INT);
-        $stmt->bindValue(':titolo',      $opera->getTitolo(),             PDO::PARAM_STR);
-        $stmt->bindValue(':anno',        $opera->getAnno(),               PDO::PARAM_INT);
-        $stmt->bindValue(':tecnica',     $opera->getTecnica(),            PDO::PARAM_STR);
-        $stmt->bindValue(':larghezza',   $opera->getLarghezza(),          PDO::PARAM_STR);
-        $stmt->bindValue(':altezza',     $opera->getAltezza(),            PDO::PARAM_STR);
-        $stmt->bindValue(':profondita',  $opera->getProfondita(),         PDO::PARAM_STR);
-        $stmt->bindValue(':unitaMisura', $opera->getUnitaMisura(),        PDO::PARAM_STR);
-        $stmt->bindValue(':descrizione', $opera->getDescrizione(),        PDO::PARAM_STR);
-        $stmt->bindValue(':categoria',   $opera->getCategoria(),          PDO::PARAM_STR);
-        $stmt->bindValue(':prezzo',      $opera->getPrezzo(),             PDO::PARAM_STR);
-        $stmt->bindValue(':stato',       $opera->getStato(),              PDO::PARAM_STR);
-        $stmt->bindValue(':idArtista',   $opera->getArtista()->getId(),   PDO::PARAM_INT);
-    }
+    $id = $opera->getId();
+    $stmt->bindValue(':id',          $id === 0 ? null : $id,                  $id === 0 ? PDO::PARAM_NULL : PDO::PARAM_INT);
+    $stmt->bindValue(':titolo',      $opera->getTitolo(),                      PDO::PARAM_STR);
+    $stmt->bindValue(':anno',        $opera->getAnno(),                        PDO::PARAM_INT);
+    $stmt->bindValue(':dimensioni',  $opera->getDimensioni(),                  PDO::PARAM_STR);
+    $stmt->bindValue(':descrizione', $opera->getDescrizione(),                 PDO::PARAM_STR);
+    $stmt->bindValue(':prezzo',      $opera->getPrezzo()->getValore(),         PDO::PARAM_STR);
+    $stmt->bindValue(':statoOpera',  'In esposizione',                         PDO::PARAM_STR);
+    $stmt->bindValue(':idArtista',   $opera->getArtista()->getId(),            PDO::PARAM_INT);
+    $stmt->bindValue(':idCategoria', $opera->getIdCategoria(),                 PDO::PARAM_INT);
+    $stmt->bindValue(':idTecnica',   $opera->getIdTecnica(),                   PDO::PARAM_INT);
+    $stmt->bindValue(':categoria',   $opera->getCategoria()->getNome(),        PDO::PARAM_STR);
+    $stmt->bindValue(':tecnica',     $opera->getTecnica()->getNome(),          PDO::PARAM_STR);
+    $stmt->bindValue(':stato',       $opera->getStatoOpera()->getNomeStato(),  PDO::PARAM_STR);
+    $stmt->bindValue(':larghezza',   $opera->getLarghezza(),                   PDO::PARAM_STR);
+    $stmt->bindValue(':altezza',     $opera->getAltezza(),                     PDO::PARAM_STR);
+    $stmt->bindValue(':profondita',  $opera->getProfondita(),                  PDO::PARAM_STR);
+    $stmt->bindValue(':unitaMisura', $opera->getUnitaMisura(),                 PDO::PARAM_STR);
+}
 
     public static function getClass(): string  { return static::$class; }
     public static function getTable(): string  { return static::$table; }
@@ -69,7 +73,8 @@ class FOpera {
     public static function store(EOpera $opera): ?string {
         $db = FDataBase::getInstance();
 
-        if (!FArtista::exist('email_utente', $opera->getArtista()->getEmail())) {
+        // ✅ CORRETTO
+if (!FArtista::exist('idUtente', $opera->getArtista()->getId()))  {
             error_log("FOpera::store - Artista non esistente per email: " . $opera->getArtista()->getEmail());
             return null;
         }
@@ -223,6 +228,7 @@ class FOpera {
                   FROM " . static::$table . " o
                   INNER JOIN UTENTE u ON o.idArtista = u.id
                   WHERE o.stato IN ('pubblicata', 'in_vendita')
+                  AND u.stato_account != 'Bannato'
                   ORDER BY o.id DESC
                   LIMIT " . (int) $limite;
 
@@ -250,16 +256,15 @@ class FOpera {
      */
     public static function loadByArtista(int $idArtista, int $idEscluso): ?array {
         $query = "SELECT o.*,
-                         u.nome     AS artista_nome,
-                         u.cognome  AS artista_cognome,
-                         u.email    AS artista_email,
-                         u.nickname AS artista_nickname
-                  FROM " . static::$table . " o
-                  INNER JOIN UTENTE u ON o.idArtista = u.id
-                  WHERE o.idArtista = :idArtista
-                    AND o.id        != :idEscluso
-                    AND o.stato     = 'pubblicata'
-                  ORDER BY o.id DESC";
+                 u.nome     AS artista_nome,
+                 u.cognome  AS artista_cognome,
+                 u.email    AS artista_email,
+                 u.nickname AS artista_nickname
+          FROM " . static::$table . " o
+          INNER JOIN UTENTE u ON o.idArtista = u.id
+          WHERE o.idArtista = :idArtista
+            AND o.id        != :idEscluso
+          ORDER BY o.id DESC";
 
         $db     = FDataBase::getInstance();
         $result = $db->queryDB($query, [
@@ -302,7 +307,8 @@ class FOpera {
                          u.nickname AS artista_nickname
                   FROM " . static::$table . " o
                   INNER JOIN UTENTE u ON o.idArtista = u.id
-                  WHERE o.stato IN ('pubblicata','in_vendita')";
+                  WHERE o.stato IN ('pubblicata','in_vendita')
+                  AND u.stato_account != 'Bannato'";
 
         // Filtro per parola chiave su titolo e descrizione
         if (!empty($parametri['parola_chiave'])) {
@@ -315,6 +321,11 @@ class FOpera {
             $query              .= " AND o.categoria = :categoria";
             $params[':categoria'] = $parametri['categoria'];
         }
+        // Filtro prezzo massimo
+if (!empty($parametri['prezzo_max'])) {
+    $query             .= " AND o.prezzo <= :prezzo_max";
+    $params[':prezzo_max'] = (float) $parametri['prezzo_max'];
+}
 
         // Ordinamento
         $ordinamento = $parametri['ordinamento'] ?? 'recenti';

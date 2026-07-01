@@ -58,6 +58,7 @@ class CCatalogo {
         'parola_chiave' => trim($parolaChiave),
         'categoria'     => trim($categoria),
         'ordinamento'   => in_array(trim($ordinamento), $ordinamentiValidi, true) ? trim($ordinamento) : 'recenti',
+        'prezzo_max'    => isset($_GET['prezzo_max']) && $_GET['prezzo_max'] > 0 ? (float)$_GET['prezzo_max'] : null,
     ];
 
     $opereFiltrate = FOpera::ricercaFiltrata($parametriPuliti) ?? [];
@@ -132,7 +133,7 @@ class CCatalogo {
 
         // PASSO 3: Passa i dati a Smarty e mostra la pagina
         // Assegniamo l'array delle opere a una variabile Smarty che useremo nel template
-        $smarty->assign('opere', $ultimeOpere);
+       $smarty->assign('opere_popolari', $ultimeOpere ?? []);
         $smarty->assign('titolo', 'Benvenuti nella Galleria d\'Arte Gallerist');
 
         // Diciamo a Smarty di renderizzare il file del template della homepage
