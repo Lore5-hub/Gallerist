@@ -116,8 +116,16 @@ class CCatalogo {
 
         // Metodo custom di dominio: non astraibile dal Manager (vedi nota architetturale)
         $altreOpere = FOpera::loadByArtista($opera->getArtista()->getId(), $idOpera) ?? [];
+$valuta = $_GET['valuta'] ?? 'EUR';
 
-        $view->mostraSchedaDettaglio($opera, $altreOpere);
+$prezzoConvertito = null;
+
+if ($valuta !== 'EUR') {
+    require_once 'Control/CValutaService.php';
+    $prezzoConvertito = CValutaService::converti($opera->getPrezzo(), $valuta);
+}
+
+$view->mostraSchedaDettaglio($opera, $altreOpere, false, $prezzoConvertito, $valuta);
     }
     public function homepage() 
     {

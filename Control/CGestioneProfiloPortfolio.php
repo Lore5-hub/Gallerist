@@ -149,29 +149,7 @@ class CGestioneProfiloPortfolio {
         }
     }
 
-    /**
-     * Operazione di sistema: L'artista decide di rimuovere definitivamente il proprio profilo/account.
-     * Questa è un'azione radicale che distrugge l'intera utenza.
-     */
-    public function eliminaProfilo(): void {
-        if (!FSession::isLogged() || FSession::getRuolo() !== 'Artista') {
-            header('Location: /login');
-            exit;
-        }
-        
-        // 1. Identificazione dell'utente da eliminare
-        $idArtistaLoggato = FSession::getId();
-        
-        // 2. Rimozione fisica dal database dell'artista (e cancellazione automatica a cascata nel DB delle sue opere)
-        FArtista::delete($idArtistaLoggato);
-        
-        // 3. Pulizia della sessione (effettua il logout forzato dell'utente appena cancellato)
-        FSession::unsetUtente();
-        
-        // 4. Reindirizzamento dell'utente, ora anonimo, alla Homepage con messaggio di conferma [cite: 74]
-        $view = new VHomepage();
-        $view->mostraHomeConMessaggio("Account eliminato con successo."); //[cite: 74]
-    }
+    
     /**
  * Mostra il form per aggiungere una nuova opera.
  * Risponde all'URL: /Gallerist/gestioneProfiloPortfolio/mostraFormOpera
@@ -297,6 +275,73 @@ $opera = new EOpera(
     }
 
     header('Location: /Gallerist/utente/profilo?opera=aggiunta');
+    exit;
+}
+/**
+ * Elimina un'opera dal portfolio dell'artista.
+ * Risponde all'URL: /Gallerist/gestioneProfiloPortfolio/eliminaOpera
+ */
+public function eliminaOpera(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $artista = $sessione->getValore('utente_loggato');
+    if ($artista->getRuolo() !== EUtente::RUOLO_ARTISTA) {
+        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        exit;
+    }
+
+    $idOpera = (int)($_POST['id_opera'] ?? 0);
+    if ($idOpera === 0) {
+        header('Location: /Gallerist/utente/profilo');
+        exit;
+    }
+
+    // Verifica che l'opera appartenga all'artista loggato
+    $opera = FPersistentManager::load('EOpera', 'id', $idOpera);
+    if (!$opera instanceof EOpera || $opera->getArtista()->getId() !== $artista->getId()) {
+        header('Location: /Gallerist/utente/profilo');
+        exit;
+    }
+
+    FPersistentManager::delete('EOpera', 'id', $idOpera);
+
+    header('Location: /Gallerist/utente/profilo?opera=eliminata');
+    exit;
+}
+
+/**
+ * Elimina il profilo dell'artista.
+ * Risponde all'URL: /Gallerist/gestioneProfiloPortfolio/eliminaProfilo
+ */
+public function eliminaProfilo(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $artista = $sessione->getValore('utente_loggato');
+    if ($artista->getRuolo() !== EUtente::RUOLO_ARTISTA) {
+        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        exit;
+    }
+
+    $id = $artista->getId();
+
+    // Elimina artista e utente dal DB
+    FPersistentManager::delete('EArtista', 'idUtente', $id);
+    FPersistentManager::delete('EUtente',  'id',       $id);
+
+    // Distruggi la sessione
+    $sessione->distruggi();
+
+    header('Location: /Gallerist/');
     exit;
 }
 }

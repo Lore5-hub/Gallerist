@@ -26,11 +26,13 @@ class CValutaService {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout di 5 secondi per non bloccare il sito
-        
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // ← AGGIUNGI questa riga
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         // Esegue la richiesta HTTP GET
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
+        
 
         // Se la chiamata è andata a buon fine (codice 200)
         if ($httpCode == 200 && $response !== false) {

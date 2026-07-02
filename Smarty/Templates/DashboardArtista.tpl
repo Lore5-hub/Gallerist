@@ -9,7 +9,7 @@
         
         <div class="column is-narrow has-text-centered">
           <figure class="image is-128x128 is-inline-block artist-avatar-figure is-clickable" title="Cambia foto profilo">
-  <img class="is-rounded" src="...">
+  <img class="is-rounded" src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}">
   <div class="artist-avatar-overlay is-flex is-align-items-center is-justify-content-center is-rounded">
     <i class="fas fa-camera fa-2x has-text-white"></i>
   </div>
@@ -19,23 +19,28 @@
         <div class="column is-4">
           <div class="is-flex is-align-items-center mb-2">
             <h1 class="title is-4 mb-0 mr-2">{$utente->getNome()} {$utente->getCognome()}</h1>
-            <a href="#" class="icon has-text-grey-light" title="Modifica Nome"><i class="fas fa-pencil-alt"></i></a>
+            
           </div>
           
           <div class="is-flex is-align-items-center mb-2">
             <p class="subtitle is-6 mb-0 mr-2"><strong>Nickname:</strong> @{$utente->getNickname()}</p>
-            <a href="#" class="icon has-text-grey-light" title="Modifica Nickname"><i class="fas fa-pencil-alt"></i></a>
+            <a href="#" class="icon has-text-grey-light" title="Modifica Nickname" onclick="document.getElementById('modal-nickname').classList.add('is-active'); return false;">
+    <i class="fas fa-pencil-alt"></i>
+</a>
           </div>
 
           <div class="is-flex is-align-items-center">
             <p class="is-size-6 mb-0 mr-2"><strong>Nazionalità:</strong> {$utente->getNazionalita()}</p>
-            <a href="#" class="icon has-text-grey-light" title="Modifica Nazionalità"><i class="fas fa-pencil-alt"></i></a>
+            
           </div>
         </div>
 
         <div class="column">
           <div class="box has-background-light artist-bio-box pt-5">
-  <a href="#" class="icon has-text-grey artist-bio-edit-btn" title="Modifica Biografia">...</a>
+  <a href="#" class="icon has-text-grey artist-bio-edit-btn" title="Modifica Biografia" 
+   onclick="document.getElementById('modal-biografia').classList.add('is-active'); return false;">
+    <i class="fas fa-pencil-alt"></i>
+</a>
               <i class="fas fa-pencil-alt"></i>
             </a>
             <p class="is-size-6 pl-4 has-text-justified">
@@ -114,7 +119,17 @@
         <div class="column is-3">
           <div class="card artist-work-card">
   <div class="card-image is-relative">
-    <figure class="image is-4by3"><img src="..."></figure> <div class="artist-work-delete-wrapper"><form method="POST" action="elimina_opera.php" onsubmit="return confirm('Sei sicuro di voler eliminare questa opera?');">
+    <figure class="image is-4by3">
+    {assign var='immagini' value=$opera->getImmagini()}
+    {if $immagini|@count > 0}
+        {assign var='prima' value=$immagini[0]}
+        <img src="/Gallerist/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}">
+    {else}
+        <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}">
+    {/if}
+</figure>
+ <div class="artist-work-delete-wrapper">
+ <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/eliminaOpera" onsubmit="return confirm('Sei sicuro di voler eliminare questa opera?');">
                   <input type="hidden" name="id_opera" value="{$opera->getId()}">
                   <button type="submit" class="button is-danger is-small is-rounded" title="Elimina Opera">
                     <span class="icon"><i class="fas fa-trash"></i></span>
@@ -184,7 +199,7 @@
 
     <hr class="mt-6 mb-5">
     <div class="has-text-centered pb-6">
-      <form method="POST" action="elimina_profilo.php" onsubmit="return confirm('ATTENZIONE: Questa azione è irreversibile. Tutte le tue opere e i tuoi dati andranno persi. Vuoi davvero eliminare il tuo profilo?');">
+      <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/eliminaProfilo" onsubmit="return confirm('ATTENZIONE: Questa azione è irreversibile. Tutte le tue opere e i tuoi dati andranno persi. Vuoi davvero eliminare il tuo profilo?');">
         <button type="submit" class="button is-danger is-outlined">
           <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
           <span>Elimina definitivamente il mio profilo</span>
@@ -193,5 +208,81 @@
     </div>
 
   </div>
+  <div id="modal-nickname" class="modal">
+    <div class="modal-background" onclick="this.parentElement.classList.remove('is-active')"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Modifica Nickname</p>
+            <button class="delete" onclick="this.closest('.modal').classList.remove('is-active')"></button>
+        </header>
+        <section class="modal-card-body">
+            <form method="POST" action="/Gallerist/utente/modificaNickname">
+                <div class="field">
+                    <label class="label">Nuovo Nickname</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" name="nickname" 
+                               value="{$utente->getNickname()}" required>
+                        <span class="icon is-left"><i class="fas fa-at"></i></span>
+                    </div>
+                </div>
+                <button type="submit" class="button is-primary is-fullwidth mt-3">Salva</button>
+            </form>
+        </section>
+    </div>
+</div>
+<div id="modal-biografia" class="modal">
+    <div class="modal-background" onclick="this.parentElement.classList.remove('is-active')"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Modifica Biografia</p>
+            <button class="delete" onclick="this.closest('.modal').classList.remove('is-active')"></button>
+        </header>
+        <section class="modal-card-body">
+            <form method="POST" action="/Gallerist/utente/modificaBiografia">
+                <div class="field">
+                    <label class="label">Biografia</label>
+                    <div class="control">
+                        <textarea class="textarea" name="biografia" rows="6" 
+                                  placeholder="Racconta qualcosa di te...">{$utente->getBiografia()}</textarea>
+                    </div>
+                </div>
+                <button type="submit" class="button is-primary is-fullwidth mt-3">Salva</button>
+            </form>
+        </section>
+    </div>
+</div>
 </section>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.tabs ul li');
+    const opere = document.querySelectorAll('.artist-work-card').forEach;
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Rimuovi is-active da tutti i tab
+            tabs.forEach(t => t.classList.remove('is-active'));
+            tab.classList.add('is-active');
+
+            const filtro = tab.querySelector('a').getAttribute('href').replace('?tab=', '');
+
+            document.querySelectorAll('.column.is-3').forEach(col => {
+                const card = col.querySelector('.artist-work-card');
+                if (!card) return;
+
+                if (filtro === 'tutte') {
+                    col.style.display = '';
+                } else if (filtro === 'vendita') {
+                    const isVendita = card.querySelector('.has-text-success') !== null;
+                    col.style.display = isVendita ? '' : 'none';
+                } else if (filtro === 'vendute') {
+                    const isVenduta = card.querySelector('.has-text-danger') !== null;
+                    col.style.display = isVenduta ? '' : 'none';
+                }
+            });
+        });
+    });
+});
+</script>
 {/block}

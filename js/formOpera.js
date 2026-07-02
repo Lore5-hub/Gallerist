@@ -1,32 +1,58 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Seleziona gli elementi dal DOM
+    // Gestione checkbox prezzo
     const checkVendita = document.getElementById('check_vendita');
     const containerPrezzo = document.getElementById('container_prezzo');
     const inputPrezzo = document.getElementById('input_prezzo');
 
-    // Funzione che accende/spegne il prezzo
     function aggiornaVisibilitaPrezzo() {
         if (checkVendita.checked) {
-            // Mostra il campo prezzo
             containerPrezzo.classList.remove('is-hidden');
-            // Rende il prezzo obbligatorio (required)
             inputPrezzo.setAttribute('required', 'required');
         } else {
-            // Nasconde il campo
             containerPrezzo.classList.add('is-hidden');
-            // Toglie l'obbligatorietà
             inputPrezzo.removeAttribute('required');
-            // Pulisce il valore se l'utente aveva scritto qualcosa e poi ha tolto la spunta
             inputPrezzo.value = '';
         }
     }
 
-    // Assicura che l'evento scatti quando clicchi la checkbox
     if (checkVendita) {
         checkVendita.addEventListener('change', aggiornaVisibilitaPrezzo);
-        
-        // Lo esegue anche all'avvio nel caso il browser abbia ricordato la spunta ricaricando la pagina
         aggiornaVisibilitaPrezzo();
+    }
+
+    // Gestione anteprima immagini
+    const inputImmagini = document.querySelector('.file-input');
+    const previewCopertina = document.querySelector('.artwork-upload-preview');
+
+
+    if (inputImmagini && previewCopertina) {
+        inputImmagini.addEventListener('change', function() {
+            
+            const files = Array.from(this.files).slice(0, 4);
+
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (index === 0) {
+                        previewCopertina.innerHTML = `
+                            <span class="tag is-primary" style="position:absolute; top:8px; left:8px;">Copertina</span>
+                            <img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">
+                        `;
+                        previewCopertina.style.position = 'relative';
+                    } else {
+                        const extra = document.querySelectorAll('.column.is-4 figure');
+                        if (extra[index - 1]) {
+                            extra[index - 1].innerHTML = `
+                                <img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">
+                            `;
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    } else {
+        console.log('Elementi non trovati!');
     }
 });

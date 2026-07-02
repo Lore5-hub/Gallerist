@@ -445,5 +445,56 @@ public function logout() {
     header('Location: /Gallerist/utente/login');
     exit;
 }
+public function modificaNickname(): void {
+    $sessione = USession::getInstance();
 
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $utente   = $sessione->getValore('utente_loggato');
+    $nickname = trim($_POST['nickname'] ?? '');
+
+    if (!empty($nickname)) {
+        $db = FDataBase::getInstance();
+        $db->queryDB(
+            "UPDATE utente SET nickname = :nickname WHERE id = :id",
+            [':nickname' => $nickname, ':id' => $utente->getId()]
+        );
+
+        // Aggiorna la sessione
+        $utente->setNickname($nickname);
+        $sessione->setValue('utente_loggato', $utente);
+    }
+
+    header('Location: /Gallerist/utente/profilo');
+    exit;
+}
+public function modificaBiografia(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $utente    = $sessione->getValore('utente_loggato');
+    $biografia = trim($_POST['biografia'] ?? '');
+
+    $db = FDataBase::getInstance();
+    $db->queryDB(
+        "UPDATE artista SET biografia = :biografia WHERE idUtente = :id",
+        [':biografia' => $biografia, ':id' => $utente->getId()]
+    );
+
+    // Aggiorna la sessione se è un EArtista
+    if ($utente instanceof EArtista) {
+        $utente->setBiografia($biografia);
+        $sessione->setValue('utente_loggato', $utente);
+    }
+
+    header('Location: /Gallerist/utente/profilo');
+    exit;
+}
 }

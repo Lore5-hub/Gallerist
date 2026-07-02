@@ -147,7 +147,7 @@ class VCatalogo
      * @param array  $altreOpere  Altre opere dello stesso artista (esclusa quella corrente),
      *                            mostrate nella sezione "Scopri altri lavori"
      */
-    public function mostraSchedaDettaglio(EOpera $opera, array $altreOpere, bool $isLogged=false): void
+    public function mostraSchedaDettaglio(EOpera $opera, array $altreOpere, bool $isLogged=false, ?EPrezzo $prezzoConvertito = null, string $valutaSelezionata = 'EUR'): void
     {
         if ($isLogged) {
             $this->smarty->assign('userlogged', 'loggato');
@@ -181,7 +181,10 @@ class VCatalogo
         // Sezione "Altre opere dell'artista" con relative copertine
         $this->smarty->assign('altreOpere',         $altreOpere);
         $this->smarty->assign('copertineAltreOpere', $this->codificaCopertine($altreOpere));
-
+if ($prezzoConvertito !== null) {
+        $this->smarty->assign('prezzoConvertito', $prezzoConvertito);
+    }
+    $this->smarty->assign('valutaSelezionata', $valutaSelezionata);
         $this->smarty->display('DettaglioOpera.tpl');
     }
 
@@ -202,7 +205,7 @@ class VCatalogo
      */
     public function mostraErrore(string $codiceErrore, array $categorie = []): void
     {
-        if (CUtente::isLogged()) {
+        if (USession::getInstance()->esisteValore('utente_loggato')) {
             $this->smarty->assign('userlogged', 'loggato');
         }
 

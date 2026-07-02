@@ -256,7 +256,9 @@ class FDataBase
 			return null;
 		}
 	}
-
+public function getConnection(): PDO {
+    return $this->db;
+}
 	/**
 	 * Metodo che chiude la connessione con il DB azzerando l'istanza statica.
 	 */

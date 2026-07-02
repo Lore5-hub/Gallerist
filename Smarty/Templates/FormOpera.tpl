@@ -166,5 +166,5 @@
 
     </div> </div>
 </form>
-<script src="js/formOpera.js"></script>
+<script src="/Gallerist/js/formOpera.js"></script>
 {/block}

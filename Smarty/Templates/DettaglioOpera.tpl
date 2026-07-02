@@ -56,19 +56,53 @@
       <span class="tag is-light">Dimensioni: {$opera->getDimensioni()}</span>
     </div>
 
-    <div class="block mt-5">
-      <p class="is-size-3 has-text-weight-bold">€ {$opera->getPrezzo()->getValore()|number_format:2:',':'.'}</p>
-    </div>
-
+   
+{* Prezzo con selettore valuta *}
+<div class="block mt-5">
+    <p class="is-size-3 has-text-weight-bold">
+        {if isset($prezzoConvertito)}
+            {$prezzoConvertito->getValore()|number_format:2:',':'.'} {$prezzoConvertito->getValuta()}
+            <span class="is-size-6 has-text-grey ml-2">(€ {$opera->getPrezzo()->getValore()|number_format:2:',':'.'})</span>
+        {else}
+            € {$opera->getPrezzo()->getValore()|number_format:2:',':'.'}
+        {/if}
+    </p>
+    
+    <form method="GET" action="/Gallerist/catalogo/visualizzaDettagliOpera/{$opera->getId()}" class="mt-2">
+        <div class="field has-addons">
+            <div class="control">
+                <div class="select">
+                    <select name="valuta">
+                        <option value="EUR" {if !isset($valutaSelezionata) || $valutaSelezionata == 'EUR'}selected{/if}>EUR €</option>
+                        <option value="USD" {if isset($valutaSelezionata) && $valutaSelezionata == 'USD'}selected{/if}>USD $</option>
+                        <option value="GBP" {if isset($valutaSelezionata) && $valutaSelezionata == 'GBP'}selected{/if}>GBP £</option>
+                        <option value="JPY" {if isset($valutaSelezionata) && $valutaSelezionata == 'JPY'}selected{/if}>JPY ¥</option>
+                        <option value="CHF" {if isset($valutaSelezionata) && $valutaSelezionata == 'CHF'}selected{/if}>CHF</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control">
+                <button type="submit" class="button is-info">
+                    <span class="icon"><i class="fas fa-exchange-alt"></i></span>
+                    <span>Converti</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
     <div class="field mt-5">
       {* Acquisto e offerta — solo per utenti non admin *}
-{if $opera->getStatoOpera()->isVendibile() && (!isset($utente_loggato) || $utente_loggato->getRuolo() != 'Amministratore')}
+{if !$opera->getStatoOpera()->isVendibile()}
+    <button class="button is-large is-fullwidth" disabled>Opera non disponibile</button>
+{elseif isset($utente_loggato) && $utente_loggato->getRuolo() == 'Amministratore'}
+    {* Admin non può comprare — non mostrare nulla *}
+{elseif isset($utente_loggato) && $utente_loggato->getId() == $opera->getArtista()->getId()}
+    <button class="button is-large is-fullwidth" disabled>Opera tua</button>
+{else}
     <form method="POST" action="/Gallerist/compravendita/avviaAcquisto/{$opera->getId()}" class="mb-3">
         <button type="submit" class="button is-black is-large is-fullwidth">Acquista Ora</button>
     </form>
     <button id="btn-apri-offerta" class="button is-white is-large is-fullwidth has-border">Fai un'offerta</button>
-{elseif !$opera->getStatoOpera()->isVendibile()}
-    <button class="button is-large is-fullwidth" disabled>Opera non disponibile</button>
 {/if}
     </div>
 

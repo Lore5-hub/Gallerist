@@ -34,6 +34,10 @@ class CCompravendita {
         $view->mostraErrore('opera_non_trovata');
         return;
     }
+    if ($opera->getArtista()->getId() === $utente->getId()) {
+    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera);
+    exit;
+}
 
     // 3. Verifica che l'opera sia acquistabile
     if (!($opera->getStatoOpera() instanceof EStatoInVendita)) {
@@ -56,77 +60,74 @@ class CCompravendita {
      * @param string $indirizzoSpedizione  Indirizzo di consegna inserito nel form
      * @param string $costoSpedizione      Costo di spedizione come stringa dal form
      */
-    public function confermaAcquisto(
-        int    $idOpera,
-        string $metodoPagamento     = '',
-        string $indirizzoSpedizione = '',
-        string $costoSpedizione     = '5.00'
-    ): void {
-        $view = new VCompravendita();
+    public function confermaAcquisto(int $idOpera): void {
+    $view     = new VCompravendita();
+    $sessione = USession::getInstance();
 
-        // 1. Verifica sessione
-        $emailUtente = USession::getInstance()->getValore('utente_loggato');
-        if ($emailUtente === null) {
-            USession::getInstance()->impostaValore('redirect_dopo_login', "/Gallerist/Compravendita/avviaAcquisto/$idOpera");
-            header('Location: /Gallerist/Accesso/login');
-            exit;
-        }
+    $utente = $sessione->getValore('utente_loggato');
+    if ($utente === null) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
 
-        // 2. Caricamento utente e opera — CRUD standard: transitano dal Manager
-        $utente = FPersistentManager::load('EUtente', 'email', $emailUtente);
-        $opera  = FPersistentManager::load('EOpera', 'id', $idOpera);
+    $opera = FPersistentManager::load('EOpera', 'id', $idOpera);
+    if ($opera === null) {
+        $view->mostraErrore('opera_non_trovata');
+        return;
+    }
 
-        if ($utente === null || $opera === null) {
-            $view->mostraErrore('opera_non_trovata');
-            return;
-        }
+    $db  = FDataBase::getInstance();
+    $pdo = $db->getConnection();
 
-        // 3. Validazione dati form
-        if (empty(trim($metodoPagamento)) || empty(trim($indirizzoSpedizione))) {
-            $view->mostraErrore('dati_mancanti');
-            return;
-        }
+    try {
+        $pdo->beginTransaction();
 
-        // 4. Controllo anti-doppio acquisto (race condition):
-        //    l'opera potrebbe essere stata acquistata da un altro utente nel frattempo
-        if (!($opera->getStatoOpera() instanceof EStatoInVendita)) {
+        // Blocca solo la riga dell'opera — locking pessimistico a livello di riga
+        $stmt = $pdo->prepare("SELECT stato FROM opera WHERE id = :id FOR UPDATE");
+        $stmt->execute([':id' => $idOpera]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row || $row['stato'] !== 'in_vendita') {
+            $pdo->rollBack();
             $view->mostraErrore('opera_non_disponibile');
             return;
         }
 
-        // 5. Costruzione dell'oggetto EOrdine
-        //    EOrdine calcola totaleOrdine e commissionePiattaforma autonomamente nel costruttore
-        $nuovoOrdine = new EOrdine(
-            0,                                         // id: AUTO_INCREMENT sul DB
-            new DateTimeImmutable(),                   // dataOrdine: adesso
-            trim($metodoPagamento),
-            trim($indirizzoSpedizione),
-            new EPrezzo((float) $costoSpedizione),     // costoSpedizione
-            $opera->getPrezzo(),                       // totaleArticolo: già EPrezzo
-            new EPrezzo(0.0),                          // commissionePiattaforma: calcolata dal costruttore
+        // Aggiorna stato opera a Venduta
+        $pdo->prepare("UPDATE opera SET stato = 'Venduta' WHERE id = :id")
+            ->execute([':id' => $idOpera]);
+
+        // Salva ordine
+        $ordine = new EOrdine(
+            0,
+            new DateTimeImmutable(),
+            $_POST['metodo_pagamento'] ?? 'carta',
+            $utente->getIndirizzo(),
+            new EPrezzo(5.00),
+            $opera->getPrezzo(),
+            new EPrezzo(0.0),
             $utente,
             $opera
         );
+        $stmt = $pdo->prepare(
+    "INSERT INTO ordine (data, idUtente, idOpera) VALUES (:data, :idUtente, :idOpera)"
+);
+$stmt->execute([
+    ':data'     => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
+    ':idUtente' => $utente->getId(),
+    ':idOpera'  => $idOpera,
+]);
 
-        // 6. Persistenza ordine — CRUD standard: transita dal Manager
-        $id = FPersistentManager::store($nuovoOrdine);
-        if ($id === null) {
-            error_log("CCompravendita::confermaAcquisto - FOrdine::store fallito per opera: $idOpera");
-            $view->mostraErrore('errore_persistenza');
-            return;
-        }
-        $nuovoOrdine->setId((int) $id);
+        $pdo->commit();
 
-        // 7. Aggiornamento stato opera a "venduta" — CRUD standard: transita dal Manager
-        FPersistentManager::update('EOpera', 'statoOpera', 'Venduta', 'id', $idOpera);
-
-        // 8. Notifica all'artista
-        // TODO: UEmail::inviaEmail($opera->getArtista()->getEmail(), "Opera venduta!", "...")
-        //       (UEmail non ancora implementata)
-
-        // 9. Visualizzazione pagina di conferma
-        $view->mostraConfermaOrdine($nuovoOrdine);
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $view->mostraErrore('errore_persistenza');
+        return;
     }
+
+    $view->mostraConfermaOrdine($opera, $utente);
+}
 
     /**
      * Operazione di sistema (Step 3): L'utente richiede di formulare una proposta d'acquisto.
@@ -229,5 +230,6 @@ class CCompravendita {
         // 7. Visualizzazione messaggio di conferma
         $view->mostraConfermaInvioOfferta($nuovaOfferta);
 }
+
 }
 ?>

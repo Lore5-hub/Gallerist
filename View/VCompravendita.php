@@ -103,31 +103,7 @@ class VCompravendita
      *
      * @param EOrdine $ordine L'ordine appena creato e persistito dal Control
      */
-    public function mostraConfermaOrdine(EOrdine $ordine): void
-    {
-        if (CUtente::isLogged()) {
-            $this->smarty->assign('userlogged', 'loggato');
-        }
-
-        // L'intero oggetto EOrdine al template: contiene già tutti i dati
-        // (acquirente, opera, importi, metodo pagamento, data) tramite i getter
-        $this->smarty->assign('ordine', $ordine);
-
-        // Copertina dell'opera acquistata per il riepilogo visivo della ricevuta
-        $immagini  = $ordine->getOpera()->getImmagini();
-        $copertina = !empty($immagini) ? $immagini[0] : null;
-        list($mime, $b64) = $this->codificaImmagine($copertina, 'opera');
-        $this->smarty->assign('copertina', ['type' => $mime, 'pic64' => $b64]);
-
-        // Messaggio di successo esplicito per il template
-        $this->smarty->assign(
-            'messaggioSuccesso',
-            'Acquisto completato! Riceverai una email di conferma. '
-            . 'L\'artista è stato notificato e provvederà alla spedizione.'
-        );
-
-        $this->smarty->display('conferma_ordine.tpl');
-    }
+   
 
     // =========================================================================
     //  UC3 — Step 3a/3b: L'utente clicca "Fai un'offerta" — flusso alternativo
@@ -152,9 +128,9 @@ class VCompravendita
         ?string $errore = null,
         array   $datiPrecedenti = []
     ): void {
-        if (CUtente::isLogged()) {
-            $this->smarty->assign('userlogged', 'loggato');
-        }
+       if (USession::getInstance()->esisteValore('utente_loggato')) {
+    $this->smarty->assign('userlogged', 'loggato');
+}
 
         $this->smarty->assign('opera',   $opera);
         $this->smarty->assign('artista', $opera->getArtista());
@@ -214,9 +190,9 @@ class VCompravendita
      */
     public function mostraConfermaInvioOfferta(EOfferta $offerta): void
     {
-        if (CUtente::isLogged()) {
-            $this->smarty->assign('userlogged', 'loggato');
-        }
+        if (USession::getInstance()->esisteValore('utente_loggato')) {
+    $this->smarty->assign('userlogged', 'loggato');
+}
 
         // Dati dell'offerta per il riepilogo
         $this->smarty->assign('offerta', $offerta);
@@ -258,9 +234,9 @@ class VCompravendita
      */
     public function mostraErrore(string $codiceErrore): void
     {
-        if (CUtente::isLogged()) {
-            $this->smarty->assign('userlogged', 'loggato');
-        }
+        if (USession::getInstance()->esisteValore('utente_loggato')) {
+    $this->smarty->assign('userlogged', 'loggato');
+}
 
         switch ($codiceErrore) {
             case 'opera_non_trovata':
@@ -347,6 +323,21 @@ class VCompravendita
     }
 
     return [$mime, $b64];
+}
+public function mostraConfermaOrdine(EOpera $opera, EUtente $utente): void {
+    if (USession::getInstance()->esisteValore('utente_loggato')) {
+        $this->smarty->assign('userlogged', 'loggato');
+    }
+
+    $this->smarty->assign('opera',  $opera);
+    $this->smarty->assign('utente', $utente);
+
+    $immagini  = $opera->getImmagini();
+    $copertina = !empty($immagini) ? $immagini[0] : null;
+    list($mime, $b64) = $this->codificaImmagine($copertina, 'opera');
+    $this->smarty->assign('copertina', ['type' => $mime, 'pic64' => $b64]);
+
+    $this->smarty->display('ConfermaOrdine.tpl');
 }
 }
 ?>
