@@ -159,39 +159,43 @@ class FOfferta {
     private static function creaOffertaDaArray(array $row): EOfferta {
         // Offerente: solo i campi estratti dalla JOIN
         $offerente = new EUtente(
-            (int) $row['offerente_id'],
-            $row['offerente_nome'],
-            $row['offerente_cognome'],
-            '',    // dataNascita: non estratta
-            '',    // indirizzo: non estratto
-            $row['offerente_nickname'],
-            '',    // telefono: non estratto
-            $row['offerente_email'],
-            '',    // password: mai esposta
-            null,  // immagineProfilo: non estratta
-            EUtente::STATO_ATTIVO
-        );
+    (int) $row['offerente_id'],
+    $row['offerente_nome'],
+    $row['offerente_cognome'],
+    new DateTimeImmutable('1990-01-01'), // ← fix
+    '',
+    $row['offerente_nickname'],
+    '+39 0000000000', // ← placeholder valido
+    $row['offerente_email'],
+    '',
+    null,
+    EUtente::STATO_ATTIVO,
+    EUtente::RUOLO_USER
+);
 
         // Opera: solo i campi essenziali estratti dalla JOIN
         // EArtista placeholder con il solo ID, sufficiente per le FK
         $artistaPlaceholder = new EArtista(
-            (int) $row['opera_idArtista'],
-            '', '', '', '', '', '', '', '', null,
-            EUtente::STATO_ATTIVO, '', '', '',
-            EArtista::STATO_IN_ATTESA
-        );
+    (int) $row['opera_idArtista'],
+    '', '',
+    new DateTimeImmutable('1990-01-01'), // ← fix
+    '', '', '+39 0000000000', '', '', null,
+    '', '', '',
+    EArtista::STATO_IN_ATTESA
+);
 
         $opera = new EOpera(
-            $row['opera_titolo'],
-            0,      // anno: non estratto
-            '',     // tecnica: non estratta
-            0.0, 0.0, 0.0, '', // dimensioni: non estratte
-            '',     // descrizione: non estratta
-            '',     // categoria: non estratta
-            (float) $row['opera_prezzo'],
-            $row['opera_stato'],
-            $artistaPlaceholder
-        );
+    (int) $row['opera_id'],              // ← id prima
+    $row['opera_titolo'],
+    0,
+    new ETecnica(0, ''),
+    '',
+    '',
+    new EPrezzo((float) $row['opera_prezzo'], 'EUR'),
+    null,
+    $artistaPlaceholder,
+    new ECategoria('')
+);
         $opera->setId((int) $row['opera_id']);
 
         return new EOfferta(

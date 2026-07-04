@@ -196,7 +196,48 @@
       {/foreach}
 
     </div>
-
+<h3 class="title is-4 mt-6">Offerte Ricevute</h3>
+<div class="box mb-6">
+    {foreach from=$offerte_ricevute item=offerta}
+        <article class="media mb-4">
+            <div class="media-content">
+                <div class="content">
+                    <p>
+                        <strong>{$offerta->getOfferente()->getNome()} {$offerta->getOfferente()->getCognome()}</strong>
+                        <span class="tag is-warning is-light ml-2">In attesa</span>
+                        <br>
+                        Opera: <strong>{$offerta->getOpera()->getTitolo()}</strong>
+                        <br>
+                        Offerta: <strong>€ {$offerta->getCifraProposta()->getValore()|number_format:2:',':'.'}</strong>
+                        {if $offerta->getNota()}
+                            <br><em>"{$offerta->getNota()}"</em>
+                        {/if}
+                    </p>
+                </div>
+                <div class="buttons">
+                    <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/rispondiOfferta">
+                        <input type="hidden" name="id_offerta" value="{$offerta->getId()}">
+                        <input type="hidden" name="risposta" value="accettata">
+                        <button type="submit" class="button is-success is-small">
+                            <span class="icon"><i class="fas fa-check"></i></span>
+                            <span>Accetta</span>
+                        </button>
+                    </form>
+                    <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/rispondiOfferta">
+                        <input type="hidden" name="id_offerta" value="{$offerta->getId()}">
+                        <input type="hidden" name="risposta" value="rifiutata">
+                        <button type="submit" class="button is-danger is-small is-outlined">
+                            <span class="icon"><i class="fas fa-times"></i></span>
+                            <span>Rifiuta</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </article>
+    {foreachelse}
+        <p class="has-text-grey has-text-centered">Nessuna offerta ricevuta al momento.</p>
+    {/foreach}
+</div>
     <hr class="mt-6 mb-5">
     <div class="has-text-centered pb-6">
       <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/eliminaProfilo" onsubmit="return confirm('ATTENZIONE: Questa azione è irreversibile. Tutte le tue opere e i tuoi dati andranno persi. Vuoi davvero eliminare il tuo profilo?');">

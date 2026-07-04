@@ -406,6 +406,24 @@ public function profilo() {
     }, 0);
     $utente->setValutazioneMedia(round($somma / count($recensioni), 1));
 }
+$offerte = FOfferta::loadByField('idOpera', $artistaId) ?? [];
+if (!is_array($offerte)) {
+    $offerte = [$offerte];
+}
+
+// Filtra solo le offerte sulle opere dell'artista
+$offerteRicevute = [];
+foreach ($mieOpere as $opera) {
+    $offerteOpera = FOfferta::loadByField('idOpera', $opera->getId());
+    if ($offerteOpera !== null) {
+        if (!is_array($offerteOpera)) $offerteOpera = [$offerteOpera];
+        foreach ($offerteOpera as $offerta) {
+            if ($offerta->getStato() === EOfferta::STATO_INVIATA) {
+                $offerteRicevute[] = $offerta;
+            }
+        }
+    }
+}
     // Statistiche
     $pubblicate  = 0;
     $inVendita   = 0;
@@ -431,6 +449,7 @@ if ($stato === 'Venduta')    $guadagni += (float)$opera->getPrezzo()->getValore(
     $vUtente->smarty->assign('utente',     $utente);
     $vUtente->smarty->assign('mie_opere',  $mieOpere);
     $vUtente->smarty->assign('recensioni', $recensioni);
+    $vUtente->smarty->assign('offerte_ricevute', $offerteRicevute);
     $vUtente->smarty->assign('statistiche', $statistiche);
     $vUtente->smarty->display('DashboardArtista.tpl');
 } else {

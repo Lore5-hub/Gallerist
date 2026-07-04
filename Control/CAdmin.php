@@ -125,7 +125,6 @@ public function statistiche() {
         exit;
     }
 
-    // Periodo dal selettore nel template (default 30 giorni)
     $giorni = isset($_GET['periodo']) ? (int)$_GET['periodo'] : 30;
     if (!in_array($giorni, [7, 30, 90, 365])) {
         $giorni = 30;
@@ -133,13 +132,8 @@ public function statistiche() {
 
     $db         = FDataBase::getInstance();
     $dataInizio = date('Y-m-d H:i:s', strtotime("-{$giorni} days"));
-    $fattore    = $giorni / 30; // usato per scalare i dati mock
 
-    // ---------------------------------------------------------------
-    // DATI REALI DAL DB
-    // ---------------------------------------------------------------
-
-    // Totale utenti non admin (manca data_registrazione in tabella → count totale)
+    // Totale utenti non admin
     $resUtenti = $db->queryDB(
         "SELECT COUNT(*) as totale FROM utente WHERE ruolo != 'Amministratore'",
         []
@@ -150,73 +144,83 @@ public function statistiche() {
     $resOpere = $db->queryDB("SELECT COUNT(*) as totale FROM opera", []);
     $totaleOpere = $resOpere ? (int)$resOpere[0]['totale'] : 0;
 
-    // Commenti nel periodo
+    // Commenti nel periodo — colonna corretta: dataPubblicazione
     $resCommenti = $db->queryDB(
-        "SELECT COUNT(*) as totale FROM commento WHERE data >= :data",
+        "SELECT COUNT(*) as totale FROM commento WHERE dataPubblicazione >= :data",
         [':data' => $dataInizio]
     );
     $totaleCommenti = $resCommenti ? (int)$resCommenti[0]['totale'] : 0;
 
-    // Ordini e guadagni nel periodo
+    // Ordini nel periodo — colonna corretta: data
     $resOrdini = $db->queryDB(
-        "SELECT COUNT(*) as totale, COALESCE(SUM(prezzoVendita), 0) as guadagni 
-         FROM ordine WHERE dataOrdine >= :data",
+        "SELECT COUNT(*) as totale FROM ordine WHERE data >= :data",
         [':data' => $dataInizio]
     );
-    $totaleMovimenti = $resOrdini ? (int)$resOrdini[0]['totale']    : 0;
-    $guadagni        = $resOrdini ? (float)$resOrdini[0]['guadagni'] : 0.0;
+    $totaleMovimenti = $resOrdini ? (int)$resOrdini[0]['totale'] : 0;
 
-    // ---------------------------------------------------------------
-    // DATI MOCK per metriche analytics non tracciate nel DB
-    // (visite, pageviews, tempo medio — non abbiamo una tabella dedicata)
-    // ---------------------------------------------------------------
-    $visiteTotali = (int)(1240 * $fattore);
-    $visPagina    = (int)(4830 * $fattore);
+    // Guadagni reali — 10% commissione su ogni opera venduta nel periodo
+    $resGuadagni = $db->queryDB(
+        "SELECT COALESCE(SUM(o.prezzo * 0.10), 0) as guadagni
+         FROM ordine ord
+         INNER JOIN opera o ON o.id = ord.idOpera
+         WHERE ord.data >= :data",
+        [':data' => $dataInizio]
+    );
+    $guadagni = $resGuadagni ? (float)$resGuadagni[0]['guadagni'] : 0.0;
 
-    // ---------------------------------------------------------------
-    // ARRAY $stats → variabile Smarty usata nel template
-    // ---------------------------------------------------------------
+    // Visite reali dalla tabella visita
+    $resVisite = $db->queryDB(
+    "SELECT COUNT(*) as pageviews, COUNT(DISTINCT sessione) as visite 
+     FROM visita WHERE data >= :data",
+    [':data' => date('Y-m-d', strtotime("-{$giorni} days")) . ' 00:00:00']
+);
+$visiteTotali = $resVisite ? (int)$resVisite[0]['visite']    : 0;
+$visPagina    = $resVisite ? (int)$resVisite[0]['pageviews'] : 0;
+
+    // Top pagine reali dalla tabella visita
+    $resTopPagine = $db->queryDB(
+        "SELECT pagina, COUNT(*) as visualizzazioni 
+         FROM visita 
+         WHERE data >= :data
+         GROUP BY pagina 
+         ORDER BY visualizzazioni DESC 
+         LIMIT 5",
+        [':data' => $dataInizio]
+    );
+
+    $topPagine = [];
+    foreach ($resTopPagine ?? [] as $row) {
+        $topPagine[] = [
+            'nome'            => $row['pagina'],
+            'url'             => '/Gallerist' . $row['pagina'],
+            'visualizzazioni' => $row['visualizzazioni'],
+        ];
+    }
+
     $stats = [
-        // KPI cards
-        'visite_totali'   => number_format($visiteTotali, 0, ',', '.'),
-        'visite_perc'     => 12,   // mock: % vs periodo precedente
+        'visite_totali' => number_format($visiteTotali, 0, ',', '.'),
+        'visite_perc'     => 0,
         'registrazioni'   => number_format($totaleRegistrazioni, 0, ',', '.'),
-        'reg_perc'        => 8,
-        'vis_pagina'      => number_format($visPagina, 0, ',', '.'),
-        'vis_pag_perc'    => 5,
-        'tempo_medio'     => '3m 42s',  // mock: non tracciato
-        'tempo_perc'      => 3,
+        'reg_perc'        => 0,
+        'vis_pagina'    => number_format($visPagina, 0, ',', '.'),
+        'vis_pag_perc'    => 0,
+        'tempo_medio'     => 'N/D',
+        'tempo_perc'      => 0,
         'movimenti'       => number_format($totaleMovimenti, 0, ',', '.'),
-        'mov_perc'        => 15,
+        'mov_perc'        => 0,
         'guadagni'        => $guadagni,
-        'guad_perc'       => 18,
-        // Azioni principali (colonna destra)
+        'guad_perc'       => 0,
         'azioni_reg'      => $totaleRegistrazioni,
         'azioni_opere'    => $totaleOpere,
         'azioni_commenti' => $totaleCommenti,
     ];
 
-    // ---------------------------------------------------------------
-    // TOP PAGINE (mock: nessuna tabella di page tracking)
-    // ---------------------------------------------------------------
-    $topPagine = [
-        ['nome' => 'Catalogo',        'url' => '/Gallerist/catalogo/esploraCatalogo', 'visualizzazioni' => (int)(980 * $fattore)],
-        ['nome' => 'Home',            'url' => '/Gallerist/',                          'visualizzazioni' => (int)(750 * $fattore)],
-        ['nome' => 'Login',           'url' => '/Gallerist/Utente/login',              'visualizzazioni' => (int)(430 * $fattore)],
-        ['nome' => 'Registrazione',   'url' => '/Gallerist/Utente/registrazione',      'visualizzazioni' => (int)(310 * $fattore)],
-        ['nome' => 'Dettaglio Opera', 'url' => '/Gallerist/catalogo/visualizzaDettagliOpera/1',        'visualizzazioni' => (int)(280 * $fattore)],
-    ];
-
-    // ---------------------------------------------------------------
-    // DATI GRAFICI per Chart.js (passati come JSON al template)
-    // Visite e Pagine: mock   |   Guadagni: reali dal DB
-    // ---------------------------------------------------------------
+    // Dati grafici
     $labelGrafici = [];
     $datiVisite   = [];
     $datiPagine   = [];
     $datiGuadagni = [];
 
-    // Step dinamico in base al periodo (giornaliero, settimanale, ecc.)
     $step = match(true) {
         $giorni <= 7  => 1,
         $giorni <= 30 => 7,
@@ -225,20 +229,31 @@ public function statistiche() {
     };
 
     for ($i = $giorni; $i >= 0; $i -= $step) {
-        $labelGrafici[] = date('d/m', strtotime("-{$i} days"));
-        $datiVisite[]   = rand((int)(30 * $fattore), (int)(80 * $fattore));
-        $datiPagine[]   = rand((int)(100 * $fattore), (int)(250 * $fattore));
+    $dal = date('Y-m-d', strtotime("-{$i} days"));
+    $al  = $i - $step < 0 
+           ? date('Y-m-d') // ← oggi come ultimo giorno
+           : date('Y-m-d', strtotime('-' . ($i - $step) . ' days'));
 
-        // Guadagni reali per ogni intervallo
-        $dal  = date('Y-m-d', strtotime("-{$i} days"));
-        $al   = date('Y-m-d', strtotime('-' . max(0, $i - $step) . ' days'));
-        $resG = $db->queryDB(
-            "SELECT COALESCE(SUM(prezzoVendita), 0) as tot 
-             FROM ordine WHERE dataOrdine BETWEEN :dal AND :al",
-            [':dal' => $dal, ':al' => $al]
-        );
-        $datiGuadagni[] = $resG ? round((float)$resG[0]['tot'], 2) : 0;
-    }
+    $labelGrafici[] = date('d/m', strtotime("-{$i} days"));
+
+    $resV = $db->queryDB(
+        "SELECT COUNT(*) as pageviews, COUNT(DISTINCT sessione) as visite
+         FROM visita 
+         WHERE data >= :dal AND data < :al",
+        [':dal' => $dal . ' 00:00:00', ':al' => $al . ' 23:59:59']
+    );
+    $datiPagine[] = $resV ? (int)$resV[0]['pageviews'] : 0;
+    $datiVisite[] = $resV ? (int)$resV[0]['visite']    : 0;
+
+    $resG = $db->queryDB(
+        "SELECT COALESCE(SUM(o.prezzo * 0.10), 0) as tot
+         FROM ordine ord
+         INNER JOIN opera o ON o.id = ord.idOpera
+         WHERE ord.data >= :dal AND ord.data < :al",
+        [':dal' => $dal . ' 00:00:00', ':al' => $al . ' 23:59:59']
+    );
+    $datiGuadagni[] = $resG ? round((float)$resG[0]['tot'], 2) : 0;
+}
 
     $vAdmin = new VAdmin();
     $vAdmin->smarty->assign('stats',         $stats);

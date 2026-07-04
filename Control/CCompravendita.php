@@ -135,32 +135,57 @@ $stmt->execute([
      * @param int $idOpera Identificativo dell'opera
      */
     public function avviaPropostaOfferta(int $idOpera): void {
-        $view = new VCompravendita();
+    $sessione = USession::getInstance();
+    $view     = new VCompravendita();
 
-        // 1. Verifica sessione
-        $emailUtente = USession::getInstance()->getValore('utente_loggato');
-        if ($emailUtente === null) {
-            USession::getInstance()->impostaValore('redirect_dopo_login', "/Gallerist/Compravendita/avviaPropostaOfferta/$idOpera");
-            header('Location: /Gallerist/Accesso/login');
-            exit;
-        }
-
-        // 2. Caricamento opera — CRUD standard: transita dal Manager
-        $opera = FPersistentManager::load('EOpera', 'id', $idOpera);
-        if ($opera === null) {
-            $view->mostraErrore('opera_non_trovata');
-            return;
-        }
-
-        // 3. Verifica che l'opera sia in uno stato che accetta offerte
-        if (!($opera->getStatoOpera() instanceof EStatoInVendita)) {
-            $view->mostraErrore('opera_non_disponibile');
-            return;
-        }
-
-        // 4. Mostra il modulo di inserimento offerta
-        $view->mostraModuloOfferta($opera);
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
     }
+
+    $utente = $sessione->getValore('utente_loggato');
+
+    // Carica opera e verifica che sia in vendita
+    $opera = FPersistentManager::load('EOpera', 'id', $idOpera);
+    if ($opera === null) {
+        $view->mostraErrore('opera_non_trovata');
+        return;
+    }
+
+    if (!($opera->getStatoOpera() instanceof EStatoInVendita)) {
+        $view->mostraErrore('opera_non_disponibile');
+        return;
+    }
+
+    // Valida il prezzo offerto
+    $prezzoOfferto = (float)($_POST['prezzo_offerto'] ?? 0);
+    $messaggio     = trim($_POST['messaggio'] ?? '');
+
+    if ($prezzoOfferto <= 0) {
+        header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=offerta_non_valida');
+        exit;
+    }
+    if ($prezzoOfferto >= $opera->getPrezzo()->getValore()) {
+    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=offerta_troppo_alta');
+    exit;
+}
+
+    // Crea e salva l'offerta
+    $offerta = new EOfferta(
+        0,
+        new EPrezzo($prezzoOfferto, 'EUR'),
+        $messaggio,
+        EOfferta::STATO_INVIATA,
+        new DateTimeImmutable(),
+        $utente,
+        $opera
+    );
+
+    FOfferta::store($offerta);
+
+    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?offerta=inviata');
+    exit;
+}
 
     /**
      * Operazione di sistema (Step 4): L'utente invia formalmente la cifra proposta.

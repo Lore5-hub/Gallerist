@@ -154,6 +154,11 @@ public function salvaRecensione(): void {
         header('Location: /Gallerist/catalogo/esploraCatalogo');
         exit;
     }
+    // Dopo aver caricato $opera
+if ($opera->getArtista()->getId() === $utente->getId()) {
+    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=propria_opera');
+    exit;
+}
 
     $recensione = new ECommento(
         0,

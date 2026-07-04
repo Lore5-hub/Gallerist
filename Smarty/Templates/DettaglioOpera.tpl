@@ -121,11 +121,28 @@
       <form id="form-offerta" method="POST" action="/Gallerist/compravendita/avviaPropostaOfferta/{$opera->getId()}">
         
         <div class="field">
-          <label class="label">La tua offerta (€)</label>
-          <div class="control">
-            <input class="input is-large" type="number" name="prezzo_offerto" min="1" step="0.01" placeholder="Es. 150.00" required>
-          </div>
-        </div>
+    <label class="label">La tua offerta (€)</label>
+    <div class="control">
+        <input class="input is-large" type="number" name="prezzo_offerto" 
+       min="1" step="0.01" 
+       max="{$opera->getPrezzo()->getValore()}"
+       placeholder="Es. 150.00" required id="input_offerta">
+    </div>
+    {if isset($prezzoConvertito)}
+        <p class="help has-text-grey mt-1">
+            <span class="icon is-small"><i class="fas fa-exchange-alt"></i></span>
+            Il prezzo dell'opera equivale a 
+            <strong>{$prezzoConvertito->getValore()|number_format:2:',':'.'} {$prezzoConvertito->getValuta()}</strong>
+            al tasso di cambio attuale
+        </p>
+    {/if}
+    {if isset($smarty.get.errore) && $smarty.get.errore == 'offerta_troppo_alta'}
+    <div class="notification is-warning is-light mb-4">
+        <button class="delete" onclick="this.parentElement.remove()"></button>
+        L'offerta non può essere superiore o uguale al prezzo dell'opera. Se vuoi pagare il prezzo pieno, acquistala direttamente.
+    </div>
+{/if}
+</div>
         
         <div class="field">
           <label class="label">Messaggio per l'artista (opzionale)</label>
@@ -158,7 +175,7 @@
         <p class="has-text-grey">Nessuna recensione presente per quest'opera.</p>
       {/foreach}
 
-      {if !isset($utente_loggato) || $utente_loggato->getRuolo() != 'Amministratore'}
+      {if !isset($utente_loggato) || $utente_loggato->getRuolo() != 'Amministratore' && $utente_loggato->getId() != $opera->getArtista()->getId()}
     <div class="mt-6">
         {include file="FormRecensione.tpl"}
     </div>

@@ -344,5 +344,39 @@ public function eliminaProfilo(): void {
     header('Location: /Gallerist/');
     exit;
 }
+public function rispondiOfferta(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $idOfferta = (int)($_POST['id_offerta'] ?? 0);
+    $risposta  = trim($_POST['risposta']    ?? '');
+
+    if ($idOfferta === 0 || !in_array($risposta, ['accettata', 'rifiutata'])) {
+        header('Location: /Gallerist/utente/profilo');
+        exit;
+    }
+
+    // Aggiorna stato offerta
+    FOfferta::update('stato', $risposta, 'id', $idOfferta);
+
+    // Se accettata, aggiorna stato opera a venduta
+    if ($risposta === 'accettata') {
+        $offerta = FOfferta::loadByField('id', $idOfferta);
+        if ($offerta instanceof EOfferta) {
+            $db = FDataBase::getInstance();
+            $db->queryDB(
+                "UPDATE opera SET stato = 'Venduta' WHERE id = :id",
+                [':id' => $offerta->getOpera()->getId()]
+            );
+        }
+    }
+
+    header('Location: /Gallerist/utente/profilo');
+    exit;
+}
 }
 ?>

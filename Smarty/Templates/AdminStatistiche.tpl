@@ -101,23 +101,16 @@
 
     <div class="columns is-multiline mb-5">
       
-      <div class="column is-6-desktop">
+      <div class="column is-12-desktop">
         <div class="box has-text-centered p-3 h-full">
-          <h2 class="title is-5 mb-4"><i class="fas fa-chart-line has-text-info mr-2"></i> Andamento Visite</h2>
+          <h2 class="title is-5 mb-4"><i class="fas fa-chart-line has-text-info mr-2"></i> Visite e Visualizzazioni di Pagina</h2>
           <div class="admin-stats-chart-wrapper admin-stats-chart-sm">
             <canvas id="chartVisite"></canvas>
           </div>
         </div>
       </div>
 
-      <div class="column is-6-desktop">
-        <div class="box has-text-centered p-3 h-full">
-          <h2 class="title is-5 mb-4"><i class="fas fa-chart-area has-text-link mr-2"></i> Visualizzazioni di Pagina</h2>
-          <div class="admin-stats-chart-wrapper admin-stats-chart-sm">
-            <canvas id="chartPagine"></canvas>
-          </div>
-        </div>
-      </div>
+      
 
     </div>
 
@@ -203,8 +196,34 @@
   const pagine   = {$dati_pagine};
   const guadagni = {$dati_guadagni};
 
-  new Chart(document.getElementById('chartVisite'),   { type: 'line', data: { labels, datasets: [{ label: 'Visite', data: visite,   borderColor: '#3273dc', tension: 0.3 }] } });
-  new Chart(document.getElementById('chartPagine'),   { type: 'line', data: { labels, datasets: [{ label: 'Pagine', data: pagine,   borderColor: '#3298dc', tension: 0.3 }] } });
-  new Chart(document.getElementById('chartGuadagni'), { type: 'bar',  data: { labels, datasets: [{ label: '€',      data: guadagni, backgroundColor: '#48c774' }] } });
+  new Chart(document.getElementById('chartVisite'), { 
+    type: 'line', 
+    data: { 
+        labels, 
+        datasets: [
+            { 
+                label: 'Visite Uniche', 
+                data: visite,   
+                borderColor: '#3273dc', 
+                tension: 0.3,
+                yAxisID: 'y'
+            },
+            { 
+                label: 'Pageviews', 
+                data: pagine,   
+                borderColor: '#23d160', 
+                tension: 0.3,
+                yAxisID: 'y1'
+            }
+        ] 
+    },
+    options: {
+        scales: {
+            y:  { type: 'linear', display: true, position: 'left' },
+            y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false } }
+        }
+    }
+});
+new Chart(document.getElementById('chartGuadagni'), { type: 'bar',  data: { labels, datasets: [{ label: '€', data: guadagni, backgroundColor: '#48c774' }] } });
 </script>
 {/block}

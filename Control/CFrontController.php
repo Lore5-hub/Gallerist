@@ -23,7 +23,11 @@ class CFrontController {
         if (isset($segments[0]) && strtolower($segments[0]) === 'index.php') {
             array_shift($segments);
         }
-
+        if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+         $visita = new EVisita(0, $path, new DateTimeImmutable(), session_id());
+FPersistentManager::store($visita);
         // 3. Identifica Controller, Metodo e Parametri
         $controllerName = "C" . ucfirst($segments[0] ?? "Catalogo");
         $method         = $segments[1] ?? "homepage";
