@@ -34,6 +34,13 @@
                   Registrazione in attesa di approvazione da parte dell'amministratore. Riceverai una notifica via email.
                 </div>
               {/if}
+              {if isset($errore_registrazione) && $errore_registrazione == true}
+    <div class="notification is-danger is-light mb-4">
+        <button class="delete" onclick="this.parentElement.remove()"></button>
+        <span class="icon mr-2"><i class="fas fa-exclamation-triangle"></i></span>
+        {$messaggio_errore}
+    </div>
+{/if}
 
               <form method="POST" action="/Gallerist/utente/verificaRegistrazione" enctype="multipart/form-data">          
                  
@@ -116,11 +123,25 @@
                   <p id="error-nickname" class="help is-danger is-hidden">Usa almeno 3 caratteri (solo lettere, numeri e underscore).</p>
                   {if isset($errori.nickname)}<p class="help is-danger">{$errori.nickname}</p>{/if}
                 </div>
+                <div class="field mt-4">
+    <label class="label">Foto Profilo <span class="has-text-grey is-size-7">(Facoltativo)</span></label>
+    <div class="file has-name is-fullwidth is-light">
+        <label class="file-label">
+            <input class="file-input" type="file" name="immagine_profilo" accept="image/*" />
+            <span class="file-cta">
+                <span class="file-icon"><i class="fas fa-camera"></i></span>
+                <span class="file-label">Sfoglia...</span>
+            </span>
+            <span class="file-name">Nessun file selezionato</span>
+        </label>
+    </div>
+    <p class="help">Formati accettati: JPG, PNG, WEBP</p>
+</div>
 
                 <div class="field mt-4">
                   <label class="label">Numero di Telefono</label>
                   <div class="control">
-                  <input class="input {if isset($errori.telefono)}is-danger{/if}" type="tel" id="telefono" name="telefono" value="{if isset($vecchi_dati.telefono)}{$vecchi_dati.telefono}{/if}"  placeholder="3331234567">
+                  <input class="input {if isset($errori.telefono)}is-danger{/if}" type="tel" id="telefono" name="telefono" value="{if isset($vecchi_dati.telefono)}{$vecchi_dati.telefono}{/if}"  placeholder="+39 3331234567">
                   </div>
                   <p id="error-telefono" class="help is-danger is-hidden">Inserisci un numero di telefono valido (9-11 cifre, solo numeri).</p>
                   {if isset($errori.telefono)}<p class="help is-danger">{$errori.telefono}</p>{/if}

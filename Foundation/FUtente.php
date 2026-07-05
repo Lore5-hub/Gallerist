@@ -12,7 +12,7 @@ class FUtente {
 
     private static string $class  = "FUtente";
     private static string $table  = "utente";
-    private static string $values = "(:id, :nome, :cognome, :data_nascita, :indirizzo, :nickname, :telefono, :email, :password, :immagine_profilo, :stato_account, :ruolo)";
+    private static string $values = "(:id, :nome, :cognome, :data_nascita, :indirizzo, :nickname, :telefono, :email, :password, :immagine_profilo, :stato_account, :ruolo, :data_registrazione)";
 
     public function __construct() {}
 
@@ -40,6 +40,7 @@ class FUtente {
         $img = $utente->getImmagineProfilo();
         $stmt->bindValue(':immagine_profilo', $img, $img === null ? PDO::PARAM_NULL : PDO::PARAM_STR); // gestisce il nullable
         $stmt->bindValue(':stato_account',   $utente->getStatoAccount(),     PDO::PARAM_STR);
+        $stmt->bindValue(':data_registrazione', $utente->getDataRegistrazione()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
     }
 
     public static function getClass(): string  { return static::$class; }
@@ -130,7 +131,7 @@ class FUtente {
         (int) $row['id'],
         $row['nome'],
         $row['cognome'],
-        new DateTimeImmutable($row['data_nascita']), // 💡 Corretto: trasforma la stringa in oggetto DateTime
+        new DateTimeImmutable($row['data_nascita']),
         $row['indirizzo'],
         $row['nickname'],
         $row['telefono'],
@@ -138,7 +139,8 @@ class FUtente {
         $row['password'],
         $row['immagine_profilo'] ?? null,
         $row['stato_account']    ?? EUtente::STATO_ATTIVO,
-        $row['ruolo']            ?? EUtente::RUOLO_USER // 💡 Passa il ruolo letto dal database
+        $row['ruolo']            ?? EUtente::RUOLO_USER,
+        isset($row['data_registrazione']) ? new DateTimeImmutable($row['data_registrazione']) : new DateTimeImmutable() // ← aggiunto
     );
 }
     /**

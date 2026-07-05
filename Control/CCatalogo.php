@@ -87,11 +87,14 @@ class CCatalogo {
 
         // Aggregazione commenti: loadByField su campo non-PK, delegabile al Manager
         $commenti = FPersistentManager::load('ECommento', 'idOpera', $idOpera);
-        if (is_array($commenti)) {
-            foreach ($commenti as $commento) {
-                $opera->addCommento($commento);
-            }
-        }
+if ($commenti !== null) {
+    if (!is_array($commenti)) {
+        $commenti = [$commenti]; // ← wrap singolo oggetto in array
+    }
+    foreach ($commenti as $commento) {
+        $opera->addCommento($commento);
+    }
+}
 
         // Aggregazione immagini: loadByField('idOpera') restituisce array ordinato per inserimento;
         // la prima immagine è la copertina (convenzione del progetto, cfr. EImmagine e VCatalogo)
@@ -148,6 +151,14 @@ $view->mostraSchedaDettaglio($opera, $altreOpere, false, $prezzoConvertito, $val
         $smarty->display('homepage.tpl');
     }
  public function visualizzaProfiloArtista(int $idArtista): void {
+    $sessione = USession::getInstance();
+    if ($sessione->esisteValore('utente_loggato')) {
+        $utente = $sessione->getValore('utente_loggato');
+        if ($utente->getId() === $idArtista) {
+            header('Location: /Gallerist/utente/profilo');
+            exit;
+        }
+    }
     $artista = FPersistentManager::load('EArtista', 'id', $idArtista);
 
     if (!$artista instanceof EArtista) {

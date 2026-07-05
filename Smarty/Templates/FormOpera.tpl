@@ -70,12 +70,11 @@
         <div class="control">
           <div class="select is-fullwidth {if isset($errori.categoria)}is-danger{/if}">
             <select name="categoria" required>
-              <option value="" disabled selected>Seleziona una categoria...</option>
-              <option value="pittura">Pittura</option>
-              <option value="scultura">Scultura</option>
-              <option value="fotografia">Fotografia</option>
-              <option value="arte_digitale">Arte Digitale</option>
-            </select>
+    <option value="" disabled selected>Seleziona una categoria...</option>
+    {foreach from=$categorie item=categoria}
+        <option value="{$categoria->getNome()}">{$categoria->getNome()}</option>
+    {/foreach}
+</select>
           </div>
         </div>
         {if isset($errori.categoria)}<p class="help is-danger">{$errori.categoria}</p>{/if}

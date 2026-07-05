@@ -8,12 +8,21 @@
       <div class="columns is-vcentered">
         
         <div class="column is-narrow has-text-centered">
-          <figure class="image is-128x128 is-inline-block artist-avatar-figure is-clickable" title="Cambia foto profilo">
-  <img class="is-rounded" src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}">
-  <div class="artist-avatar-overlay is-flex is-align-items-center is-justify-content-center is-rounded">
-    <i class="fas fa-camera fa-2x has-text-white"></i>
-  </div>
+          <figure class="image is-128x128 is-inline-block artist-avatar-figure is-clickable" 
+        title="Cambia foto profilo"
+        onclick="document.getElementById('input-avatar').click()">
+    <img class="is-rounded" 
+         src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}">
+    <div class="artist-avatar-overlay is-flex is-align-items-center is-justify-content-center is-rounded">
+        <i class="fas fa-camera fa-2x has-text-white"></i>
+    </div>
 </figure>
+<form method="POST" action="/Gallerist/utente/cambiaFotoProfilo" 
+      enctype="multipart/form-data" id="form-avatar">
+    <input type="file" id="input-avatar" name="immagine_profilo" 
+           accept="image/*" style="display:none"
+           onchange="document.getElementById('form-avatar').submit()">
+</form>
         </div>
 
         <div class="column is-4">
@@ -29,10 +38,7 @@
 </a>
           </div>
 
-          <div class="is-flex is-align-items-center">
-            <p class="is-size-6 mb-0 mr-2"><strong>Nazionalità:</strong> {$utente->getNazionalita()}</p>
-            
-          </div>
+          
         </div>
 
         <div class="column">

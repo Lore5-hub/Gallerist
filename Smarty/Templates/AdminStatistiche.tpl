@@ -65,14 +65,14 @@
       </div>
 
       <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3 h-full">
-          <span class="icon is-medium has-text-warning mb-1"><i class="fas fa-clock fa-lg"></i></span>
-          <p class="heading mb-1">Tempo Medio</p>
-          <p class="title is-4 mb-2">{$stats.tempo_medio}</p>
-          <p class="is-size-7 has-text-success">
-            <i class="fas fa-arrow-up"></i> {$stats.tempo_perc}% <span class="has-text-grey">vs prec.</span>
-          </p>
-        </div>
+       <div class="box has-text-centered p-3 h-full">
+    <span class="icon is-medium has-text-danger mb-1"><i class="fas fa-gavel fa-lg"></i></span>
+    <p class="heading mb-1">Opere Vendute</p>
+    <p class="title is-4 mb-2">{$stats.opere_vendute}</p>
+    <p class="is-size-7 has-text-success">
+        <i class="fas fa-arrow-up"></i> {$stats.vendute_perc}% <span class="has-text-grey">vs prec.</span>
+    </p>
+</div>
       </div>
 
       <div class="column is-2-desktop is-half-tablet">

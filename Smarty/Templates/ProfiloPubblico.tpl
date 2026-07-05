@@ -20,9 +20,7 @@
               <span class="tag is-info is-light">Collezionista</span>
             {/if}
             
-            {if $utente->getNazionalita()}
-              <span class="has-text-grey ml-2">&bull; {$utente->getNazionalita()}</span>
-            {/if}
+            
           </p>
           
           <p class="is-size-7 has-text-grey">Membro dal {$utente->getDataDiNascita()|date_format:"%Y"}</p>

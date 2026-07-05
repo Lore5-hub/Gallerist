@@ -54,6 +54,9 @@
     <div class="tags are-medium mt-4">
       <span class="tag is-info is-light">{$opera->getCategoria()->getNome()}</span>
       <span class="tag is-light">Dimensioni: {$opera->getDimensioni()}</span>
+      {foreach from=$opera->getTag() item=tag}
+    <span class="tag is-primary is-light">#{$tag->getNomeTag()}</span>
+{/foreach}
     </div>
 
    
@@ -191,7 +194,7 @@
   <h3 class="title is-3 mb-5">Altro di {$opera->getArtista()->getNome()}</h3>
   
   <div class="columns is-multiline">
-    {foreach from=$altre_opere item=altra_opera}
+    {foreach from=$altreOpere item=altra_opera}
       <div class="column is-3">
         <div class="card h-full artwork-card">
   <div class="card-image">

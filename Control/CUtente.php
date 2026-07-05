@@ -516,4 +516,49 @@ public function modificaBiografia(): void {
     header('Location: /Gallerist/utente/profilo');
     exit;
 }
+public function cambiaFotoProfilo(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $utente = $sessione->getValore('utente_loggato');
+
+    if (isset($_FILES['immagine_profilo']) && $_FILES['immagine_profilo']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath   = $_FILES['immagine_profilo']['tmp_name'];
+        $fileName      = $_FILES['immagine_profilo']['name'];
+        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        $estensioniPermesse = ['jpg', 'jpeg', 'png', 'webp'];
+        if (in_array($fileExtension, $estensioniPermesse)) {
+            $nuovoNomeFile = md5(time() . $fileName) . '.' . $fileExtension;
+            $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/profilo/';
+
+            if (!is_dir($uploadFileDir)) {
+                mkdir($uploadFileDir, 0755, true);
+            }
+
+            $destPath = $uploadFileDir . $nuovoNomeFile;
+            if (move_uploaded_file($fileTmpPath, $destPath)) {
+                $nuovoPath = '/Gallerist/uploads/profilo/' . $nuovoNomeFile;
+
+                // Aggiorna nel DB
+                $db = FDataBase::getInstance();
+                $db->queryDB(
+                    "UPDATE utente SET immagine_profilo = :img WHERE id = :id",
+                    [':img' => $nuovoPath, ':id' => $utente->getId()]
+                );
+
+                // Aggiorna in sessione
+                $utente->setImmagineProfilo($nuovoPath);
+                $sessione->setValue('utente_loggato', $utente);
+            }
+        }
+    }
+
+    header('Location: /Gallerist/utente/profilo');
+    exit;
+}
 }

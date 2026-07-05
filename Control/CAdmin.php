@@ -132,13 +132,30 @@ public function statistiche() {
 
     $db         = FDataBase::getInstance();
     $dataInizio = date('Y-m-d H:i:s', strtotime("-{$giorni} days"));
+    $dataPrecInizio = date('Y-m-d H:i:s', strtotime("-" . ($giorni * 2) . " days"));
+$dataPrecFine   = $dataInizio;
+
+// Helper per calcolare percentuale variazione
+$calcPerc = function(int $attuale, int $precedente): int {
+    if ($precedente === 0) return $attuale > 0 ? 100 : 0;
+    return (int)round(($attuale - $precedente) / $precedente * 100);
+};
+
 
     // Totale utenti non admin
     $resUtenti = $db->queryDB(
-        "SELECT COUNT(*) as totale FROM utente WHERE ruolo != 'Amministratore'",
-        []
-    );
-    $totaleRegistrazioni = $resUtenti ? (int)$resUtenti[0]['totale'] : 0;
+    "SELECT COUNT(*) as totale FROM utente 
+     WHERE ruolo != 'Amministratore' AND data_registrazione >= :data",
+    [':data' => $dataInizio]
+);
+$totaleRegistrazioni = $resUtenti ? (int)$resUtenti[0]['totale'] : 0;
+$resUtentiPrec = $db->queryDB(
+    "SELECT COUNT(*) as totale FROM utente 
+     WHERE ruolo != 'Amministratore' 
+     AND data_registrazione >= :dal AND data_registrazione < :al",
+    [':dal' => $dataPrecInizio, ':al' => $dataPrecFine]
+);
+$totaleRegistrazioniPrec = $resUtentiPrec ? (int)$resUtentiPrec[0]['totale'] : 0;
 
     // Opere totali
     $resOpere = $db->queryDB("SELECT COUNT(*) as totale FROM opera", []);
@@ -146,27 +163,54 @@ public function statistiche() {
 
     // Commenti nel periodo — colonna corretta: dataPubblicazione
     $resCommenti = $db->queryDB(
-        "SELECT COUNT(*) as totale FROM commento WHERE dataPubblicazione >= :data",
-        [':data' => $dataInizio]
-    );
-    $totaleCommenti = $resCommenti ? (int)$resCommenti[0]['totale'] : 0;
+    "SELECT COUNT(*) as totale FROM commento WHERE dataPubblicazione >= :data",
+    [':data' => $dataInizio]
+);
+$totaleCommenti = $resCommenti ? (int)$resCommenti[0]['totale'] : 0;
+
+// Commenti periodo precedente
+$resCommentiPrec = $db->queryDB(
+    "SELECT COUNT(*) as totale FROM commento 
+     WHERE dataPubblicazione >= :dal AND dataPubblicazione < :al",
+    [':dal' => $dataPrecInizio, ':al' => $dataPrecFine]
+);
+$totaleCommentiPrec = $resCommentiPrec ? (int)$resCommentiPrec[0]['totale'] : 0;
 
     // Ordini nel periodo — colonna corretta: data
     $resOrdini = $db->queryDB(
-        "SELECT COUNT(*) as totale FROM ordine WHERE data >= :data",
-        [':data' => $dataInizio]
-    );
-    $totaleMovimenti = $resOrdini ? (int)$resOrdini[0]['totale'] : 0;
+    "SELECT COUNT(*) as totale FROM ordine WHERE data >= :data",
+    [':data' => $dataInizio]
+);
+$totaleMovimenti = $resOrdini ? (int)$resOrdini[0]['totale'] : 0;
+
+// Ordini periodo precedente
+$resOrdiniPrec = $db->queryDB(
+    "SELECT COUNT(*) as totale FROM ordine 
+     WHERE data >= :dal AND data < :al",
+    [':dal' => $dataPrecInizio, ':al' => $dataPrecFine]
+);
+$totaleMovimentiPrec = $resOrdiniPrec ? (int)$resOrdiniPrec[0]['totale'] : 0;
+
 
     // Guadagni reali — 10% commissione su ogni opera venduta nel periodo
     $resGuadagni = $db->queryDB(
-        "SELECT COALESCE(SUM(o.prezzo * 0.10), 0) as guadagni
-         FROM ordine ord
-         INNER JOIN opera o ON o.id = ord.idOpera
-         WHERE ord.data >= :data",
-        [':data' => $dataInizio]
-    );
-    $guadagni = $resGuadagni ? (float)$resGuadagni[0]['guadagni'] : 0.0;
+    "SELECT COALESCE(SUM(o.prezzo * 0.10), 0) as guadagni
+     FROM ordine ord
+     INNER JOIN opera o ON o.id = ord.idOpera
+     WHERE ord.data >= :data",
+    [':data' => $dataInizio]
+);
+$guadagni = $resGuadagni ? (float)$resGuadagni[0]['guadagni'] : 0.0;
+
+// Guadagni periodo precedente
+$resGuadagniPrec = $db->queryDB(
+    "SELECT COALESCE(SUM(o.prezzo * 0.10), 0) as guadagni
+     FROM ordine ord
+     INNER JOIN opera o ON o.id = ord.idOpera
+     WHERE ord.data >= :dal AND ord.data < :al",
+    [':dal' => $dataPrecInizio, ':al' => $dataPrecFine]
+);
+$guadagniPrec = $resGuadagniPrec ? (float)$resGuadagniPrec[0]['guadagni'] : 0.0;
 
     // Visite reali dalla tabella visita
     $resVisite = $db->queryDB(
@@ -176,6 +220,15 @@ public function statistiche() {
 );
 $visiteTotali = $resVisite ? (int)$resVisite[0]['visite']    : 0;
 $visPagina    = $resVisite ? (int)$resVisite[0]['pageviews'] : 0;
+
+// Visite periodo precedente
+$resVisitePrec = $db->queryDB(
+    "SELECT COUNT(*) as pageviews, COUNT(DISTINCT sessione) as visite 
+     FROM visita WHERE data >= :dal AND data < :al",
+    [':dal' => $dataPrecInizio, ':al' => $dataPrecFine]
+);
+$visiteTotaliPrec = $resVisitePrec ? (int)$resVisitePrec[0]['visite']    : 0;
+$visPaginaPrec    = $resVisitePrec ? (int)$resVisitePrec[0]['pageviews'] : 0;
 
     // Top pagine reali dalla tabella visita
     $resTopPagine = $db->queryDB(
@@ -196,24 +249,36 @@ $visPagina    = $resVisite ? (int)$resVisite[0]['pageviews'] : 0;
             'visualizzazioni' => $row['visualizzazioni'],
         ];
     }
+$resVendute = $db->queryDB(
+    "SELECT COUNT(*) as totale FROM ordine WHERE data >= :data",
+    [':data' => $dataInizio]
+);
+$opereVendute = $resVendute ? (int)$resVendute[0]['totale'] : 0;
 
+// Opere vendute nel periodo precedente
+$resVendutePrec = $db->queryDB(
+    "SELECT COUNT(*) as totale FROM ordine 
+     WHERE data >= :dal AND data < :al",
+    [':dal' => $dataPrecInizio, ':al' => $dataPrecFine]
+);
+$opereVendutePrec = $resVendutePrec ? (int)$resVendutePrec[0]['totale'] : 0;
     $stats = [
-        'visite_totali' => number_format($visiteTotali, 0, ',', '.'),
-        'visite_perc'     => 0,
-        'registrazioni'   => number_format($totaleRegistrazioni, 0, ',', '.'),
-        'reg_perc'        => 0,
-        'vis_pagina'    => number_format($visPagina, 0, ',', '.'),
-        'vis_pag_perc'    => 0,
-        'tempo_medio'     => 'N/D',
-        'tempo_perc'      => 0,
-        'movimenti'       => number_format($totaleMovimenti, 0, ',', '.'),
-        'mov_perc'        => 0,
-        'guadagni'        => $guadagni,
-        'guad_perc'       => 0,
-        'azioni_reg'      => $totaleRegistrazioni,
-        'azioni_opere'    => $totaleOpere,
-        'azioni_commenti' => $totaleCommenti,
-    ];
+    'visite_totali'  => number_format($visiteTotali, 0, ',', '.'),
+    'visite_perc'    => $calcPerc($visiteTotali, $visiteTotaliPrec),
+    'registrazioni'  => number_format($totaleRegistrazioni, 0, ',', '.'),
+    'reg_perc'       => $calcPerc($totaleRegistrazioni, $totaleRegistrazioniPrec),
+    'vis_pagina'     => number_format($visPagina, 0, ',', '.'),
+    'vis_pag_perc'   => $calcPerc($visPagina, $visPaginaPrec),
+    'opere_vendute' => number_format($opereVendute, 0, ',', '.'),
+'vendute_perc'  => $calcPerc($opereVendute, $opereVendutePrec),
+    'movimenti'      => number_format($totaleMovimenti, 0, ',', '.'),
+    'mov_perc'       => $calcPerc($totaleMovimenti, $totaleMovimentiPrec),
+    'guadagni'       => $guadagni,
+    'guad_perc'      => $calcPerc((int)$guadagni, (int)$guadagniPrec),
+    'azioni_reg'     => $totaleRegistrazioni,
+    'azioni_opere'   => $totaleOpere,
+    'azioni_commenti'=> $totaleCommenti,
+];
 
     // Dati grafici
     $labelGrafici = [];
@@ -230,9 +295,14 @@ $visPagina    = $resVisite ? (int)$resVisite[0]['pageviews'] : 0;
 
     for ($i = $giorni; $i >= 0; $i -= $step) {
     $dal = date('Y-m-d', strtotime("-{$i} days"));
-    $al  = $i - $step < 0 
-           ? date('Y-m-d') // ← oggi come ultimo giorno
-           : date('Y-m-d', strtotime('-' . ($i - $step) . ' days'));
+    
+    // L'ultimo punto è sempre oggi
+    if ($i === 0) {
+        $al = date('Y-m-d', strtotime('+1 day')); // domani per includere tutto oggi
+    } else {
+        $nextI = max(0, $i - $step);
+        $al = date('Y-m-d', strtotime("-{$nextI} days"));
+    }
 
     $labelGrafici[] = date('d/m', strtotime("-{$i} days"));
 
@@ -240,7 +310,7 @@ $visPagina    = $resVisite ? (int)$resVisite[0]['pageviews'] : 0;
         "SELECT COUNT(*) as pageviews, COUNT(DISTINCT sessione) as visite
          FROM visita 
          WHERE data >= :dal AND data < :al",
-        [':dal' => $dal . ' 00:00:00', ':al' => $al . ' 23:59:59']
+        [':dal' => $dal . ' 00:00:00', ':al' => $al . ' 00:00:00']
     );
     $datiPagine[] = $resV ? (int)$resV[0]['pageviews'] : 0;
     $datiVisite[] = $resV ? (int)$resV[0]['visite']    : 0;
@@ -250,7 +320,7 @@ $visPagina    = $resVisite ? (int)$resVisite[0]['pageviews'] : 0;
          FROM ordine ord
          INNER JOIN opera o ON o.id = ord.idOpera
          WHERE ord.data >= :dal AND ord.data < :al",
-        [':dal' => $dal . ' 00:00:00', ':al' => $al . ' 23:59:59']
+        [':dal' => $dal . ' 00:00:00', ':al' => $al . ' 00:00:00']
     );
     $datiGuadagni[] = $resG ? round((float)$resG[0]['tot'], 2) : 0;
 }
@@ -340,7 +410,7 @@ public function mostraValidazione() {
         'telefono'           => $artista->getTelefono(),
         'indirizzo'          => $artista->getIndirizzo(),
         'data_nascita'       => $artista->getDataDiNascita()->format('Y-m-d'),
-        'data_registrazione' => $artista->getDataDiNascita()->format('Y-m-d'), // non abbiamo data reg separata
+        'data_registrazione' => $artista->getDataRegistrazione()->format('Y-m-d'),
         'biografia'          => $artista->getBiografia(),
         'stile_artistico'    => $artista->getStileArtistico(),
         'localita'           => $artista->getIndirizzo(),
@@ -419,7 +489,7 @@ public function mostraSegnalazione() {
     $autoreContenuto = [
         'id'                    => $utenteSegnalato ? $utenteSegnalato->getId() : 0,
         'nickname'              => $utenteSegnalato ? $utenteSegnalato->getNickname() : 'N/D',
-        'data_registrazione'    => $utenteSegnalato ? $utenteSegnalato->getDataDiNascita()->format('Y-m-d') : '',
+        'data_registrazione' => $utenteSegnalato ? $utenteSegnalato->getDataRegistrazione()->format('Y-m-d') : '',
         'stato'                 => $utenteSegnalato ? $utenteSegnalato->getStatoAccount() : '',
         'segnalazioni_ricevute' => count($storico), // ← reale
         'commenti_pubblicati'   => 0,               // mock

@@ -167,8 +167,9 @@ public function mostraFormOpera(): void {
         header('Location: /Gallerist/catalogo/esploraCatalogo');
         exit;
     }
-
+    $categorie = FCategoria::loadAll() ?? [];
     $vUtente = new VUtente();
+    $vUtente->smarty->assign('categorie', $categorie);
     $vUtente->smarty->display('FormOpera.tpl');
 }
 

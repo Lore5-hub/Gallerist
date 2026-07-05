@@ -17,7 +17,7 @@ class EUtente {
     private ?string $immagineProfilo; 
     private string $statoAccount; 
     private string $ruolo; // 🟢 NUOVO ATTRIBUTO
-
+    private DateTimeImmutable $dataRegistrazione;
     // Costanti per lo Stato Account
     public const STATO_ATTIVO  = "attivo";
     public const STATO_BANNATO = "Bannato";
@@ -31,12 +31,12 @@ class EUtente {
      * Costruttore della classe.
      */
     public function __construct(
-        int $id, string $nome, string $cognome, DateTimeImmutable $dataDiNascita, 
-        string $indirizzo, string $nickname, string $telefono, string $email, 
-        string $password, ?string $immagineProfilo = null, 
-        string $statoAccount = self::STATO_ATTIVO, 
-        string $ruolo = self::RUOLO_USER // 🟢 Nuovo parametro (default su 'user')
-    ) {
+    int $id, string $nome, string $cognome, DateTimeImmutable $dataDiNascita,
+    string $indirizzo, string $nickname, string $telefono, string $email,
+    string $password, ?string $immagineProfilo, string $statoAccount = self::STATO_ATTIVO,
+    string $ruolo = self::RUOLO_USER,
+    ?DateTimeImmutable $dataRegistrazione = null  // ← aggiunto come opzionale
+)  {
         $this->id = $id;
         $this->nome = $nome;
         $this->cognome = $cognome;
@@ -49,6 +49,7 @@ class EUtente {
         $this->immagineProfilo = $immagineProfilo;
         $this->statoAccount = $statoAccount;
         $this->setRuolo($ruolo); // 🟢 Utilizza il setter per validare il ruolo
+         $this->dataRegistrazione = $dataRegistrazione ?? new DateTimeImmutable();
     }
 
     // --- GETTER & SETTER ---
@@ -113,5 +114,7 @@ class EUtente {
     return $this->ruolo === self::RUOLO_ARTISTA;
 }
 public function getNazionalita(): string { return ''; }
+public function getDataRegistrazione(): DateTimeImmutable { return $this->dataRegistrazione; }
+public function setDataRegistrazione(DateTimeImmutable $data): void { $this->dataRegistrazione = $data; }
 }
 ?>
