@@ -37,11 +37,7 @@
           
           <!-- Profilo e Stato -->
           <div class="media is-align-items-center mb-5">
-            <div class="media-left">
-              <figure class="image is-96x96">
-                <img class="is-rounded admin-validation-avatar" src="...">
-              </figure>
-            </div>
+            
             <div class="media-content">
               <h2 class="title is-4 mb-2">{$utente.nome} {$utente.cognome}</h2>
               <span class="tag is-warning is-light has-text-weight-semibold">In attesa di verifica</span>
@@ -100,35 +96,7 @@
               </div>
             </div>
 
-            <!-- Portfolio di esempio -->
-            <div>
-              <h3 class="title is-6 mb-3">Esempi di Portfolio Opere</h3>
-              <div class="columns is-mobile is-multiline">
-                {foreach from=$opere_portfolio item=opera}
-                  <div class="column is-4-tablet is-12-mobile">
-                    <div class="card admin-validation-portfolio-card">
-                      <div class="card-image">
-                        <figure class="image is-4by3">
-                          <img src="{$opera.src}" alt="{$opera.titolo}">
-                      </div>
-                      <div class="p-2 has-text-centered">
-                        <p class="is-size-7 has-text-weight-semibold is-truncated" title="{$opera.titolo}">{$opera.titolo}</p>
-                      </div>
-                    </div>
-                  </div>
-                {foreachelse}
-                  <div class="column is-12">
-                    <p class="has-text-grey is-italic">Nessuna opera caricata nel portfolio di prova.</p>
-                  </div>
-                {/foreach}
-              </div>
-              
-              {if $opere_portfolio}
-                <div class="has-text-right mt-3">
-                  <a href="admin_portfolio_completo.php?id={$utente.id}" class="is-size-7 has-text-link has-text-weight-bold">Visualizza tutto <i class="fas fa-chevron-right ml-1"></i></a>
-                </div>
-              {/if}
-            </div>
+           
 
           </div>
         </div>

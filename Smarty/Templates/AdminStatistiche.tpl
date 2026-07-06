@@ -8,7 +8,7 @@
         <p class="subtitle is-6 has-text-grey">Panoramica generale delle performance della piattaforma</p>
       </div>
       
-      <!-- DOPO (corretto — select dentro un form) -->
+      
 <form method="GET" action="/Gallerist/Admin/statistiche">
   <div class="field mb-0">
     <div class="control has-icons-left">
@@ -158,7 +158,11 @@
               </div>
               <div class="level-right has-text-right">
                 <strong>{$stats.azioni_reg}</strong> 
-                <span class="is-size-7 has-text-success ml-2"><i class="fas fa-arrow-up"></i> 8%</span>
+                {if $stats.reg_perc >= 0}
+    <span class="is-size-7 has-text-success ml-2"><i class="fas fa-arrow-up"></i> {$stats.reg_perc}%</span>
+{else}
+    <span class="is-size-7 has-text-danger ml-2"><i class="fas fa-arrow-down"></i> {$stats.reg_perc}%</span>
+{/if}
               </div>
             </div>
             
@@ -168,7 +172,11 @@
               </div>
               <div class="level-right has-text-right">
                 <strong>{$stats.azioni_opere}</strong>
-                <span class="is-size-7 has-text-success ml-2"><i class="fas fa-arrow-up"></i> 12%</span>
+                {if $stats.mov_perc >= 0}
+    <span class="is-size-7 has-text-success ml-2"><i class="fas fa-arrow-up"></i> {$stats.mov_perc}%</span>
+{else}
+    <span class="is-size-7 has-text-danger ml-2"><i class="fas fa-arrow-down"></i> {$stats.mov_perc}%</span>
+{/if}
               </div>
             </div>
 
@@ -178,7 +186,11 @@
               </div>
               <div class="level-right has-text-right">
                 <strong>{$stats.azioni_commenti}</strong>
-                <span class="is-size-7 has-text-danger ml-2"><i class="fas fa-arrow-down"></i> 3%</span>
+                {if $stats.vis_pag_perc >= 0}
+    <span class="is-size-7 has-text-success ml-2"><i class="fas fa-arrow-up"></i> {$stats.vis_pag_perc}%</span>
+{else}
+    <span class="is-size-7 has-text-danger ml-2"><i class="fas fa-arrow-down"></i> {$stats.vis_pag_perc}%</span>
+{/if}
               </div>
             </div>
           </div>

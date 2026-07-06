@@ -124,9 +124,7 @@
     <span class="icon"><i class="fas fa-eye"></i></span>
     <span>Verifica</span>
 </a>
-                        <span class="icon"><i class="fas fa-check"></i></span>
-                        <span>Verifica</span>
-                      </a>
+                        
                     </td>
                   </tr>
                 {foreachelse}

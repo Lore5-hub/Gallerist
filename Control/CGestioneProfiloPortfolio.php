@@ -366,15 +366,32 @@ public function rispondiOfferta(): void {
 
     // Se accettata, aggiorna stato opera a venduta
     if ($risposta === 'accettata') {
-        $offerta = FOfferta::loadByField('id', $idOfferta);
-        if ($offerta instanceof EOfferta) {
-            $db = FDataBase::getInstance();
-            $db->queryDB(
-                "UPDATE opera SET stato = 'Venduta' WHERE id = :id",
-                [':id' => $offerta->getOpera()->getId()]
-            );
-        }
+    $offerta = FOfferta::loadByField('id', $idOfferta);
+    if ($offerta instanceof EOfferta) {
+        $db = FDataBase::getInstance();
+        
+        // Aggiorna stato opera a Venduta
+        $db->queryDB(
+            "UPDATE opera SET stato = 'Venduta' WHERE id = :id",
+            [':id' => $offerta->getOpera()->getId()]
+        );
+
+        // ✅ Crea ordine con tipo 'offerta'
+        $ordine = new EOrdine(
+            0,
+            new DateTimeImmutable(),
+            'offerta_accettata',
+            $offerta->getOfferente()->getIndirizzo(),
+            new EPrezzo(5.00),
+            $offerta->getCifraProposta(),
+            new EPrezzo(0.0),
+            $offerta->getOfferente(),
+            $offerta->getOpera(),
+            'offerta'  // ← tipo offerta
+        );
+        FPersistentManager::store($ordine);
     }
+}
 
     header('Location: /Gallerist/utente/profilo');
     exit;

@@ -1,5 +1,4 @@
-{extends file='layout.tpl'}
-{block name=content}
+
 <div class="box report-form-box">
   <h4 class="title is-4 mb-4 has-text-danger-dark">
     <span class="icon mr-2"><i class="fas fa-exclamation-triangle"></i></span>Invia una Segnalazione
@@ -40,4 +39,3 @@
 
   </form>
 </div>
-{/block}

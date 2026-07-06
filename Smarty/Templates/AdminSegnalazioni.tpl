@@ -125,11 +125,7 @@
             
             <!-- Intestazione Autore -->
             <div class="media is-align-items-center mb-4">
-              <div class="media-left">
-                <figure class="image is-48x48">
-                  <img class="is-rounded admin-ticket-avatar" src="...">
-                </figure>
-              </div>
+              
               <div class="media-content">
                 <h3 class="title is-5 mb-0">Autore del contenuto: @{$autore_contenuto.nickname}</h3>
                 <p class="subtitle is-7 has-text-grey">ID Utente: #{$autore_contenuto.id}</p>

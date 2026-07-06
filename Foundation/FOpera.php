@@ -402,6 +402,16 @@ if (!empty($parametri['prezzo_max'])) {
              new ECategoria($row['categoria'])
         );
         //$opera->setId((int) $row['id']);
+        $db = FDataBase::getInstance();
+$resImmagine = $db->queryDB(
+    "SELECT nome_file FROM immagine WHERE idOpera = :id ORDER BY id ASC LIMIT 1",
+    [':id' => (int)$row['id']]
+);
+
+if ($resImmagine && !empty($resImmagine[0]['nome_file'])) {
+    $immagine = new EImmagine(0, $resImmagine[0]['nome_file']);
+    $opera->addImmagine($immagine);
+}
         return $opera;
     }
 }

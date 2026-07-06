@@ -12,15 +12,16 @@ class FOrdine {
 
     private static $class = "FOrdine";
     private static $table = "ordine";
-    private static $values = "(:id, :data, :idUtente, :idOpera)";
+    private static $values = "(:id, :data, :idUtente, :idOpera, :tipo)";
 
     public function __construct() {}
 
     public static function bind($stmt, EOrdine $ordine) {
-    $stmt->bindValue(':id',       NULL,                                           PDO::PARAM_INT);
+    $stmt->bindValue(':id',       NULL,                                             PDO::PARAM_INT);
     $stmt->bindValue(':data',     $ordine->getDataOrdine()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
-    $stmt->bindValue(':idUtente', $ordine->getAcquirente()->getId(),              PDO::PARAM_INT);
-    $stmt->bindValue(':idOpera',  $ordine->getOpera()->getId(),                   PDO::PARAM_INT);
+    $stmt->bindValue(':idUtente', $ordine->getAcquirente()->getId(),                PDO::PARAM_INT);
+    $stmt->bindValue(':idOpera',  $ordine->getOpera()->getId(),                     PDO::PARAM_INT);
+    $stmt->bindValue(':tipo',     $ordine->getTipo(),                               PDO::PARAM_STR);
 }
 
     public static function getClass() { return static::$class; }

@@ -23,15 +23,13 @@ class CCatalogo {
      * Operazione di sistema (Step 1): L'utente richiede l'esplorazione del catalogo.
      * Recupera le categorie per i filtri e la griglia iniziale delle opere recenti.
      */
-    public function esploraCatalogo(): void {
-        // Metodi custom di dominio: non astraibili dal Manager (vedi nota architetturale)
-        $categorie = FCategoria::loadAll() ?? [];
-        $opere     = FOpera::loadRecenti() ?? [];
-       $isLogged = isset($_SESSION['id_utente']) ? true : false;
-        $view = new VCatalogo();
-
-        $view->mostraPaginaCatalogo($categorie, $opere, $isLogged);
-    }
+   public function esploraCatalogo(): void {
+    $categorie = FCategoria::loadAll() ?? [];
+    $opere     = FOpera::loadRecenti() ?? [];
+    
+    $view = new VCatalogo();
+    $view->mostraPaginaCatalogo($categorie, $opere);
+}
 
     /**
      * Operazione di sistema (Step 2): L'utente applica filtri o criteri di ricerca.

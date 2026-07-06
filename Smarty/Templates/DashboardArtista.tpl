@@ -47,8 +47,7 @@
    onclick="document.getElementById('modal-biografia').classList.add('is-active'); return false;">
     <i class="fas fa-pencil-alt"></i>
 </a>
-              <i class="fas fa-pencil-alt"></i>
-            </a>
+              
             <p class="is-size-6 pl-4 has-text-justified">
               {$utente->getBiografia()|default:"<em>Nessuna descrizione inserita. Clicca la matita per aggiungere la tua biografia.</em>"}
             </p>
@@ -93,12 +92,13 @@
       </div>
 
       <div class="column is-one-fifth-desktop is-half-tablet">
-        <div class="box has-text-centered">
-          <span class="icon is-large has-text-success mb-2"><i class="fas fa-euro-sign fa-2x"></i></span>
-          <p class="heading">Guadagni Totali</p>
-          <p class="title is-3">€ {$statistiche.guadagni|number_format:2:',':'.'}</p>
-        </div>
-      </div>
+    <a href="/Gallerist/utente/storicoVendite" class="box has-text-centered is-block">
+        <span class="icon is-large has-text-success mb-2"><i class="fas fa-euro-sign fa-2x"></i></span>
+        <p class="heading">Guadagni Totali</p>
+        <p class="title is-3">€ {$statistiche.guadagni|number_format:2:',':'.'}</p>
+        <p class="is-size-7 has-text-grey mt-1">Vedi storico →</p>
+    </a>
+</div>
 
     </div>
 
@@ -120,56 +120,50 @@
       </div>
     </div>
 
-    <div class="columns is-multiline mb-6">
-      {foreach from=$mie_opere item=opera}
+   <div class="columns is-multiline mb-6">
+    {foreach from=$mie_opere item=opera}
         <div class="column is-3">
-          <div class="card artist-work-card">
-  <div class="card-image is-relative">
-    <figure class="image is-4by3">
-    {assign var='immagini' value=$opera->getImmagini()}
-    {if $immagini|@count > 0}
-        {assign var='prima' value=$immagini[0]}
-        <img src="/Gallerist/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}">
-    {else}
-        <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}">
-    {/if}
-</figure>
- <div class="artist-work-delete-wrapper">
- <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/eliminaOpera" onsubmit="return confirm('Sei sicuro di voler eliminare questa opera?');">
-                  <input type="hidden" name="id_opera" value="{$opera->getId()}">
-                  <button type="submit" class="button is-danger is-small is-rounded" title="Elimina Opera">
-                    <span class="icon"><i class="fas fa-trash"></i></span>
-                  </button>
-                </form>
+            <div class="card artist-work-card">
+                <div class="card-image is-relative">
+                    <figure class="image is-4by3">
+                        {assign var='immagini' value=$opera->getImmagini()}
+                        {if $immagini|@count > 0}
+                            {assign var='prima' value=$immagini[0]}
+                            <img src="/Gallerist/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}">
+                        {else}
+                            <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}">
+                        {/if}
+                    </figure>
+                    <div class="artist-work-delete-wrapper">
+                        <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/eliminaOpera" 
+                              onsubmit="return confirm('Sei sicuro di voler eliminare questa opera?');">
+                            <input type="hidden" name="id_opera" value="{$opera->getId()}">
+                            <button type="submit" class="button is-danger is-small is-rounded" title="Elimina Opera">
+                                <span class="icon"><i class="fas fa-trash"></i></span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-  </div>
-              
-              
-                
-              </div>
+                <div class="card-content p-3">
+                    <p class="title is-6 mb-1">{$opera->getTitolo()}</p>
+                    <p class="subtitle is-7 has-text-grey">
+                        {if $opera->isVenduta()}
+                            <span class="has-text-danger"><i class="fas fa-gavel"></i> Venduta</span>
+                        {elseif $opera->isInVendita()}
+                            <span class="has-text-success"><i class="fas fa-tag"></i> In vendita: € {$opera->getPrezzo()->getValore()|number_format:2:',':'.'}</span>
+                        {else}
+                            <span><i class="fas fa-eye-slash"></i> Non in vendita</span>
+                        {/if}
+                    </p>
+                </div>
             </div>
-
-            <div class="card-content p-3">
-              <p class="title is-6 mb-1">{$opera->getTitolo()}</p>
-              <p class="subtitle is-7 has-text-grey">
-                {if $opera->isVenduta()}
-                  <span class="has-text-danger"><i class="fas fa-gavel"></i> Venduta</span>
-                {elseif $opera->isInVendita()}
-                  <span class="has-text-success"><i class="fas fa-tag"></i> In vendita: € {$opera->getPrezzo()->getValore()|number_format:2:',':'.'}</span>
-                {else}
-                  <span><i class="fas fa-eye-slash"></i> Non in vendita</span>
-                {/if}
-              </p>
-            </div>
-
-          </div>
-        </div>
-      {foreachelse}
+        </div>  {* ← chiude column is-3 *}
+    {foreachelse}
         <div class="column is-12 has-text-centered py-6">
-          <p class="has-text-grey is-size-5">Non hai ancora pubblicato nessuna opera.</p>
+            <p class="has-text-grey is-size-5">Non hai ancora pubblicato nessuna opera.</p>
         </div>
-      {/foreach}
-    </div>
+    {/foreach}
+</div>
 
     <h3 class="title is-4 mt-6">Recensioni Ricevute</h3>
     <div class="box mb-6">

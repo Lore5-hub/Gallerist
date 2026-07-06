@@ -17,7 +17,7 @@ class EOrdine {
     private EPrezzo $totaleArticolo;
     private EPrezzo $totaleOrdine;
     private EPrezzo $commissionePiattaforma;
-    
+    private string $tipo;
     // Associazioni come tipi di riferimento (Slide 4 del PPT 04)
     private EUtente $acquirente;
     private EOpera $opera;
@@ -35,28 +35,28 @@ class EOrdine {
 
     public const PERCENTUALE_COMMISSIONE = 10.0;  //così da modificare facilmente le commissioni
     public function __construct(
-        int $id, DateTimeImmutable $dataOrdine, string $metodoPagamento, string $indirizzoSpedizione,
-        EPrezzo $costoSpedizione, EPrezzo $totaleArticolo,
-        EPrezzo $commissionePiattaforma, EUtente $acquirente, EOpera $opera
-    ) {
-        $this->id = $id;
-        $this->dataOrdine = $dataOrdine;
-        $this->metodoPagamento = $metodoPagamento;
-        $this->indirizzoSpedizione = $indirizzoSpedizione;
-        $this->costoSpedizione = $costoSpedizione;
-        $this->totaleArticolo = $totaleArticolo;
-        $this->commissionePiattaforma = $commissionePiattaforma;
-        $this->acquirente = $acquirente;
-        $this->opera = $opera;
+    int $id, DateTimeImmutable $dataOrdine, string $metodoPagamento, string $indirizzoSpedizione,
+    EPrezzo $costoSpedizione, EPrezzo $totaleArticolo,
+    EPrezzo $commissionePiattaforma, EUtente $acquirente, EOpera $opera,
+    string $tipo = 'diretto'  // ← aggiunto
+) {
+    $this->id = $id;
+    $this->dataOrdine = $dataOrdine;
+    $this->metodoPagamento = $metodoPagamento;
+    $this->indirizzoSpedizione = $indirizzoSpedizione;
+    $this->costoSpedizione = $costoSpedizione;
+    $this->totaleArticolo = $totaleArticolo;
+    $this->commissionePiattaforma = $commissionePiattaforma;
+    $this->acquirente = $acquirente;
+    $this->opera = $opera;
+    $this->tipo = $tipo;  // ← aggiunto
 
-        //Nel costruttore si richiedono solo i dati grezzi e si calcolano i totali e le commissioni in automatico, così da evitare errori di inserimento
+    $this->totaleOrdine = $this->calcolaTotaleOrdine();
+    $this->commissionePiattaforma = $this->calcolaTrattenuta();
+}
 
-        // Calcoliamo il totale in automatico!
-        $this->totaleOrdine = $this->calcolaTotaleOrdine();
-
-        // 2. Calcoliamo la trattenuta della galleria (in euro)
-        $this->commissionePiattaforma = $this->calcolaTrattenuta();
-    }
+public function getTipo(): string { return $this->tipo; }
+public function setTipo(string $tipo): void { $this->tipo = $tipo; }
 
     // --- GETTER & SETTER ---
     public function setId(int $id): void { $this->id = $id; }

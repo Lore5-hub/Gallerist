@@ -178,7 +178,7 @@
         <p class="has-text-grey">Nessuna recensione presente per quest'opera.</p>
       {/foreach}
 
-      {if !isset($utente_loggato) || $utente_loggato->getRuolo() != 'Amministratore' && $utente_loggato->getId() != $opera->getArtista()->getId()}
+      {if !isset($utente_loggato) || ($utente_loggato->getRuolo() != 'Amministratore' && $utente_loggato->getId() != $opera->getArtista()->getId())}
     <div class="mt-6">
         {include file="FormRecensione.tpl"}
     </div>
@@ -199,7 +199,13 @@
         <div class="card h-full artwork-card">
   <div class="card-image">
     <figure class="image is-4by3">
-      <img src="/Gallerist/img/default_opera.png" alt="{$altra_opera->getTitolo()}" class="artwork-img">
+      {assign var='immagini_altra' value=$altra_opera->getImmagini()}
+{if $immagini_altra|@count > 0}
+    {assign var='prima_altra' value=$immagini_altra[0]}
+    <img src="/Gallerist/uploads/opere/{$prima_altra->getUrlFile()}" alt="{$altra_opera->getTitolo()}" class="artwork-img">
+{else}
+    <img src="/Gallerist/img/default_opera.png" alt="{$altra_opera->getTitolo()}" class="artwork-img">
+{/if}
     </figure>
   </div>
           <div class="card-content">

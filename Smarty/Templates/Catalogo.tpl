@@ -11,14 +11,14 @@
         <div class="field">
           <label class="label">Categoria</label>
           <div class="control">
-            <div class="select is-fullwidth">
-              <select name="categoria">
-                <option value="">Tutte le categorie</option>
-                <option value="Pittura">Pittura</option>
-                <option value="Scultura">Scultura</option>
-                <option value="Fotografia">Fotografia</option>
-              </select>
-            </div>
+            <div class="select is-fullwidth {if isset($errori.categoria)}is-danger{/if}">
+            <select name="categoria">
+    <option value="">Tutte le categorie</option>
+    {foreach from=$categorie item=categoria}
+        <option value="{$categoria->getNome()}">{$categoria->getNome()}</option>
+    {/foreach}
+</select>
+          </div>
           </div>
         </div>
 
@@ -65,10 +65,11 @@
             
             <div class="card-image">
               <figure class="image is-4by3">
+              
                {if $opera->getImmagini()|@count > 0}
     {assign var='immagini' value=$opera->getImmagini()}
     {assign var='prima' value=$immagini[0]}
-    <img src="/Gallerist/uploads/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="artwork-img">
+    <img src="/Gallerist/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="artwork-img">
 {else}
     <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}" class="artwork-img">
 {/if}

@@ -19,6 +19,11 @@
             </div>
 
             <div class="navbar-menu">
+            <div class="navbar-start">
+        <a href="/Gallerist/catalogo/esploraCatalogo" class="navbar-item has-text-light">
+            <span class="icon mr-1"><i class="fas fa-palette"></i></span> Catalogo
+        </a>
+    </div>
                 <div class="navbar-end">
                     <div class="navbar-item has-dropdown is-hoverable">
                         <a class="navbar-link is-arrowless">

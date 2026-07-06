@@ -6,7 +6,7 @@
     <div class="is-flex is-justify-content-space-between is-align-items-center mb-6">
       <h1 class="title is-3 mb-0">Storico Vendite e Guadagni</h1>
       
-      <form method="GET" action="storico_vendite.php">
+      <form method="GET" action="/Gallerist/utente/storicoVendite">
         <div class="field mb-0">
           <div class="control has-icons-left">
             <div class="select is-info">
@@ -134,4 +134,49 @@
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Grafico andamento entrate
+const ctxAndamento = document.getElementById('graficoAndamento').getContext('2d');
+new Chart(ctxAndamento, {
+    type: 'line',
+    data: {
+        labels: [{foreach from=$storico_vendite item=v}'{$v.data|date_format:"%d/%m"}',{/foreach}],
+        datasets: [{
+            label: 'Entrate (€)',
+            data: [{foreach from=$storico_vendite item=v}{$v.prezzo},{/foreach}],
+            borderColor: '#48c774',
+            tension: 0.3,
+            fill: true,
+            backgroundColor: 'rgba(72,199,116,0.1)'
+        }]
+    }
+});
+
+// Grafico torta categorie
+const ctxTorta = document.getElementById('graficoTorta').getContext('2d');
+new Chart(ctxTorta, {
+    type: 'doughnut',
+    data: {
+        labels: {$statistiche.labels_categorie|json_encode},
+        datasets: [{
+            data: {$statistiche.dati_categorie|json_encode},
+            backgroundColor: ['#3273dc','#48c774','#ffdd57','#f14668','#00d1b2']
+        }]
+    }
+});
+
+// Grafico barre modalità vendita
+const ctxBarre = document.getElementById('graficoBarre').getContext('2d');
+new Chart(ctxBarre, {
+    type: 'bar',
+    data: {
+        labels: ['Vendita Diretta', 'Offerta Accettata'],
+        datasets: [{
+            label: 'Vendite',
+            data: [{$statistiche.vendite_dirette}, {$statistiche.vendite_offerta}],
+            backgroundColor: ['#3273dc', '#48c774']
+        }]
+    }
+});
+</script>
 {/block}

@@ -31,7 +31,7 @@
             <tr>
               <td><span class="tag is-dark">{$segnalazione.tipo}</span></td>
               <td>{$segnalazione.motivo}</td>
-              <td>#{$segnalazione.autore}</td>
+              <td>{$segnalazione.autore}</td>
               <td>{$segnalazione.data|date_format:"%d/%m/%Y"}</td>
               <td>
                 {if $segnalazione.stato == 'Aperta'}

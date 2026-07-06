@@ -141,7 +141,7 @@
                 <div class="field mt-4">
                   <label class="label">Numero di Telefono</label>
                   <div class="control">
-                  <input class="input {if isset($errori.telefono)}is-danger{/if}" type="tel" id="telefono" name="telefono" value="{if isset($vecchi_dati.telefono)}{$vecchi_dati.telefono}{/if}"  placeholder="+39 3331234567">
+                  <input class="input {if isset($errori.telefono)}is-danger{/if}" type="tel" id="telefono" name="telefono" value="{if isset($vecchi_dati.telefono)}{$vecchi_dati.telefono}{/if}"  required placeholder="+39 3331234567">
                   </div>
                   <p id="error-telefono" class="help is-danger is-hidden">Inserisci un numero di telefono valido (9-11 cifre, solo numeri).</p>
                   {if isset($errori.telefono)}<p class="help is-danger">{$errori.telefono}</p>{/if}

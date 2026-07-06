@@ -1,6 +1,6 @@
 {extends file="layout.tpl"}
 
-{block name="contenuto"}
+{block name=content}
 <section class="hero is-fullheight-with-navbar error-hero">
   <div class="hero-body">
     <div class="container has-text-centered">

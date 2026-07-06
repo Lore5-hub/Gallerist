@@ -554,4 +554,107 @@ public function cambiaFotoProfilo(): void {
     header('Location: /Gallerist/utente/profilo');
     exit;
 }
+public function storicoVendite(): void {
+    $sessione = USession::getInstance();
+
+    if (!$sessione->esisteValore('utente_loggato')) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    $artista = $sessione->getValore('utente_loggato');
+    if ($artista->getRuolo() !== EUtente::RUOLO_ARTISTA) {
+        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        exit;
+    }
+
+    $db = FDataBase::getInstance();
+
+    // Storico vendite reale
+    $resVendite = $db->queryDB(
+        "SELECT o.titolo as titolo_opera, o.categoria, o.prezzo,
+                ord.data,
+                o.prezzo * 0.15 as commissione,
+                o.prezzo * 0.85 as netto
+         FROM ordine ord
+         INNER JOIN opera o ON o.id = ord.idOpera
+         WHERE o.idArtista = :id
+         ORDER BY ord.data DESC",
+        [':id' => $artista->getId()]
+    );
+
+    $storicoVendite = $resVendite ?? [];
+
+    // Calcola statistiche
+    $entrateLorde = 0.0;
+    $commissioni  = 0.0;
+    $ricavoNetto  = 0.0;
+    $votiTotali   = 0;
+    $numVoti      = 0;
+
+    foreach ($storicoVendite as $v) {
+        $entrateLorde += (float)$v['prezzo'];
+        $commissioni  += (float)$v['commissione'];
+        $ricavoNetto  += (float)$v['netto'];
+    }
+
+    // Valutazione media dalle recensioni
+    $resVoti = $db->queryDB(
+        "SELECT AVG(c.valutazione) as media, COUNT(*) as num
+         FROM commento c
+         INNER JOIN opera o ON o.id = c.idOpera
+         WHERE o.idArtista = :id",
+        [':id' => $artista->getId()]
+    );
+    $votoMedio = $resVoti ? round((float)$resVoti[0]['media'], 1) : 0.0;
+$resTipi = $db->queryDB(
+    "SELECT tipo, COUNT(*) as num
+     FROM ordine ord
+     INNER JOIN opera o ON o.id = ord.idOpera
+     WHERE o.idArtista = :id
+     GROUP BY tipo",
+    [':id' => $artista->getId()]
+);
+
+$venditeDirette = 0;
+$venditeOfferta = 0;
+foreach ($resTipi ?? [] as $row) {
+    if ($row['tipo'] === 'diretto')  $venditeDirette = (int)$row['num'];
+    if ($row['tipo'] === 'offerta')  $venditeOfferta = (int)$row['num'];
+}
+
+// Aggiungi questa query in storicoVendite()
+$resCategorie = $db->queryDB(
+    "SELECT o.categoria, SUM(o.prezzo) as totale
+     FROM ordine ord
+     INNER JOIN opera o ON o.id = ord.idOpera
+     WHERE o.idArtista = :id
+     GROUP BY o.categoria",
+    [':id' => $artista->getId()]
+);
+
+$labelsCategorie = [];
+$datiCategorie   = [];
+foreach ($resCategorie ?? [] as $row) {
+    $labelsCategorie[] = $row['categoria'];
+    $datiCategorie[]   = (float)$row['totale'];
+}
+
+
+    $statistiche = [
+        'entrate_lorde'  => $entrateLorde,
+        'numero_vendite' => count($storicoVendite),
+        'voto_medio'     => $votoMedio,
+        'ricavo_netto'   => $ricavoNetto,
+        'commissioni'    => $commissioni,
+    ];
+$statistiche['vendite_dirette'] = $venditeDirette;
+$statistiche['vendite_offerta'] = $venditeOfferta;
+$statistiche['labels_categorie'] = $labelsCategorie;
+$statistiche['dati_categorie']   = $datiCategorie;
+    $vUtente = new VUtente();
+    $vUtente->smarty->assign('statistiche',     $statistiche);
+    $vUtente->smarty->assign('storico_vendite', $storicoVendite);
+    $vUtente->smarty->display('StoricoVendite.tpl');
+}
 }

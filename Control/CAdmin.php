@@ -570,15 +570,18 @@ public function tutteSegnalazioni() {
 
     $segnalazioniArray = [];
     foreach ($segnalazioniList as $seg) {
-        $segnalazioniArray[] = [
-            'id'      => $seg->getId(),
-            'tipo'    => $seg->getTipoTarget(),
-            'motivo'  => $seg->getMotivo(),
-            'data'    => $seg->getDataSegnalazione()->format('Y-m-d'),
-            'stato'   => $seg->getStato()->getNomeStato(),
-            'autore'  => $seg->getIdSegnalatore(),
-        ];
-    }
+    // Carica il segnalante per ottenere il nickname
+    $segnalante = FPersistentManager::load('EUtente', 'id', $seg->getIdSegnalatore());
+    
+    $segnalazioniArray[] = [
+        'id'     => $seg->getId(),
+        'tipo'   => $seg->getTipoTarget(),
+        'motivo' => $seg->getMotivo(),
+        'data'   => $seg->getDataSegnalazione()->format('Y-m-d'),
+        'stato'  => $seg->getStato()->getNomeStato(),
+        'autore' => $segnalante ? '@' . $segnalante->getNickname() : '#' . $seg->getIdSegnalatore(),
+    ];
+}
 
     $vAdmin = new VAdmin();
     $vAdmin->smarty->assign('segnalazioni', $segnalazioniArray);

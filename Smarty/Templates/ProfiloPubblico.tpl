@@ -6,7 +6,7 @@
     <article class="media">
       <figure class="media-left">
         <p class="image is-96x96">
-          <img class="is-rounded public-profile-avatar" src="{$utente->getImmagineProfilo()|default:'img/default-avatar.png'}" alt="Profilo" />
+          <img class="is-rounded public-profile-avatar" src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}" alt="Profilo" />
         </p>
       </figure>
       <div class="media-content">
@@ -23,7 +23,7 @@
             
           </p>
           
-          <p class="is-size-7 has-text-grey">Membro dal {$utente->getDataDiNascita()|date_format:"%Y"}</p>
+          <p class="is-size-7 has-text-grey">Membro dal {$utente->getDataRegistrazione()|date_format:"%Y"}</p>
         </div>
       </div>
     </article>
@@ -72,7 +72,7 @@
                 {assign var='immagini' value=$opera->getImmagini()}
 {if $immagini|@count > 0}
     {assign var='prima' value=$immagini[0]}
-    <img src="/Gallerist/uploads/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="portfolio-card-img">
+    <img src="/Gallerist/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="portfolio-card-img">
 {else}
     <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}" class="portfolio-card-img">
 {/if}
