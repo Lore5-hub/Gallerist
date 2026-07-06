@@ -370,6 +370,13 @@ public function verificaArtista() {
         // Aggiorna anche stato_account in utente → da 'attivo' rimane attivo,
         // ma se avessi messo uno stato 'in_attesa' anche lì va aggiornato
         FPersistentManager::update('EUtente', 'stato_account', EUtente::STATO_ATTIVO, 'id', $id);
+
+        // Notifica l'artista dell'avvenuta approvazione
+        UEmail::inviaEmail(
+            $artista->getEmail(),
+            "Il tuo profilo artista è stato approvato",
+            UEmail::corpoArtistaApprovato($artista->getNome())
+    );
     }
 
     // Torna alla dashboard con un parametro di feedback

@@ -249,8 +249,17 @@ $stmt->execute([
         $nuovaOfferta->setId((int) $id);
 
         // 6. Notifica all'artista
-        // TODO: UEmail::inviaEmail($opera->getArtista()->getEmail(), "Nuova offerta ricevuta", "...")
-        //       (UEmail non ancora implementata)
+        UEmail::inviaEmail(
+            $opera->getArtista()->getEmail(),
+            "Nuova offerta ricevuta per \"{$opera->getTitolo()}\"",
+            UEmail::corpoNotificaNuovaOfferta(
+                $opera->getArtista()->getNome(),
+                $opera->getTitolo(),
+                $cifra,
+                $utente->getNickname(),
+                trim($nota)
+            )
+        );
 
         // 7. Visualizzazione messaggio di conferma
         $view->mostraConfermaInvioOfferta($nuovaOfferta);

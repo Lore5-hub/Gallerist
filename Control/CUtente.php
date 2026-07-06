@@ -95,13 +95,7 @@ class CUtente
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-           
-
             $vUtente = new VUtente();
-
-
-
-            // ✨ FIX: Spostato qui dentro il controllo del ruolo per evitare errori in GET
 
             $ruoloPost = $_POST['ruolo'] ?? '';
 
@@ -118,7 +112,6 @@ class CUtente
                 $ruoloDB = 'Utente registrato';
 
             }
-
 
 
             // 1. Recupero e pulizia dei dati testuali dal $_POST

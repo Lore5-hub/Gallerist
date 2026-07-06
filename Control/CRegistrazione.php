@@ -49,8 +49,11 @@ class CRegistrazione {
         USession::getInstance()->impostaValore('utente_loggato', $nuovoUtente->getEmail());
         USession::getInstance()->impostaValore('ruolo', 'utente');
 
-        // TODO: UEmail::inviaEmail($nuovoUtente->getEmail(), "Benvenuto!", "Registrazione completata.")
-
+        UEmail::inviaEmail(
+            $nuovoUtente->getEmail(),
+            "Benvenuto su Gallerist!",
+            UEmail::corpoBenvenutoUtente($nuovoUtente->getNome())
+);
         $view->mostraMessaggio('registrazione_completata');
     }
 
@@ -93,8 +96,11 @@ class CRegistrazione {
             return;
         }
 
-        // TODO: UEmail::inviaEmail(ADMIN_EMAIL, "Nuovo artista", "Nuovo profilo artista in attesa di validazione.")
-
+        UEmail::inviaEmail(
+            ADMIN_EMAIL,
+            "Nuovo artista in attesa di validazione",
+            UEmail::corpoNotificaNuovoArtista($nuovoArtista->getNome(), $nuovoArtista->getCognome(), $nuovoArtista->getEmail())
+        );
         $view->mostraMessaggio('artista_in_attesa');
     }
 
