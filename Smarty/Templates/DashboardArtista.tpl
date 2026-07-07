@@ -178,7 +178,11 @@
           <div class="media-content">
             <div class="content">
               <p>
-                <strong>{$recensione->getAutore()->getNome()}</strong> 
+                <strong>
+    <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$recensione->getAutore()->getId()}">
+        {$recensione->getAutore()->getNome()} {$recensione->getAutore()->getCognome()}
+    </a>
+</strong>
                 <span class="has-text-warning ml-2">
                   <i class="fas fa-star"></i> {$recensione->getValutazione()}
                 </span>

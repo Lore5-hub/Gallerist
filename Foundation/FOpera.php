@@ -414,5 +414,32 @@ if ($resImmagine && !empty($resImmagine[0]['nome_file'])) {
 }
         return $opera;
     }
+    public static function loadPiuApprezzate(int $limite = 6): ?array {
+    $query = "SELECT o.*,
+                     u.nome     AS artista_nome,
+                     u.cognome  AS artista_cognome,
+                     u.email    AS artista_email,
+                     u.nickname AS artista_nickname,
+                     COALESCE(AVG(c.valutazione), 0) as valutazione_media
+              FROM " . static::$table . " o
+              INNER JOIN utente u ON o.idArtista = u.id
+              LEFT JOIN commento c ON c.idOpera = o.id
+              WHERE o.stato IN ('pubblicata', 'in_vendita')
+              AND u.stato_account != 'Bannato'
+              GROUP BY o.id
+              ORDER BY valutazione_media DESC, o.id DESC
+              LIMIT " . (int)$limite;
+
+    $db     = FDataBase::getInstance();
+    $result = $db->queryDB($query, []);
+
+    if ($result === null) return null;
+
+    $opere = [];
+    foreach ($result as $row) {
+        $opere[] = self::creaOperaDaArray($row);
+    }
+    return $opere;
+}
 }
 ?>

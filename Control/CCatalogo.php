@@ -133,7 +133,7 @@ $view->mostraSchedaDettaglio($opera, $altreOpere, false, $prezzoConvertito, $val
         // PASSO 1: Recupera i dati che servono dal Database (Model/Foundation)
         // Ad esempio, potresti voler mostrare le ultime 6 opere d'arte caricate nella galleria
         // (Ipotizzo il nome di una classe Entity o Foundation, usa le tue)
-        $ultimeOpere = FOpera::loadRecenti(6); 
+        $ultimeOpere = FOpera::loadPiuApprezzate(6); 
 
         // PASSO 2: Prendi l'istanza di Smarty per gestire la View
         // Nota: se avete creato una classe apposita per la View (es. VCatalogo), 
@@ -157,14 +157,40 @@ $view->mostraSchedaDettaglio($opera, $altreOpere, false, $prezzoConvertito, $val
             exit;
         }
     }
+
     $artista = FPersistentManager::load('EArtista', 'id', $idArtista);
 
     if (!$artista instanceof EArtista) {
+        // È un utente normale
+        $utente = FPersistentManager::load('EUtente', 'id', $idArtista);
+        if (!$utente instanceof EUtente) {
+            $view = new VCatalogo();
+            $view->mostraErrore('utente_non_trovato');
+            return;
+        }
+
+        // Carica recensioni scritte dall'utente
+        $recensioniScritte = [];
+        $commenti = FPersistentManager::load('ECommento', 'idAutore', $idArtista);
+        if ($commenti !== null) {
+            if (!is_array($commenti)) $commenti = [$commenti];
+            $recensioniScritte = $commenti;
+        }
+
+        // Conta acquisti
+        $db = FDataBase::getInstance();
+        $resAcquisti = $db->queryDB(
+            "SELECT COUNT(*) as totale FROM ordine WHERE idUtente = :id",
+            [':id' => $idArtista]
+        );
+        $numeroAcquisti = $resAcquisti ? (int)$resAcquisti[0]['totale'] : 0;
+
         $view = new VCatalogo();
-        $view->mostraErrore('utente_non_trovato');
+        $view->mostraProfiloPubblico($utente, [], $recensioniScritte, $numeroAcquisti);
         return;
     }
 
+    // È un artista
     $opere = FOpera::loadByArtista($idArtista, -1) ?? [];
 
     $view = new VCatalogo();

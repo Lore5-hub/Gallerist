@@ -93,5 +93,17 @@ class UEmail {
             <p>Puoi iniziare a caricare le tue opere quando vuoi.</p>
         ";
     }
+    public static function inviaEmailRecuperoPassword(string $destinatario, string $linkReset): bool {
+    $oggetto = 'Recupero Password - Gallerist';
+    $corpo   = "
+        <h2>Recupero Password</h2>
+        <p>Hai richiesto il reset della tua password su Gallerist.</p>
+        <p>Clicca sul link qui sotto per impostare una nuova password:</p>
+        <p><a href='{$linkReset}'>Reimposta la mia password</a></p>
+        <p>Il link scadrà tra 1 ora.</p>
+        <p>Se non hai richiesto il reset, ignora questa email.</p>
+    ";
+    return self::inviaEmail($destinatario, $oggetto, $corpo);
+}
 }
 ?>

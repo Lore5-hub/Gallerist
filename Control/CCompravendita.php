@@ -44,12 +44,39 @@ class CCompravendita {
         $view->mostraErrore('opera_non_disponibile');
         return;
     }
+// Carica opere dell'artista per calcolare valutazione media
+$opereArtista = FOpera::loadByArtista($opera->getArtista()->getId(), -1) ?? [];
+$tuttiCommenti = [];
+foreach ($opereArtista as $op) {
+    $commentiOpera = FPersistentManager::load('ECommento', 'idOpera', $op->getId());
+    if ($commentiOpera !== null) {
+        if (!is_array($commentiOpera)) $commentiOpera = [$commentiOpera];
+        foreach ($commentiOpera as $commento) {
+            $tuttiCommenti[] = $commento;
+            // ✅ Se è l'opera corrente, aggiungila anche ad essa
+            if ($op->getId() === $opera->getId()) {
+                $opera->addCommento($commento);
+            }
+        }
+    }
+}
 
-    // 4. Prezzo spedizione
+// Calcola valutazione media dell'artista
+if (count($tuttiCommenti) > 0) {
+    $somma = array_reduce($tuttiCommenti, fn($carry, $c) => $carry + $c->getValutazione(), 0);
+    $opera->getArtista()->setValutazioneMedia(round($somma / count($tuttiCommenti), 1));
+}
+    $artista = FPersistentManager::load('EArtista', 'id', $opera->getArtista()->getId());
+if ($artista instanceof EArtista && count($tuttiCommenti) > 0) {
+    $somma = array_reduce($tuttiCommenti, fn($carry, $c) => $carry + $c->getValutazione(), 0);
+    $artista->setValutazioneMedia(round($somma / count($tuttiCommenti), 1));
+}
+// 4. Prezzo spedizione
     $prezzoSpedizione = new EPrezzo(5.00);
 
     // 5. Mostra riepilogo
-    $view->mostraRiepilogoOrdine($utente, $opera, $prezzoSpedizione);
+    
+    $view->mostraRiepilogoOrdine($utente, $opera, $prezzoSpedizione, $artista);
 }
 
     /**

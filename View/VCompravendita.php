@@ -51,7 +51,8 @@ class VCompravendita
     public function mostraRiepilogoOrdine(
         EUtente $utente,
         EOpera  $opera,
-        EPrezzo $prezzoSpedizione
+        EPrezzo $prezzoSpedizione,
+        ?EArtista $artista = null
     ): void {
         // UC3 richiede login: verifichiamo centralmente prima di mostrare dati sensibili
         if (USession::getInstance()->esisteValore('utente_loggato')) {
@@ -63,7 +64,7 @@ class VCompravendita
 
         // Dati dell'opera da acquistare (titolo, artista, prezzo)
         $this->smarty->assign('opera',   $opera);
-        $this->smarty->assign('artista', $opera->getArtista());
+         $this->smarty->assign('artista',    $artista ?? $opera->getArtista());
 
         // Copertina dell'opera codificata in Base64 per il riepilogo visivo
         $immagini  = $opera->getImmagini();

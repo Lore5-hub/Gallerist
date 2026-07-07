@@ -8,7 +8,7 @@
          ========================================== -->
     <div class="is-flex is-justify-content-space-between is-align-items-center mb-6">
       <div>
-        <h1 class="title is-3 mb-1">Verifica Utente</h1>
+        <h1 class="title is-3 has-text-dark mb-1">Verifica Utente</h1>
         <p class="subtitle is-6 has-text-grey">Revisione dei dati anagrafici e attivazione account</p>
       </div>
       

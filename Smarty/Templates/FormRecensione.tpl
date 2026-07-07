@@ -7,7 +7,7 @@
     <input type="hidden" name="id_opera" value="{$opera->getId()}">
 
     <div class="field">
-      <label class="label">Valutazione <span class="has-text-danger">*</span></label>
+      <label class="label has-text-dark">Valutazione <span class="has-text-danger">*</span></label>
       <div class="control has-icons-left">
         <div class="select {if isset($errori.valutazione)}is-danger{/if}">
           <select name="valutazione" required>
@@ -27,7 +27,7 @@
     </div>
 
     <div class="field mt-4">
-      <label class="label">Commento <span class="has-text-danger">*</span></label>
+      <label class="label has-text-dark">Commento <span class="has-text-danger">*</span></label>
       <div class="control">
         <textarea class="textarea {if isset($errori.commento)}is-danger{/if}" 
                   name="commento" 
@@ -50,9 +50,7 @@
           <span>Aggiungi commento</span>
         </button>
       </div>
-      <div class="control">
-        <button type="reset" class="button is-light">Annulla</button>
-      </div>
+      
     </div>
 
   </form>

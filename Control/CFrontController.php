@@ -26,6 +26,19 @@ class CFrontController {
         if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+// Timeout sessione: 30 minuti di inattività
+$timeoutMinuti = 30;
+$sessione = USession::getInstance();
+
+if ($sessione->esisteValore('ultimo_accesso')) {
+    $inattivita = time() - $sessione->getValore('ultimo_accesso');
+    if ($inattivita > ($timeoutMinuti * 60)) {
+        $sessione->distruggi();
+        header('Location: /Gallerist/utente/login?sessione=scaduta');
+        exit;
+    }
+}
+$sessione->setValue('ultimo_accesso', time());
          $visita = new EVisita(0, $path, new DateTimeImmutable(), session_id());
 FPersistentManager::store($visita);
         // 3. Identifica Controller, Metodo e Parametri

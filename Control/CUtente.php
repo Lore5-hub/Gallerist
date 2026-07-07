@@ -389,20 +389,23 @@ public function profilo() {
     $mieOpere = FOpera::loadByArtista($artistaId, -1) ?? [];
 
     // Recensioni ricevute (tramite le opere dell'artista)
-    $recensioni = FPersistentManager::load('ECommento', 'idAutore', $artistaId) ?? [];
-    if (!is_array($recensioni)) {
-        $recensioni = [$recensioni];
+    $recensioni = [];
+foreach ($mieOpere as $opera) {
+    $commentiOpera = FPersistentManager::load('ECommento', 'idOpera', $opera->getId());
+    if ($commentiOpera !== null) {
+        if (!is_array($commentiOpera)) $commentiOpera = [$commentiOpera];
+        foreach ($commentiOpera as $commento) {
+            $recensioni[] = $commento;
+        }
     }
+}
     if (count($recensioni) > 0) {
     $somma = array_reduce($recensioni, function($carry, $r) {
         return $carry + $r->getValutazione();
     }, 0);
     $utente->setValutazioneMedia(round($somma / count($recensioni), 1));
 }
-$offerte = FOfferta::loadByField('idOpera', $artistaId) ?? [];
-if (!is_array($offerte)) {
-    $offerte = [$offerte];
-}
+
 
 // Filtra solo le offerte sulle opere dell'artista
 $offerteRicevute = [];
@@ -446,11 +449,27 @@ if ($stato === 'Venduta')    $guadagni += (float)$opera->getPrezzo()->getValore(
     $vUtente->smarty->assign('statistiche', $statistiche);
     $vUtente->smarty->display('DashboardArtista.tpl');
 } else {
-        // ✅ Utente normale → mostra profilo pubblico
-        $vUtente = new VUtente();
-        $vUtente->smarty->assign('utente', $utente);
-        $vUtente->smarty->assign('opere',  []);
-        $vUtente->smarty->display('ProfiloPubblico.tpl');
+        $recensioniScritte = [];
+    $commenti = FPersistentManager::load('ECommento', 'idAutore', $utente->getId());
+    if ($commenti !== null) {
+        if (!is_array($commenti)) $commenti = [$commenti];
+        $recensioniScritte = $commenti;
+    }
+
+    // Conta acquisti
+    $db = FDataBase::getInstance();
+    $resAcquisti = $db->queryDB(
+        "SELECT COUNT(*) as totale FROM ordine WHERE idUtente = :id",
+        [':id' => $utente->getId()]
+    );
+    $numeroAcquisti = $resAcquisti ? (int)$resAcquisti[0]['totale'] : 0;
+
+    $vUtente = new VUtente();
+    $vUtente->smarty->assign('utente',             $utente);
+    $vUtente->smarty->assign('opere',              []);
+    $vUtente->smarty->assign('recensioni_scritte', $recensioniScritte);
+    $vUtente->smarty->assign('numero_acquisti',    $numeroAcquisti);
+    $vUtente->smarty->display('ProfiloPubblico.tpl');
     }}
 public function logout() {
     USession::getInstance()->distruggi();
@@ -656,5 +675,120 @@ $statistiche['dati_categorie']   = $datiCategorie;
     $vUtente->smarty->assign('statistiche',     $statistiche);
     $vUtente->smarty->assign('storico_vendite', $storicoVendite);
     $vUtente->smarty->display('StoricoVendite.tpl');
+}
+/**
+ * Mostra il form per il recupero password.
+ * Risponde all'URL: /Gallerist/utente/recuperoPassword
+ */
+public function recuperoPassword(): void {
+    $vUtente = new VUtente();
+    $vUtente->smarty->display('RecuperoPassword.tpl');
+}
+
+/**
+ * Invia il link di reset via email.
+ * Risponde all'URL: /Gallerist/utente/inviaLinkReset
+ */
+public function inviaLinkReset(): void {
+    $email = trim($_POST['email'] ?? '');
+    $vUtente = new VUtente();
+
+    if (empty($email)) {
+        $vUtente->smarty->assign('errore', 'Inserisci un indirizzo email valido.');
+        $vUtente->smarty->display('RecuperoPassword.tpl');
+        return;
+    }
+
+    // Verifica che l'email esista nel DB
+    $utente = FPersistentManager::load('EUtente', 'email', $email);
+    
+    // Per sicurezza mostriamo sempre lo stesso messaggio
+    // anche se l'email non esiste (evita enumeration attack)
+    if ($utente instanceof EUtente) {
+        $token    = bin2hex(random_bytes(32));
+        $scadenza = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+        $db = FDataBase::getInstance();
+        $db->queryDB(
+            "INSERT INTO password_reset (email, token, scadenza, usato) 
+             VALUES (:email, :token, :scadenza, 0)",
+            [':email' => $email, ':token' => $token, ':scadenza' => $scadenza]
+        );
+
+        $linkReset = "http://localhost/Gallerist/utente/resetPassword?token=" . $token;
+        UEmail::inviaEmailRecuperoPassword($email, $linkReset);
+    }
+
+    $vUtente->smarty->assign('successo', 'Se l\'email è registrata, riceverai il link di reset a breve.');
+    $vUtente->smarty->display('RecuperoPassword.tpl');
+}
+
+/**
+ * Mostra il form per inserire la nuova password.
+ * Risponde all'URL: /Gallerist/utente/resetPassword?token=xxx
+ */
+public function resetPassword(): void {
+    $token   = trim($_GET['token'] ?? '');
+    $vUtente = new VUtente();
+
+    if (empty($token)) {
+        header('Location: /Gallerist/utente/login');
+        exit;
+    }
+
+    // Verifica token
+    $db     = FDataBase::getInstance();
+    $result = $db->queryDB(
+        "SELECT * FROM password_reset 
+         WHERE token = :token AND usato = 0 AND scadenza > NOW()",
+        [':token' => $token]
+    );
+
+    if (empty($result)) {
+        $vUtente->smarty->assign('errore', 'Il link di reset non è valido o è scaduto.');
+        $vUtente->smarty->display('RecuperoPassword.tpl');
+        return;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $nuovaPassword = trim($_POST['password'] ?? '');
+        $conferma      = trim($_POST['conferma_password'] ?? '');
+
+        if (strlen($nuovaPassword) < 8) {
+            $vUtente->smarty->assign('errore', 'La password deve essere di almeno 8 caratteri.');
+            $vUtente->smarty->assign('token', $token);
+            $vUtente->smarty->display('ResetPassword.tpl');
+            return;
+        }
+
+        if ($nuovaPassword !== $conferma) {
+            $vUtente->smarty->assign('errore', 'Le password non coincidono.');
+            $vUtente->smarty->assign('token', $token);
+            $vUtente->smarty->display('ResetPassword.tpl');
+            return;
+        }
+
+        $email        = $result[0]['email'];
+        $passwordHash = password_hash($nuovaPassword, PASSWORD_BCRYPT);
+
+        // Aggiorna password
+        $db->queryDB(
+            "UPDATE utente SET password = :password WHERE email = :email",
+            [':password' => $passwordHash, ':email' => $email]
+        );
+
+        // Marca token come usato
+        $db->queryDB(
+            "UPDATE password_reset SET usato = 1 WHERE token = :token",
+            [':token' => $token]
+        );
+
+        $vUtente->smarty->assign('successo', 'Password aggiornata con successo!');
+        $vUtente->smarty->display('Login.tpl');
+        return;
+    }
+
+    $vUtente->smarty->assign('token', $token);
+    $vUtente->smarty->display('ResetPassword.tpl');
 }
 }

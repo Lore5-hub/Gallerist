@@ -100,16 +100,51 @@
 {else}
   
   <h3 class="title is-4 mt-6 mb-4">Attività</h3>
-  
-  <div class="box has-background-light has-text-centered p-6 mt-4">
-    <span class="icon is-large has-text-grey-light mb-3">
-      <i class="fas fa-lock fa-3x"></i>
-    </span>
-    <p class="is-size-5 has-text-grey has-text-weight-bold">Collezione Privata</p>
-    <p class="has-text-grey">Le opere acquistate e preferite dai collezionisti sono mantenute private per motivi di riservatezza.</p>
+
+  {* Statistiche utente *}
+  <div class="box mt-4 mb-4">
+    <div class="level">
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Opere Acquistate</p>
+          <p class="title">{$numero_acquisti}</p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Recensioni Scritte</p>
+          <p class="title">{$recensioni_scritte|@count}</p>
+        </div>
+      </div>
+    </div>
   </div>
 
+  {* Recensioni scritte dall'utente *}
+  {if $recensioni_scritte|@count > 0}
+    <h3 class="title is-5 mt-5 mb-3">Recensioni scritte</h3>
+    {foreach from=$recensioni_scritte item=rec}
+      <div class="box mb-3">
+        <div class="is-flex is-justify-content-space-between mb-2">
+          <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$rec->getOpera()->getId()}" class="has-text-weight-bold">
+            {$rec->getOpera()->getTitolo()}
+          </a>
+          <span class="has-text-warning">
+            <i class="fas fa-star"></i> {$rec->getValutazione()}/5
+          </span>
+        </div>
+        <p class="has-text-grey">{$rec->getTesto()}</p>
+        <p class="is-size-7 has-text-grey mt-1">{$rec->getData()|date_format:"%d/%m/%Y"}</p>
+      </div>
+    {/foreach}
+  {else}
+    <div class="box has-background-light has-text-centered p-6 mt-4">
+      <p class="has-text-grey">Questo utente non ha ancora scritto recensioni.</p>
+    </div>
+  {/if}
+
 {/if}
+
+
 
 <div id="modal-segnalazione" class="modal">
   <div class="modal-background chiudi-modale-segnalazione"></div>

@@ -11,7 +11,7 @@
         
         <div class="is-flex is-align-items-center mb-5">
           <h3 class="title is-4 mb-0 mr-3">{$artista->getNome()}</h3>
-          <span class="tag is-warning is-light is-medium">
+          <span class="tag is-warning is-dark is-medium">
             <span class="icon is-small mr-1"><i class="fas fa-star"></i></span>
             <strong>{$artista->getValutazioneMedia()|number_format:1:',':'.'}</strong>
           </span>

@@ -1,5 +1,5 @@
 <?php
-
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 function my_autoloader($className)
 {
     // dirname(__DIR__) ottiene la root del progetto (Gallerist) in modo pulito

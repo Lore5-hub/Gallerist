@@ -12,7 +12,7 @@
            INTESTAZIONE
            ========================================== -->
       <div class="block mb-6">
-        <h1 class="title is-3 mb-1">Dettaglio Segnalazione</h1>
+        <h1 class="title is-3 has-text-dark mb-1">Dettaglio Segnalazione</h1>
         <p class="subtitle is-6 has-text-grey">Esamina il ticket e applica le necessarie misure di moderazione</p>
       </div>
 

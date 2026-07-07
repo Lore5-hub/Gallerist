@@ -312,9 +312,11 @@ if ($prezzoConvertito !== null) {
     /**
  * Mostra il profilo pubblico di un artista.
  */
-public function mostraProfiloPubblico(EArtista $artista, array $opere): void {
-    $this->smarty->assign('utente', $artista);
-    $this->smarty->assign('opere',  $opere);
+public function mostraProfiloPubblico(EUtente $utente, array $opere, array $recensioniScritte = [], int $numeroAcquisti = 0): void {
+    $this->smarty->assign('utente',             $utente);
+    $this->smarty->assign('opere',              $opere);
+    $this->smarty->assign('recensioni_scritte', $recensioniScritte);
+    $this->smarty->assign('numero_acquisti',    $numeroAcquisti);
     $this->smarty->display('ProfiloPubblico.tpl');
 }
 }

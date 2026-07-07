@@ -170,13 +170,18 @@
       <h3 class="title is-3">Recensioni degli utenti</h3>
       
       {foreach from=$commenti item=recensione}
-        <div class="box mb-4 artwork-review-box">
-          <p class="has-text-weight-bold">{$recensione->getAutore()->getNome()} {$recensione->getAutore()->getCognome()} <span class="has-text-grey is-size-7 ml-2">{$recensione->getData()|date_format:"%d/%m/%Y"}</span></p>
-          <p class="mt-2">{$recensione->getTesto()}</p>
-        </div>
-      {foreachelse}
-        <p class="has-text-grey">Nessuna recensione presente per quest'opera.</p>
-      {/foreach}
+    <div class="box mb-4 artwork-review-box">
+        <p class="has-text-weight-bold">
+            <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$recensione->getAutore()->getId()}">
+                {$recensione->getAutore()->getNome()} {$recensione->getAutore()->getCognome()}
+            </a>
+            <span class="has-text-grey is-size-7 ml-2">{$recensione->getData()|date_format:"%d/%m/%Y"}</span>
+        </p>
+        <p class="mt-2">{$recensione->getTesto()}</p>
+    </div>
+{foreachelse}
+    <p class="has-text-grey">Nessuna recensione presente per quest'opera.</p>
+{/foreach}
 
       {if !isset($utente_loggato) || ($utente_loggato->getRuolo() != 'Amministratore' && $utente_loggato->getId() != $opera->getArtista()->getId())}
     <div class="mt-6">

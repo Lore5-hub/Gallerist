@@ -20,6 +20,13 @@
         {$messaggio_errore_login}
     </div>
 {/if}
+{if isset($successo)}
+    <div class="notification is-success is-light mb-4">
+        <button class="delete" onclick="this.parentElement.remove()"></button>
+        <span class="icon mr-2"><i class="fas fa-check-circle"></i></span>
+        {$successo}
+    </div>
+{/if}
 
           <div class="box p-6 auth-box">
             
@@ -66,6 +73,11 @@
                 <a href="/Gallerist/utente/registrazione" class="has-text-info has-text-weight-bold">Registrati ora</a>
               </p>
             </div>
+            <div class="has-text-right mt-2 mb-4">
+    <a href="/Gallerist/utente/recuperoPassword" class="is-size-7 has-text-grey">
+        Password dimenticata?
+    </a>
+</div>
 
           </div>
           
