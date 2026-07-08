@@ -46,17 +46,71 @@ $sessione->setValue('flash_moderazione', $_GET['moderazione'] ?? null);
     $artistiAttivi   = FPersistentManager::getArtistiAttivi();
     $utentiStandard  = FPersistentManager::getUtentiStandard();
     $segnalazioniList = FPersistentManager::getSegnalazioniAperte();
+
+    $db = FDataBase::getInstance();
+$giorni = 30; // periodo di riferimento
+$dataInizio = date('Y-m-d H:i:s', strtotime("-{$giorni} days"));
+$dataPrecInizio = date('Y-m-d H:i:s', strtotime("-" . ($giorni * 2) . " days"));
+
+// Helper percentuale
+$calcPerc = function(int $attuale, int $precedente): int {
+    if ($precedente === 0) return $attuale > 0 ? 100 : 0;
+    return (int)round(($attuale - $precedente) / $precedente * 100);
+};
+
+// Utenti periodo attuale e precedente
+$resUtentiAtt = $db->queryDB(
+    "SELECT COUNT(*) as tot FROM utente WHERE ruolo != 'Amministratore' AND data_registrazione >= :data",
+    [':data' => $dataInizio]
+);
+$resUtentiPrec = $db->queryDB(
+    "SELECT COUNT(*) as tot FROM utente WHERE ruolo != 'Amministratore' AND data_registrazione >= :dal AND data_registrazione < :al",
+    [':dal' => $dataPrecInizio, ':al' => $dataInizio]
+);
+$utentiAtt  = $resUtentiAtt  ? (int)$resUtentiAtt[0]['tot']  : 0;
+$utentiPrec = $resUtentiPrec ? (int)$resUtentiPrec[0]['tot'] : 0;
+
+// Artisti periodo attuale e precedente
+$resArtAtt = $db->queryDB(
+    "SELECT COUNT(*) as tot FROM artista a INNER JOIN utente u ON u.id = a.idUtente WHERE a.stato_validazione = 'APPROVATO' AND u.data_registrazione >= :data",
+    [':data' => $dataInizio]
+);
+$resArtPrec = $db->queryDB(
+    "SELECT COUNT(*) as tot FROM artista a INNER JOIN utente u ON u.id = a.idUtente WHERE a.stato_validazione = 'APPROVATO' AND u.data_registrazione >= :dal AND u.data_registrazione < :al",
+    [':dal' => $dataPrecInizio, ':al' => $dataInizio]
+);
+$artAtt  = $resArtAtt  ? (int)$resArtAtt[0]['tot']  : 0;
+$artPrec = $resArtPrec ? (int)$resArtPrec[0]['tot'] : 0;
+
+// Segnalazioni periodo attuale e precedente
+$resSegnAtt = $db->queryDB(
+    "SELECT COUNT(*) as tot FROM segnalazione WHERE dataSegnalazione >= :data",
+    [':data' => $dataInizio]
+);
+$resSegnPrec = $db->queryDB(
+    "SELECT COUNT(*) as tot FROM segnalazione WHERE dataSegnalazione >= :dal AND dataSegnalazione < :al",
+    [':dal' => $dataPrecInizio, ':al' => $dataInizio]
+);
+$segnAtt  = $resSegnAtt  ? (int)$resSegnAtt[0]['tot']  : 0;
+$segnPrec = $resSegnPrec ? (int)$resSegnPrec[0]['tot'] : 0;
+
+// Commenti segnalati
+$resCommSegnalati = $db->queryDB(
+    "SELECT COUNT(*) as tot FROM segnalazione WHERE tipoOggetto = 'Commento'",
+    []
+);
+$commentiSegnalati = $resCommSegnalati ? (int)$resCommSegnalati[0]['tot'] : 0;
     $dashboard = [
-        'utenti_totali'       => count($utentiStandard) + count($artistiAttivi),
-        'utenti_perc'         => 5,   // mock
-        'utenti_attesa'       => count($artisitInAttesa),
-        'artisti_attivi'      => count($artistiAttivi),
-        'artisti_perc'        => 8,   // mock
-        'segnalazioni_aperte' => count($segnalazioniList),
-        'segnalazioni_perc'   => 3,   // mock
-        'commenti_segnalati'  => 0,   // mock
-        'commenti_perc'       => 2,   // mock
-    ];
+    'utenti_totali'       => count($utentiStandard) + count($artistiAttivi),
+    'utenti_perc'         => $calcPerc($utentiAtt, $utentiPrec),   // ← reale
+    'utenti_attesa'       => count($artisitInAttesa),
+    'artisti_attivi'      => count($artistiAttivi),
+    'artisti_perc'        => $calcPerc($artAtt, $artPrec),         // ← reale
+    'segnalazioni_aperte' => count($segnalazioniList),
+    'segnalazioni_perc'   => $calcPerc($segnAtt, $segnPrec),       // ← reale
+    'commenti_segnalati'  => $commentiSegnalati,                   // ← reale
+    'commenti_perc'       => 0,                                    // mock — difficile calcolare
+];
     $segnalazioniArray = [];
 foreach ($segnalazioniList as $seg) {
     $segnalazioniArray[] = [
@@ -453,7 +507,29 @@ public function mostraSegnalazione() {
         header('Location: /Gallerist/Admin/dashboard');
         exit;
     }
+// Dopo aver caricato $seg
+$urlAnteprimaOpera = '/Gallerist/img/default_opera.png';
+$titoloOpera = '';
+$categoriaOpera = '';
+$idOpera = 0;
 
+if ($seg->getTipoTarget() === 'Opera') {
+    $opera = FPersistentManager::load('EOpera', 'id', $seg->getIdTarget());
+    if ($opera instanceof EOpera) {
+        $idOpera = $opera->getId();
+        $titoloOpera = $opera->getTitolo();
+        $categoriaOpera = $opera->getCategoria()->getNome();
+        
+        // Carica immagine reale
+        $immagini = FPersistentManager::load('EImmagine', 'idOpera', $opera->getId());
+        if ($immagini !== null) {
+            if (!is_array($immagini)) $immagini = [$immagini];
+            if (!empty($immagini)) {
+                $urlAnteprimaOpera = '/Gallerist/uploads/opere/' . $immagini[0]->getUrlFile();
+            }
+        }
+    }
+}
     $utenteSegnalato  = FPersistentManager::load('EUtente', 'id', $seg->getIdTarget());
     $utenteSegnalante = FPersistentManager::load('EUtente', 'id', $seg->getIdSegnalatore());
 
@@ -491,6 +567,10 @@ public function mostraSegnalazione() {
         'url_anteprima_opera' => '/Gallerist/img/default_opera.png',
         'id_opera'            => 0,
         'categoria_opera'     => '',
+        'titolo_opera'        => $titoloOpera,
+    'url_anteprima_opera' => $urlAnteprimaOpera,
+    'id_opera'            => $idOpera,
+    'categoria_opera'     => $categoriaOpera,
     ];
 
     $autoreContenuto = [

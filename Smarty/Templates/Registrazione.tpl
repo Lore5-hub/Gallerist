@@ -45,7 +45,7 @@
               <form method="POST" action="/Gallerist/utente/verificaRegistrazione" enctype="multipart/form-data">          
                  
                 <div class="field mb-5">
-                  <label class="label">Tipo di Account <span class="has-text-danger">*</span></label>
+                  <label class="label has-text-dark">Tipo di Account <span class="has-text-danger">*</span></label>
                   <div class="control">
                     <label class="radio b-checkbox mr-4">
                       <input type="radio" name="ruolo" value="artista" id="ruolo-artista" {if isset($vecchi_dati.ruolo) && $vecchi_dati.ruolo == 'artista'}checked{/if}>
@@ -60,14 +60,14 @@
 
                 <div class="field is-grouped">
                   <div class="control is-expanded">
-                    <label class="label">Nome</label>
+                    <label class="label has-text-dark">Nome</label>
                     <input class="input {if isset($errori.nome)}is-danger{/if}" type="text" id="nome" name="nome" value="{if isset($vecchi_dati.nome)}{$vecchi_dati.nome}{/if}" required pattern="[A-Za-zÀ-ÿ\s']+" placeholder="Mario">
                     <p id="error-nome" class="help is-danger is-hidden">Il nome può contenere solo lettere.</p>
                     {if isset($errori.nome)}<p class="help is-danger">{$errori.nome}</p>{/if}
                   </div>
                   
                   <div class="control is-expanded">
-                    <label class="label">Cognome</label>
+                    <label class="label has-text-dark">Cognome</label>
                     <input class="input {if isset($errori.cognome)}is-danger{/if}" type="text" id="cognome" name="cognome" value="{if isset($vecchi_dati.cognome)}{$vecchi_dati.cognome}{/if}" required pattern="[A-Za-zÀ-ÿ\s']+" placeholder="Rossi">
                     <p id="error-cognome" class="help is-danger is-hidden">Il cognome può contenere solo lettere.</p>
                     {if isset($errori.cognome)}<p class="help is-danger">{$errori.cognome}</p>{/if}
@@ -77,7 +77,7 @@
                 <hr class="my-4">
 
                 <div class="field">
-                  <label class="label">Email</label>
+                  <label class="label has-text-dark">Email</label>
                   <div class="control has-icons-left">
                     <input class="input {if isset($errori.email)}is-danger{/if}" type="email" id="email" name="email" value="{if isset($vecchi_dati.email)}{$vecchi_dati.email}{/if}" required placeholder="esempio@dominio.com">
                     <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="field mt-4">
-                  <label class="label">Password</label>
+                  <label class="label has-text-dark">Password</label>
                   <div class="control has-icons-left">
                     <input class="input {if isset($errori.password)}is-danger{/if}" type="password" id="password" name="password" minlength="8" required placeholder="••••••••">
                     <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
@@ -97,7 +97,7 @@
                 </div>
 
                 <div class="field mt-4">
-                  <label class="label">Data di Nascita</label>
+                  <label class="label has-text-dark">Data di Nascita</label>
                   <div class="control has-icons-right">
                     <input class="input {if isset($errori.data_nascita)}is-danger{/if}" type="date" id="data_nascita" name="data_nascita" value="{if isset($vecchi_dati.data_nascita)}{$vecchi_dati.data_nascita}{/if}" required>
                     <span class="icon is-small is-right pointer-events-none"><i class="fas fa-calendar"></i></span>
@@ -107,7 +107,7 @@
                 </div>
 
                 <div class="field mt-4">
-                  <label class="label">Indirizzo di Spedizione</label>
+                  <label class="label has-text-dark">Indirizzo di Spedizione</label>
                   <div class="control">
                     <input class="input {if isset($errori.indirizzo)}is-danger{/if}" type="text" id="indirizzo" name="indirizzo" value="{if isset($vecchi_dati.indirizzo)}{$vecchi_dati.indirizzo}{/if}" required minlength="10" placeholder="Via Roma 15, Roma (RM)">
                   </div>
@@ -116,7 +116,7 @@
                 </div>
 
                 <div class="field mt-4">
-                  <label class="label">Nickname</label>
+                  <label class="label has-text-dark">Nickname</label>
                   <div class="control">
                     <input class="input {if isset($errori.nickname)}is-danger{/if}" type="text" id="nickname" name="nickname" value="{if isset($vecchi_dati.nickname)}{$vecchi_dati.nickname}{/if}" required minlength="3" pattern="[A-Za-z0-9_]+" placeholder="art_lover99">
                   </div>
@@ -124,7 +124,7 @@
                   {if isset($errori.nickname)}<p class="help is-danger">{$errori.nickname}</p>{/if}
                 </div>
                 <div class="field mt-4">
-    <label class="label">Foto Profilo <span class="has-text-grey is-size-7">(Facoltativo)</span></label>
+    <label class="label has-text-dark">Foto Profilo <span class="has-text-grey is-size-7">(Facoltativo)</span></label>
     <div class="file has-name is-fullwidth is-light">
         <label class="file-label">
             <input class="file-input" type="file" name="immagine_profilo" accept="image/*" />
@@ -139,7 +139,7 @@
 </div>
 
                 <div class="field mt-4">
-                  <label class="label">Numero di Telefono</label>
+                  <label class="label has-text-dark">Numero di Telefono</label>
                   <div class="control">
                   <input class="input {if isset($errori.telefono)}is-danger{/if}" type="tel" id="telefono" name="telefono" value="{if isset($vecchi_dati.telefono)}{$vecchi_dati.telefono}{/if}"  required placeholder="+39 3331234567">
                   </div>
@@ -155,7 +155,7 @@
                     <div class="message-body has-background-white border-info">
                       
                       <div class="field">
-                        <label class="label">Biografia</label>
+                        <label class="label has-text-dark">Biografia</label>
                         <div class="control">
                           <textarea class="textarea {if isset($errori.biografia)}is-danger{/if}" name="biografia" id="biografia" minlength="50" maxlength="1000" placeholder="Racconta la tua storia e il tuo percorso accademico/artistico...">{if isset($vecchi_dati.biografia)}{$vecchi_dati.biografia}{/if}</textarea>
                         </div>
@@ -163,7 +163,7 @@
                       </div>
 
                       <div class="field mt-4">
-                        <label class="label">Stile Artistico</label>
+                        <label class="label has-text-dark">Stile Artistico</label>
                         <div class="control">
                           <input class="input {if isset($errori.stile)}is-danger{/if}" type="text" name="stile" value="{if isset($vecchi_dati.stile)}{$vecchi_dati.stile}{/if}" pattern="[A-Za-zÀ-ÿ\s,]+" maxlength="50" placeholder="Es. Astrattismo, Impressionismo">
                         </div>
@@ -171,7 +171,7 @@
                       </div>
 
                       <div class="field mt-4">
-                        <label class="label">Portfolio Opere (PDF o ZIP)</label>
+                        <label class="label has-text-dark">Portfolio Opere (PDF o ZIP)</label>
                         <div class="file has-name is-fullwidth is-light">
                           <label class="file-label">
                             <input class="file-input" type="file" name="portfolio" />
@@ -185,7 +185,7 @@
                       </div>
 
                       <div class="field mt-4">
-                        <label class="label">Documento d'Identità (Fronte/Retro)</label>
+                        <label class="label has-text-dark">Documento d'Identità (Fronte/Retro)</label>
                         <div class="file has-name is-fullwidth is-light">
                           <label class="file-label">
                             <input class="file-input" type="file" name="documento_identita" />

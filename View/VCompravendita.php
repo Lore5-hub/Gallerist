@@ -52,7 +52,8 @@ class VCompravendita
         EUtente $utente,
         EOpera  $opera,
         EPrezzo $prezzoSpedizione,
-        ?EArtista $artista = null
+        ?EArtista $artista = null,
+        string    $erroreIndirizzo = ''
     ): void {
         // UC3 richiede login: verifichiamo centralmente prima di mostrare dati sensibili
         if (USession::getInstance()->esisteValore('utente_loggato')) {
@@ -84,7 +85,7 @@ class VCompravendita
             $opera->getPrezzo()->getValuta()
         );
         $this->smarty->assign('totaleOrdine', $totale);
-
+        $this->smarty->assign('errore_indirizzo', $erroreIndirizzo);
         $this->smarty->display('RiepilogoOrdine.tpl');
     }
 

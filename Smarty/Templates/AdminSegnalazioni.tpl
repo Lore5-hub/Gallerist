@@ -73,7 +73,7 @@
                 <div class="box has-background-light p-3 is-shadowless admin-ticket-comment-quote">
                   <p class="is-italic is-size-6">"{$segnalazione.testo_incriminato}"</p>
                 </div>
-              {else}
+              {elseif $segnalazione.tipo_oggetto == 'Opera'}
                 <!-- Se è stata segnalata direttamente l'opera -->
                 <p class="subtitle is-6 mb-2">
                   <span class="icon has-text-primary mr-1"><i class="fas fa-palette"></i></span>
@@ -85,6 +85,13 @@
   <img src="{$segnalazione.url_anteprima_opera}" class="admin-ticket-artwork-img">
 </figure>
                 </div>
+              {else}
+    {* Profilo utente segnalato *}
+    <p class="subtitle is-6 mb-2">
+        <span class="icon has-text-warning mr-1"><i class="fas fa-user"></i></span>
+        Profilo utente segnalato
+    </p>
+    <p class="has-text-grey">La segnalazione riguarda il comportamento o il profilo dell'utente.</p>
               {/if}
             </div>
 
@@ -180,7 +187,7 @@
                   {foreach from=$storico_segnalazioni_utente item=past_ticket}
                     <tr>
                       <td>{$past_ticket.data|date_format:"%d/%m/%Y"}</td>
-                      <td><span class="tag is-small is-light">{$past_ticket.tipo}</span></td>
+                      <td><span class="tag is-small is-dark">{$past_ticket.tipo}</span></td>
                       <td>{$past_ticket.motivo}</td>
                       <td>
                         {if $past_ticket.stato_azione == 'Bannato'}

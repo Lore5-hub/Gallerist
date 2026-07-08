@@ -11,12 +11,12 @@
           <div class="control has-icons-left">
             <div class="select is-info">
               <select name="periodo" onchange="this.form.submit()">
-                <option value="30">Ultimi 30 giorni</option>
-                <option value="90">Ultimi 3 mesi</option>
-                <option value="180">Ultimi 6 mesi</option>
-                <option value="365">Ultimo anno</option>
-                <option value="all" selected>Sempre</option>
-              </select>
+    <option value="30"  {if $periodo_selezionato == '30'}selected{/if}>Ultimi 30 giorni</option>
+    <option value="90"  {if $periodo_selezionato == '90'}selected{/if}>Ultimi 3 mesi</option>
+    <option value="180" {if $periodo_selezionato == '180'}selected{/if}>Ultimi 6 mesi</option>
+    <option value="365" {if $periodo_selezionato == '365'}selected{/if}>Ultimo anno</option>
+    <option value="all" {if $periodo_selezionato == 'all'}selected{/if}>Sempre</option>
+</select>
             </div>
             <span class="icon is-small is-left has-text-info">
               <i class="fas fa-calendar-alt"></i>

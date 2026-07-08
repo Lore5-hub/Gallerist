@@ -50,16 +50,20 @@
     <div class="column is-5">
       
       <h3 class="title is-5 mb-3">Indirizzo di Spedizione</h3>
-      <div class="box is-flex is-justify-content-space-between is-align-items-center has-background-light">
-        <div>
-          <p class="has-text-weight-bold">{$acquirente->getNome()} {$acquirente->getCognome()}</p>
-          <p class="is-size-6 has-text-grey">{$acquirente->getIndirizzo()}</p>
+      <div class="box has-background-light">
+    <p class="has-text-weight-bold mb-2">{$acquirente->getNome()} {$acquirente->getCognome()}</p>
+    <div class="field">
+        <div class="control">
+            <input class="input" type="text" name="indirizzo_spedizione" 
+                   value="{$acquirente->getIndirizzo()}"
+                   placeholder="Via Roma 1, Milano (MI)" required>
         </div>
-        <a href="/Gallerist/utente/profilo" class="button is-small is-ghost" title="Modifica Indirizzo">
-          <span class="icon has-text-grey"><i class="fas fa-pencil-alt fa-lg"></i></span>
-        </a>
-      </div>
-
+        <p class="help has-text-grey">Modifica l'indirizzo se necessario</p>
+    </div>
+</div>
+{if isset($errore_indirizzo) && $errore_indirizzo != ''}
+    <p class="help is-danger">{$errore_indirizzo}</p>
+{/if}
       <h3 class="title is-5 mt-5 mb-3">Metodo di Pagamento</h3>
       
       <label class="box is-flex is-align-items-center is-clickable mb-2 py-3 payment-method-box">

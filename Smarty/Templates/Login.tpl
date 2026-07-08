@@ -11,7 +11,7 @@
           <div class="notification is-danger is-light">
             <button class="delete" onclick="this.parentElement.remove()"></button>
             <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-            {$errore_login}
+           Email o password non corretti. Riprova.
           </div>
           {/if}
           {if isset($messaggio_errore_login)}
@@ -31,7 +31,7 @@
           <div class="box p-6 auth-box">
             
             <div class="has-text-centered mb-5">
-              <h1 class="title has-text-dark">Bentornato!</h1>
+              <h1 class="title has-text-light">Bentornato!</h1>
               <p class="subtitle is-6 has-text-grey">Inserisci le tue credenziali per accedere</p>
             </div>
 

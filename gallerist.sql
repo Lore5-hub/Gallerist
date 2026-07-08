@@ -307,6 +307,8 @@ CREATE TABLE `ordine` (
   `idUtente` int(11) NOT NULL,
   `idOpera` int(11) NOT NULL,
   `tipo` enum('diretto','offerta') NOT NULL DEFAULT 'diretto'
+  `indirizzo_spedizione` varchar(255) DEFAULT NULL,
+  `metodo_pagamento` varchar(50) DEFAULT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

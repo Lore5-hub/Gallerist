@@ -586,9 +586,15 @@ public function storicoVendite(): void {
         header('Location: /Gallerist/catalogo/esploraCatalogo');
         exit;
     }
-
+    $periodo = $_GET['periodo'] ?? 'all';
     $db = FDataBase::getInstance();
-
+    $filtroData = '';
+    $params = [':id' => $artista->getId()];
+    
+    if ($periodo !== 'all') {
+        $filtroData = "AND ord.data >= :dataInizio";
+        $params[':dataInizio'] = date('Y-m-d', strtotime("-{$periodo} days"));
+    }
     // Storico vendite reale
     $resVendite = $db->queryDB(
         "SELECT o.titolo as titolo_opera, o.categoria, o.prezzo,
@@ -597,9 +603,10 @@ public function storicoVendite(): void {
                 o.prezzo * 0.85 as netto
          FROM ordine ord
          INNER JOIN opera o ON o.id = ord.idOpera
-         WHERE o.idArtista = :id
+          WHERE o.idArtista = :id {$filtroData}
          ORDER BY ord.data DESC",
-        [':id' => $artista->getId()]
+         $params
+    
     );
 
     $storicoVendite = $resVendite ?? [];
@@ -674,6 +681,7 @@ $statistiche['dati_categorie']   = $datiCategorie;
     $vUtente = new VUtente();
     $vUtente->smarty->assign('statistiche',     $statistiche);
     $vUtente->smarty->assign('storico_vendite', $storicoVendite);
+    $vUtente->smarty->assign('periodo_selezionato', $periodo);
     $vUtente->smarty->display('StoricoVendite.tpl');
 }
 /**

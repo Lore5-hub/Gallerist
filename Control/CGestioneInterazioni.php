@@ -121,8 +121,16 @@ class CGestioneInterazioni {
 
     FPersistentManager::store($segnalazione);
 
+// ✅ Redirect corretto in base al tipo
+if ($tipo === 'Opera') {
+    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idSegnalato . '?segnalazione=inviata');
+} elseif ($tipo === 'Commento') {
+    header('Location: /Gallerist/catalogo/esploraCatalogo?segnalazione=inviata');
+} else {
+    // Profilo
     header('Location: /Gallerist/catalogo/visualizzaProfiloArtista/' . $idSegnalato . '?segnalazione=inviata');
-    exit;
+}
+exit;
 }
 public function salvaRecensione(): void {
     $sessione = USession::getInstance();

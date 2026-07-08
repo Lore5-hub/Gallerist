@@ -46,7 +46,12 @@
   <div class="column is-5">
     
     <h1 class="title is-2 mb-2">{$opera->getTitolo()}</h1>
-    
+    {if isset($utente_loggato) && $utente_loggato->getRuolo() != 'Amministratore' && $utente_loggato->getId() != $opera->getArtista()->getId()}
+    <button class="button is-danger is-outlined is-small mt-2" id="btn-segnala-opera">
+        <span class="icon"><i class="fas fa-flag"></i></span>
+        <span>Segnala Opera</span>
+    </button>
+{/if}
     <h2 class="subtitle is-4 mt-0">
       di <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$opera->getArtista()->getId()}" class="has-text-link">{$opera->getArtista()->getNome()}</a>
     </h2>
@@ -228,5 +233,38 @@
     {/foreach}
   </div>
 </section>
+<div id="modal-segnalazione-opera" class="modal">
+    <div class="modal-background" onclick="this.parentElement.classList.remove('is-active')"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Segnala Opera</p>
+            <button class="delete" onclick="this.closest('.modal').classList.remove('is-active')"></button>
+        </header>
+        <section class="modal-card-body">
+            <form method="POST" action="/Gallerist/gestioneInterazioni/inviaSegnalazione">
+                <input type="hidden" name="id_segnalato" value="{$opera->getId()}">
+                <input type="hidden" name="tipo_segnalazione" value="Opera">
+                
+                <div class="field">
+                    <label class="label">Descrizione del problema</label>
+                    <div class="control">
+                        <textarea class="textarea" name="descrizione" 
+                                  placeholder="Descrivi il problema..." 
+                                  required minlength="10"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="button is-danger is-fullwidth mt-3">
+                    Conferma Segnalazione
+                </button>
+            </form>
+        </section>
+    </div>
+</div>
+
+<script>
+document.getElementById('btn-segnala-opera')?.addEventListener('click', () => {
+    document.getElementById('modal-segnalazione-opera').classList.add('is-active');
+});
+</script>
 <script src="/Gallerist/js/dettaglioOpera.js"></script>
 {/block}

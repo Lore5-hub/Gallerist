@@ -123,13 +123,22 @@ if ($artista instanceof EArtista && count($tuttiCommenti) > 0) {
         // Aggiorna stato opera a Venduta
         $pdo->prepare("UPDATE opera SET stato = 'Venduta' WHERE id = :id")
             ->execute([':id' => $idOpera]);
-
+// ✅ Leggi indirizzo dal form — può essere diverso da quello del profilo
+$indirizzoSpedizione = trim($_POST['indirizzo_spedizione'] ?? $utente->getIndirizzo());
+if (strlen($indirizzoSpedizione) < 10) {
+    $pdo->rollBack();
+    // Ricarica il riepilogo con errore
+    $prezzoSpedizione = new EPrezzo(5.00);
+    $view->mostraRiepilogoOrdine($utente, $opera, $prezzoSpedizione, null, 'Inserisci un indirizzo valido (almeno 10 caratteri).');
+    return;
+}
         // Salva ordine
         $ordine = new EOrdine(
             0,
             new DateTimeImmutable(),
             $_POST['metodo_pagamento'] ?? 'carta',
-            $utente->getIndirizzo(),
+            
+            $indirizzoSpedizione,
             new EPrezzo(5.00),
             $opera->getPrezzo(),
             new EPrezzo(0.0),
@@ -137,12 +146,16 @@ if ($artista instanceof EArtista && count($tuttiCommenti) > 0) {
             $opera
         );
         $stmt = $pdo->prepare(
-    "INSERT INTO ordine (data, idUtente, idOpera) VALUES (:data, :idUtente, :idOpera)"
+    "INSERT INTO ordine (data, idUtente, idOpera, tipo, indirizzo_spedizione, metodo_pagamento) 
+     VALUES (:data, :idUtente, :idOpera, :tipo, :indirizzo, :metodo)"
 );
 $stmt->execute([
     ':data'     => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
     ':idUtente' => $utente->getId(),
     ':idOpera'  => $idOpera,
+    ':tipo'     => 'diretto',
+    ':indirizzo' => $indirizzoSpedizione,
+    ':metodo'   => $_POST['metodo_pagamento'] ?? 'carta',
 ]);
 
         $pdo->commit();
