@@ -39,6 +39,30 @@ class CUtente
             $utente = FUtente::verificaCredenziali($email, $password); 
             
             if ($utente !== null) {
+                if ($utente->getStatoAccount() === EUtente::STATO_BANNATO) {
+                    $db = FDataBase::getInstance();
+    $result = $db->queryDB(
+        "SELECT dataFine FROM provvedimento 
+         WHERE idUtenteSanzionato = :id 
+         AND (dataFine IS NULL OR dataFine > NOW())
+         ORDER BY id DESC LIMIT 1",
+        [':id' => $utente->getId()]
+    );
+
+    if (empty($result)) {
+        // Ban scaduto — riattiva l'account
+        $db->queryDB(
+            "UPDATE utente SET stato_account = 'attivo' WHERE id = :id",
+            [':id' => $utente->getId()]
+        );
+    } else {
+        $vUtente = new VUtente();
+        $vUtente->smarty->assign('errore_login', true);
+        $vUtente->smarty->assign('messaggio_errore_login', 'Il tuo account è stato sospeso. Contatta l\'amministratore per maggiori informazioni.');
+        $vUtente->smarty->display('Login.tpl');
+        return;}
+    }
+                
     // ✅ Se è un artista, ricaricalo come EArtista
     if ($utente->getRuolo() === EUtente::RUOLO_ARTISTA) {
         $artista = FPersistentManager::load('EArtista', 'id', $utente->getId());
@@ -46,13 +70,7 @@ class CUtente
             $utente = $artista;
         }
     }
-     if ($utente->getStatoAccount() === EUtente::STATO_BANNATO) {
-        $vUtente = new VUtente();
-        $vUtente->smarty->assign('errore_login', true);
-        $vUtente->smarty->assign('messaggio_errore_login', 'Il tuo account è stato sospeso. Contatta l\'amministratore per maggiori informazioni.');
-        $vUtente->smarty->display('Login.tpl');
-        return;
-    }
+     
     if ($utente instanceof EArtista && $utente->getStatoValidazione() === 'IN_ATTESA') {
         $vUtente = new VUtente();
         $vUtente->smarty->assign('errore_login', true);

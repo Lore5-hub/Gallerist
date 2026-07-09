@@ -390,7 +390,7 @@ CREATE TABLE `segnalazione` (
   `id` int(11) NOT NULL,
   `motivo` varchar(255) NOT NULL,
   `descrizione` text DEFAULT NULL,
-  `dataSegnalazione` date NOT NULL,
+  `dataSegnalazione` datetime NOT NULL,
   `stato` enum('Aperta','Archiviata','Risolta') DEFAULT 'Aperta',
   `tipoOggetto` enum('Commento','Profilo','Opera') NOT NULL,
   `idOggettoSegnalato` int(11) NOT NULL,

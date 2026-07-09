@@ -113,11 +113,12 @@ $commentiSegnalati = $resCommSegnalati ? (int)$resCommSegnalati[0]['tot'] : 0;
 ];
     $segnalazioniArray = [];
 foreach ($segnalazioniList as $seg) {
+    $segnalante = FPersistentManager::load('EUtente', 'id', $seg->getIdSegnalatore());
     $segnalazioniArray[] = [
         'id'                  => $seg->getId(),
         'tipo'                => $seg->getTipoTarget(),
         'contenuto'           => $seg->getMotivo(),
-        'autore_segnalazione' => $seg->getIdSegnalatore(), // id, non nickname — da migliorare
+        'autore_segnalazione' => $segnalante ? '@' . $segnalante->getNickname() : '#' . $seg->getIdSegnalatore(),
         'data'                => $seg->getDataSegnalazione()->format('Y-m-d'),
         'stato'               => 'Aperta',
     ];
@@ -128,7 +129,7 @@ foreach ($segnalazioniList as $seg) {
         $utentiInAttesaArray[] = [
             'id'                 => $artista->getId(),
             'nickname'           => $artista->getNickname(),
-            'data_registrazione' => $artista->getDataDiNascita()->format('Y-m-d'),
+            'data_registrazione' => $artista->getDataRegistrazione()->format('Y-m-d'),
         ];
     }
     $provvedimenti = FPersistentManager::getProvvedimentiAttivi();
@@ -507,11 +508,29 @@ public function mostraSegnalazione() {
         header('Location: /Gallerist/Admin/dashboard');
         exit;
     }
-// Dopo aver caricato $seg
-$urlAnteprimaOpera = '/Gallerist/img/default_opera.png';
+    // Dopo aver caricato $seg
+$testoIncriminato = '';
 $titoloOpera = '';
+$urlAnteprimaOpera = '/Gallerist/img/default_opera.png';
+
 $categoriaOpera = '';
 $idOpera = 0;
+
+if ($seg->getTipoTarget() === 'Commento') {
+    $commento = FPersistentManager::load('ECommento', 'id', $seg->getIdTarget());
+    if ($commento instanceof ECommento) {
+        
+        $testoIncriminato = $commento->getTesto();
+        $opera = FPersistentManager::load('EOpera', 'id', $commento->getOpera()->getId());
+        
+        if ($opera instanceof EOpera) {
+            $titoloOpera = $opera->getTitolo();
+        }
+        $idAutoreCommento = $commento->getAutore()->getId();
+    }
+}
+// Dopo aver caricato $seg
+
 
 if ($seg->getTipoTarget() === 'Opera') {
     $opera = FPersistentManager::load('EOpera', 'id', $seg->getIdTarget());
@@ -530,7 +549,11 @@ if ($seg->getTipoTarget() === 'Opera') {
         }
     }
 }
-    $utenteSegnalato  = FPersistentManager::load('EUtente', 'id', $seg->getIdTarget());
+    if ($seg->getTipoTarget() === 'Commento' && isset($idAutoreCommento)) {
+    $utenteSegnalato = FPersistentManager::load('EUtente', 'id', $idAutoreCommento);
+} else {
+    $utenteSegnalato = FPersistentManager::load('EUtente', 'id', $seg->getIdTarget());
+}
     $utenteSegnalante = FPersistentManager::load('EUtente', 'id', $seg->getIdSegnalatore());
 
     // Storico segnalazioni reale
@@ -554,24 +577,20 @@ if ($seg->getTipoTarget() === 'Opera') {
         ];
     }
 
-    $segnalazione = [
-        'id'                  => $seg->getId(),
-        'tipo_oggetto'        => $seg->getTipoTarget(),
-        'autore_segnalazione' => $utenteSegnalante ? $utenteSegnalante->getNickname() : $seg->getIdSegnalatore(),
-        'data_invio'          => $seg->getDataSegnalazione()->format('Y-m-d H:i:s'),
-        'stato'               => $seg->getStato()->getNomeStato(),
-        'motivo_principale'   => $seg->getMotivo(),
-        'dettagli_aggiuntivi' => $seg->getNotaOpzionale(),
-        'titolo_opera'        => '',
-        'testo_incriminato'   => '',
-        'url_anteprima_opera' => '/Gallerist/img/default_opera.png',
-        'id_opera'            => 0,
-        'categoria_opera'     => '',
-        'titolo_opera'        => $titoloOpera,
+   $segnalazione = [
+    'id'                  => $seg->getId(),
+    'tipo_oggetto'        => $seg->getTipoTarget(),
+    'autore_segnalazione' => $utenteSegnalante ? $utenteSegnalante->getNickname() : $seg->getIdSegnalatore(),
+    'data_invio'          => $seg->getDataSegnalazione()->format('Y-m-d H:i:s'),
+    'stato'               => $seg->getStato()->getNomeStato(),
+    'motivo_principale'   => $seg->getMotivo(),
+    'dettagli_aggiuntivi' => $seg->getNotaOpzionale(),
+    'titolo_opera'        => $titoloOpera,
+    'testo_incriminato'   => $testoIncriminato,
     'url_anteprima_opera' => $urlAnteprimaOpera,
     'id_opera'            => $idOpera,
     'categoria_opera'     => $categoriaOpera,
-    ];
+];
 
     $autoreContenuto = [
         'id'                    => $utenteSegnalato ? $utenteSegnalato->getId() : 0,
@@ -586,6 +605,7 @@ if ($seg->getTipoTarget() === 'Opera') {
     $vAdmin->smarty->assign('segnalazione',                $segnalazione);
     $vAdmin->smarty->assign('autore_contenuto',            $autoreContenuto);
     $vAdmin->smarty->assign('storico_segnalazioni_utente', $storico);
+    
     $vAdmin->smarty->display('AdminSegnalazioni.tpl');
 }
 
@@ -702,6 +722,9 @@ public function processaModerazione() {
     // 1. Applica il ban se richiesto
     if ($azione === 'ban' && $idUtente > 0) {
         $dataInizio = date('Y-m-d');
+        if ($tipoBan === 'permanente') {
+    $durataBan = 0;
+}
         $dataFine   = $durataBan > 0 
             ? date('Y-m-d', strtotime("+{$durataBan} days")) 
             : null;
@@ -722,6 +745,33 @@ public function processaModerazione() {
         // Aggiorna stato account utente a Bannato
         FPersistentManager::update('EUtente', 'stato_account', EUtente::STATO_BANNATO, 'id', $idUtente);
     }
+    if ($azione === 'ban' && $idUtente > 0) {
+    // ... codice ban invariato
+}
+
+// ✅ AGGIUNGI QUI
+// 1b. Rimuovi contenuto se richiesto
+if ($rimuoviContenuto) {
+    $db = FDataBase::getInstance();
+    
+    $segResult = $db->queryDB(
+        "SELECT tipoOggetto, idOggettoSegnalato FROM segnalazione WHERE id = :id",
+        [':id' => $idSegnalazione]
+    );
+    
+    if (!empty($segResult)) {
+        $tipo      = $segResult[0]['tipoOggetto'];
+        $idOggetto = (int)$segResult[0]['idOggettoSegnalato'];
+        
+        if ($tipo === 'Commento') {
+            $db->queryDB(
+                "DELETE FROM commento WHERE id = :id",
+                [':id' => $idOggetto]
+            );
+        }
+        // Opera e Profilo: il ban nasconde già il contenuto automaticamente
+    }
+}
 
     // 2. Aggiorna stato segnalazione ad Archiviata
     if ($idSegnalazione > 0) {

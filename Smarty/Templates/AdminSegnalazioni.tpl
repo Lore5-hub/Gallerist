@@ -228,6 +228,12 @@
             </label>
 
             <!-- Opzione 2: Banna Utente -->
+            {if $autore_contenuto.stato == 'Bannato'}
+    <div class="notification is-warning is-light mb-3">
+        <span class="icon mr-2"><i class="fas fa-ban"></i></span>
+        Questo utente è già bannato.
+    </div>
+{else}
             <div class="box py-2 px-3 mb-3 is-shadowless admin-ticket-ban-panel">
               <label class="radio is-flex is-align-items-center mb-2 is-clickable">
                 <input type="radio" name="azione_moderazione" value="ban">
@@ -263,14 +269,17 @@
                 </div>
               </div>
             </div>
+            {/if}
 
             <!-- Opzione 3: Rimuovi contenuto e avvisa -->
+            {if $segnalazione.tipo_oggetto != 'Profilo'}
             <label class="checkbox box is-flex is-align-items-center py-2 px-3 mb-4 is-clickable has-background-light is-shadowless">
               <!-- Questo è un checkbox separato perché l'admin potrebbe voler rimuovere il contenuto SIA se non banna, SIA in combinazione con il ban! -->
               <input type="checkbox" name="rimuovi_e_avvisa" value="1" checked>
               <span class="icon has-text-warning ml-2 mr-1"><i class="fas fa-trash-alt"></i></span>
               <span class="is-size-6 has-text-weight-medium">Rimuovi contenuto e avvisa</span>
             </label>
+            {/if}
 
             <!-- Nota di spiegazione per il Ban / Azione -->
             <div class="field">
@@ -298,4 +307,16 @@
     </div>
   </section>
 </form>
+<script>
+document.querySelector('select[name="tipo_ban"]').addEventListener('change', function() {
+    const durata = document.querySelector('select[name="durata_ban"]');
+    if (this.value === 'permanente') {
+        durata.value = '0';
+        durata.disabled = true;
+    } else {
+        durata.disabled = false;
+        durata.value = '1';
+    }
+});
+</script>
 {/block}

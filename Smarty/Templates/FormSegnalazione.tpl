@@ -7,19 +7,7 @@
   <form method="POST" action="/Gallerist/gestioneInterazioni/inviaSegnalazione">
   <input type="hidden" name="id_segnalato" value="{$utente->getId()}">
     
-    <div class="field">
-      <label class="label">Cosa vuoi segnalare?</label>
-      <div class="control">
-        <div class="select is-fullwidth">
-          <select name="tipo_segnalazione" required>
-    <option value="" disabled selected>Seleziona una categoria...</option>
-    <option value="Profilo">Profilo utente</option>
-    <option value="Opera">Un'opera specifica</option>
-    <option value="Commento">Commento inappropriato</option>
-</select>
-        </div>
-      </div>
-    </div>
+    <input type="hidden" name="tipo_segnalazione" value="Profilo">
 
     <div class="field">
       <label class="label">Descrizione del problema</label>

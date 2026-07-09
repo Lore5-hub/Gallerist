@@ -216,7 +216,7 @@
                   <tr>
                     <td><strong>{$segnalazione.tipo}</strong></td>
                     <td><span class="text-truncate-custom max-w-150">{$segnalazione.contenuto}</span></td>
-                    <td>@{$segnalazione.autore_segnalazione}</td>
+                    <td>{$segnalazione.autore_segnalazione}</td>
                     <td>{$segnalazione.data|date_format:"%d/%m/%Y"}</td>
                     <td>
                       {if $segnalazione.stato == 'Aperta'}

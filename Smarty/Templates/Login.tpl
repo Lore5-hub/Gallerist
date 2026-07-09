@@ -7,7 +7,7 @@
         
         <div class="column is-4-desktop is-6-tablet">
           
-          {if isset($errore_login)}
+          {if isset($errore_login) && !isset($messaggio_errore_login)}
           <div class="notification is-danger is-light">
             <button class="delete" onclick="this.parentElement.remove()"></button>
             <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
@@ -38,7 +38,7 @@
             <form method="POST" action="/Gallerist/Utente/verifica">
               
               <div class="field">
-                <label class="label">Email</label>
+                <label class="label has-text-dark">Email</label>
                 <div class="control has-icons-left">
                   <input class="input is-medium {if isset($errore_login)}is-danger{/if}" type="email" name="email" value="{if isset($email_inserita)}{$email_inserita}{/if}" placeholder="tua@email.com" required />
                   <span class="icon is-small is-left">
@@ -48,7 +48,7 @@
               </div>
 
               <div class="field mt-4">
-                <label class="label">Password</label>
+                <label class="label has-text-dark">Password</label>
                 <div class="control has-icons-left">
                   <input class="input is-medium {if isset($errore_login)}is-danger{/if}" type="password" name="password" placeholder="********" required />
                   <span class="icon is-small is-left">

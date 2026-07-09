@@ -108,6 +108,13 @@ class CGestioneInterazioni {
         header('Location: /Gallerist/catalogo/esploraCatalogo');
         exit;
     }
+    if ($tipo === 'Commento') {
+    $commento = FPersistentManager::load('ECommento', 'id', $idSegnalato);
+    if ($commento instanceof ECommento && $commento->getAutore()->getId() === $segnalante->getId()) {
+        header('Location: /Gallerist/catalogo/esploraCatalogo?errore=segnalazione_propria');
+        exit;
+    }
+}
 
     $segnalazione = new ESegnalazione(
         0,                          // id → AUTO_INCREMENT

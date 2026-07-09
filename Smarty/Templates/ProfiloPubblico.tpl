@@ -6,7 +6,23 @@
     <article class="media">
       <figure class="media-left">
         <p class="image is-96x96">
-          <img class="is-rounded public-profile-avatar" src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}" alt="Profilo" />
+          {if isset($utente_loggato) && $utente_loggato->getId() == $utente->getId()}
+    <figure class="image is-96x96 is-clickable" 
+            title="Cambia foto profilo"
+            onclick="document.getElementById('input-avatar-profilo').click()">
+        <img class="is-rounded public-profile-avatar" 
+             src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}" alt="Profilo" />
+    </figure>
+    <form method="POST" action="/Gallerist/utente/cambiaFotoProfilo" 
+          enctype="multipart/form-data" id="form-avatar-profilo">
+        <input type="file" id="input-avatar-profilo" name="immagine_profilo" 
+               accept="image/*" style="display:none"
+               onchange="document.getElementById('form-avatar-profilo').submit()">
+    </form>
+{else}
+    <img class="is-rounded public-profile-avatar" 
+         src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}" alt="Profilo" />
+{/if}
         </p>
       </figure>
       <div class="media-content">

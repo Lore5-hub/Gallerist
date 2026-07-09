@@ -176,12 +176,25 @@
       
       {foreach from=$commenti item=recensione}
     <div class="box mb-4 artwork-review-box">
-        <p class="has-text-weight-bold">
-            <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$recensione->getAutore()->getId()}">
-                {$recensione->getAutore()->getNome()} {$recensione->getAutore()->getCognome()}
-            </a>
-            <span class="has-text-grey is-size-7 ml-2">{$recensione->getData()|date_format:"%d/%m/%Y"}</span>
-        </p>
+        <div class="is-flex is-justify-content-space-between is-align-items-center">
+            <p class="has-text-weight-bold">
+                <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$recensione->getAutore()->getId()}">
+                    {$recensione->getAutore()->getNome()} {$recensione->getAutore()->getCognome()}
+                </a>
+                <span class="has-text-grey is-size-7 ml-2">{$recensione->getData()|date_format:"%d/%m/%Y"}</span>
+            </p>
+            {if isset($utente_loggato) && $utente_loggato->getRuolo() != 'Amministratore' && $utente_loggato->getId() != $recensione->getAutore()->getId()}
+    <form method="POST" action="/Gallerist/gestioneInterazioni/inviaSegnalazione" style="display:inline;">
+        <input type="hidden" name="id_segnalato" value="{$recensione->getId()}">
+        <input type="hidden" name="tipo_segnalazione" value="Commento">
+        <input type="hidden" name="descrizione" value="Commento inappropriato segnalato dall'utente">
+        <button type="submit" class="button is-small is-danger is-outlined"
+                onclick="return confirm('Vuoi segnalare questo commento?')">
+            <span class="icon"><i class="fas fa-flag"></i></span>
+        </button>
+    </form>
+{/if}
+        </div>
         <p class="mt-2">{$recensione->getTesto()}</p>
     </div>
 {foreachelse}

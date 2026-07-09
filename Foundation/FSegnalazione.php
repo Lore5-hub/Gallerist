@@ -17,7 +17,7 @@ class FSegnalazione {
         $stmt->bindValue(':id',                NULL,                                        PDO::PARAM_INT);
     $stmt->bindValue(':motivo',            $segnalazione->getMotivo(),                  PDO::PARAM_STR);
     $stmt->bindValue(':descrizione',       $segnalazione->getNotaOpzionale(),           PDO::PARAM_STR);
-    $stmt->bindValue(':dataSegnalazione',  $segnalazione->getDataSegnalazione()->format('Y-m-d'), PDO::PARAM_STR);
+    $stmt->bindValue(':dataSegnalazione', $segnalazione->getDataSegnalazione()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
     $stmt->bindValue(':stato', $segnalazione->getStato()->getNomeStato(), PDO::PARAM_STR);
     $stmt->bindValue(':tipoOggetto',       $segnalazione->getTipoTarget(),              PDO::PARAM_STR);
     $stmt->bindValue(':idOggettoSegnalato',$segnalazione->getIdTarget(),                PDO::PARAM_INT);
