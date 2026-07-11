@@ -78,21 +78,26 @@ class FDataBase
 	 */
 	public function loadDB ($class, $field, $id)
 	{
+		if (!$this->isValidFieldName($field)) {
+			error_log("loadDB: nome campo non valido: " . $field);
+			return null;
+		}
 		try {
-			$query = "SELECT * FROM " . $class::getTable() . " WHERE " . $field . "='" . $id . "';";
+			$query = "SELECT * FROM " . $class::getTable() . " WHERE " . $field . " = :id;";
 			$stmt = $this->db->prepare($query);
+			$stmt->bindValue(':id', $id);
 			$stmt->execute();
 			$num = $stmt->rowCount();
-			
+
 			if ($num == 0) {
-				$result = null; 
+				$result = null;
 			} elseif ($num == 1) {
-				$result = $stmt->fetch(PDO::FETCH_ASSOC); // Ritorna una sola riga (array associativo)
+				$result = $stmt->fetch(PDO::FETCH_ASSOC);
 			} else {
-				$result = array(); 
+				$result = array();
 				$stmt->setFetchMode(PDO::FETCH_ASSOC);
 				while ($row = $stmt->fetch())
-					$result[] = $row; // Ritorna un array di righe
+					$result[] = $row;
 			}
 			return $result;
 		} catch (PDOException $e) {
@@ -134,13 +139,18 @@ class FDataBase
 	 */
 	public function deleteDB ($class, $field, $id)
 	{
+		if (!$this->isValidFieldName($field)) {
+			error_log("deleteDB: nome campo non valido: " . $field);
+			return null;
+		}
 		try {
 			$result = null;
 			$this->db->beginTransaction();
 			$esiste = $this->existDB($class, $field, $id);
 			if ($esiste) {
-				$query = "DELETE FROM " . $class::getTable() . " WHERE " . $field . "='" . $id . "';";
+				$query = "DELETE FROM " . $class::getTable() . " WHERE " . $field . " = :id;";
 				$stmt = $this->db->prepare($query);
+				$stmt->bindValue(':id', $id);
 				$stmt->execute();
 				$this->db->commit();
 				$this->closeDbConnection();
@@ -164,10 +174,16 @@ class FDataBase
 	 */
 	public function updateDB ($class, $field, $newvalue, $pk, $id)
 	{
+		if (!$this->isValidFieldName($field) || !$this->isValidFieldName($pk)) {
+			error_log("updateDB: nome campo non valido");
+			return false;
+		}
 		try {
 			$this->db->beginTransaction();
-			$query = "UPDATE " . $class::getTable() . " SET " . $field . "='" . $newvalue . "' WHERE " . $pk . "='" . $id . "';";
+			$query = "UPDATE " . $class::getTable() . " SET " . $field . " = :newvalue WHERE " . $pk . " = :id;";
 			$stmt = $this->db->prepare($query);
+			$stmt->bindValue(':newvalue', $newvalue);
+			$stmt->bindValue(':id', $id);
 			$stmt->execute();
 			$this->db->commit();
 			$this->closeDbConnection();
@@ -188,17 +204,22 @@ class FDataBase
 	 */
 	public function existDB ($class, $field, $id)
 	{
+		if (!$this->isValidFieldName($field)) {
+			error_log("existDB: nome campo non valido: " . $field);
+			return null;
+		}
 		try {
-			$query = "SELECT * FROM " . $class::getTable() . " WHERE " . $field . "='" . $id . "'";
+			$query = "SELECT * FROM " . $class::getTable() . " WHERE " . $field . " = :id";
 			$stmt = $this->db->prepare($query);
+			$stmt->bindValue(':id', $id);
 			$stmt->execute();
 			$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 			$this->closeDbConnection();
-			
+
 			if (count($result) == 1) {
-				return $result[0]; 
+				return $result[0];
 			} else if (count($result) > 1) {
-				return $result; 
+				return $result;
 			}
 			return null;
 		} catch (PDOException $e) {
@@ -220,13 +241,15 @@ class FDataBase
 	{
 		try {
 			$class = "FOrdine";
-			// Query con filtro sull'artista e intervallo temporale (BETWEEN) per il calendario dell'UC6
-			$query = "SELECT * FROM " . $class::getTable() . " WHERE idArtista = '" . $idArtista . "' AND dataOrdine BETWEEN '" . $dataInizio . "' AND '" . $dataFine . "' ORDER BY dataOrdine DESC;";
-			
+			$query = "SELECT * FROM " . $class::getTable() . " WHERE idArtista = :idArtista AND dataOrdine BETWEEN :dataInizio AND :dataFine ORDER BY dataOrdine DESC;";
+
 			$stmt = $this->db->prepare($query);
+			$stmt->bindValue(':idArtista', $idArtista);
+			$stmt->bindValue(':dataInizio', $dataInizio);
+			$stmt->bindValue(':dataFine', $dataFine);
 			$stmt->execute();
 			$num = $stmt->rowCount();
-			
+
 			if ($num == 0) {
 				$result = null;
 			} elseif ($num == 1) {
@@ -266,5 +289,16 @@ public function getConnection(): PDO {
 	{
 		self::$instance = null;
 	}
+
+	/**
+	 * Valida un nome di campo/colonna prima di usarlo in una query.
+	 * I nomi di colonna non sono bindabili via PDO, quindi vanno
+	 * validati esplicitamente per evitare SQL injection sul nome campo.
+	 * Ammette solo lettere, numeri e underscore (nessuno spazio, apice, punto e virgola...).
+	 */
+	private function isValidFieldName(string $field): bool
+	{
+		return (bool) preg_match('/^[a-zA-Z0-9_]+$/', $field);
+	}
+
 }
-?>
