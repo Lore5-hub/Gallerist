@@ -450,6 +450,27 @@ INSERT INTO `tecnica` (`id`, `nome`) VALUES
 (3, 'Matita'),
 (4, 'Fotografia digitale');
 
+-- Aggiunta tecniche: Scultura
+INSERT INTO `tecnica` (`nome`) VALUES
+('Scultura in marmo'),
+('Scultura in bronzo'),
+('Scultura in legno'),
+('Terracotta'),
+('Ceramica'),
+('Scultura in pietra'),
+('Scultura in metallo'),
+('Modellato in argilla'),
+('Intaglio');
+
+-- Aggiunta tecniche: Fotografia
+INSERT INTO `tecnica` (`nome`) VALUES
+('Fotografia analogica (pellicola)'),
+('Fotografia in bianco e nero'),
+('Fotografia di ritratto'),
+('Fotografia di paesaggio'),
+('Fotomontaggio / collage fotografico'),
+('Polaroid'),
+
 -- --------------------------------------------------------
 
 --
