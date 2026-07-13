@@ -19,12 +19,30 @@
   <div class="column is-7">
     
     <figure class="image is-fullwidth artwork-detail-wrapper mb-2">
-  {if $immaginiOpera|@count > 0}
-    <img src="data:{$immaginiOpera[0].type};base64,{$immaginiOpera[0].pic64}" alt="{$opera->getTitolo()}" />
+{if $immaginiOpera|@count > 0}
+    <img id="immagine-principale-opera"
+         src="data:{$immaginiOpera[0].type};base64,{$immaginiOpera[0].pic64}"
+         alt="{$opera->getTitolo()}" />
 {else}
     <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}" />
 {/if}
 </figure>
+
+{if $immaginiOpera|@count > 1}
+<div class="thumbnail-strip mb-4" style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    {foreach from=$immaginiOpera item=img name=miniature}
+        {if !$smarty.foreach.miniature.first}
+        <img src="data:{$img.type};base64,{$img.pic64}"
+             alt="Miniatura {$smarty.foreach.miniature.iteration}"
+             class="thumbnail-opera"
+             style="width:70px; height:70px; object-fit:cover; cursor:pointer; border-radius:4px; border:2px solid transparent;"
+             onclick="document.getElementById('immagine-principale-opera').src=this.src;
+                      document.querySelectorAll('.thumbnail-opera').forEach(t=>t.style.borderColor='transparent');
+                      this.style.borderColor='#00d1b2';" />
+        {/if}
+    {/foreach}
+</div>
+{/if}
     
     <div class="has-text-centered mb-5">
       <span class="icon has-text-warning is-medium">

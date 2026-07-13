@@ -168,8 +168,10 @@ public function mostraFormOpera(): void {
         exit;
     }
     $categorie = FCategoria::loadAll() ?? [];
+    $tecniche  = FTecnica::loadAll() ?? [];   // ← aggiunta
     $vUtente = new VUtente();
     $vUtente->smarty->assign('categorie', $categorie);
+    $vUtente->smarty->assign('tecniche', $tecniche);   // ← aggiunta
     $vUtente->smarty->display('FormOpera.tpl');
 }
 

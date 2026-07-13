@@ -7,6 +7,14 @@ class USession {
 
     private function __construct() {
         if (session_status() === PHP_SESSION_NONE) {
+            session_set_cookie_params([
+                'lifetime' => defined('COOKIE_EXP_TIME') ? COOKIE_EXP_TIME : 0,
+                'path'     => '/',
+                'domain'   => '',       // vuoto = dominio corrente
+                'secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                'httponly' => true, //serve per evitare XXS con javascript che permetterebbe di leggere i cookie, così il coockie è visibile solo dal server nelle ichieste HTTP
+                'samesite' => 'Lax',
+            ]);
             session_start();
         }
     }

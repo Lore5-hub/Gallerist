@@ -26,13 +26,20 @@
         {if isset($errori.anno)}<p class="help is-danger">{$errori.anno}</p>{/if}
       </div>
 
-      <div class="field">
-        <label class="label">Tecnica <span class="has-text-danger">*</span></label>
-        <div class="control">
-          <input class="input {if isset($errori.tecnica)}is-danger{/if}" type="text" name="tecnica" value="{if isset($vecchi_dati.tecnica)}{$vecchi_dati.tecnica}{/if}" placeholder="Es. Olio su tela" required>
-        </div>
-        {if isset($errori.tecnica)}<p class="help is-danger">{$errori.tecnica}</p>{/if}
+  <div class="field">
+    <label class="label">Tecnica <span class="has-text-danger">*</span></label>
+    <div class="control">
+      <div class="select is-fullwidth {if isset($errori.tecnica)}is-danger{/if}">
+        <select name="tecnica" required>
+          <option value="" disabled selected>Seleziona una tecnica...</option>
+          {foreach from=$tecniche item=tecnica}
+            <option value="{$tecnica->getNome()}">{$tecnica->getNome()}</option>
+          {/foreach}
+        </select>
       </div>
+    </div>
+    {if isset($errori.tecnica)}<p class="help is-danger">{$errori.tecnica}</p>{/if}
+  </div>
 
       <div class="field">
         <label class="label">Dimensioni (Larghezza x Altezza x Profondità) <span class="has-text-danger">*</span></label>

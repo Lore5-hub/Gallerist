@@ -55,7 +55,7 @@ class FTecnica extends FDataBase
 		if ($row == null) {
 			return null;
 		}
-		return new ETecnica($row['id'], $row['nome'], $row['descrizione']);
+		return new ETecnica($row['id'], $row['nome'], $row['descrizione'] ?? '');
 	}
 	public static function getIdByNome(string $nome): int {
     $db     = FDataBase::getInstance();
@@ -64,6 +64,20 @@ class FTecnica extends FDataBase
         [':nome' => $nome]
     );
     return !empty($result) ? (int)$result[0]['id'] : 0;
-}
+	}
+	public static function loadAll(): array {
+		$db     = FDataBase::getInstance();
+		$result = $db->queryDB("SELECT * FROM tecnica ORDER BY nome ASC", []);
+
+		if (empty($result)) {
+			return [];
+		}
+
+		$tecniche = [];
+		foreach ($result as $row) {
+			$tecniche[] = self::createObject($row);
+		}
+		return $tecniche;
+	}
 }
 ?>
