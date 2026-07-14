@@ -44,12 +44,9 @@ class VCatalogo
      * @param array $categorie  Array di oggetti ECategoria per popolare il menu filtri
      * @param array $opere      Array di oggetti EOpera per la griglia iniziale
      */
-    public function mostraPaginaCatalogo(array $categorie, array $opere,bool $isLogged = false): void
+    public function mostraPaginaCatalogo(array $categorie, array $opere): void
     {
-        // Stato sessione: verificato centralmente, non assumiamo nulla dal Control
-        if ($isLogged) {
-            $this->smarty->assign('userlogged', 'loggato');
-        }
+        
 
         // Categorie per la sidebar/dropdown dei filtri
         $this->smarty->assign('categorie', $categorie);
@@ -62,7 +59,7 @@ class VCatalogo
         // (nessun filtro attivo, nessuna parola chiave inserita)
         $this->smarty->assign('filtriAttivi', false);
 
-        $this->smarty->display('catalogo.tpl');
+        $this->smarty->display('Catalogo.tpl');
     }
 
     // =========================================================================
@@ -88,12 +85,10 @@ class VCatalogo
     public function mostraRisultatiFiltrati(
         array $opere,
         array $categorie,
-        array $parametriUsati = [],
-        bool $isLogged= false
+        array $parametriUsati = []
+       
     ): void {
-        if ($isLogged) {
-            $this->smarty->assign('userlogged', 'loggato');
-        }
+        
 
         // Categorie sempre presenti per permettere all'utente di cambiare filtro
         $this->smarty->assign('categorie', $categorie);
@@ -318,6 +313,11 @@ public function mostraProfiloPubblico(EUtente $utente, array $opere, array $rece
     $this->smarty->assign('recensioni_scritte', $recensioniScritte);
     $this->smarty->assign('numero_acquisti',    $numeroAcquisti);
     $this->smarty->display('ProfiloPubblico.tpl');
+}
+public function mostraHomepage(array $opere): void {
+    $this->smarty->assign('opere_popolari', $opere);
+    $this->smarty->assign('titolo', 'Benvenuti nella Galleria d\'Arte Gallerist');
+    $this->smarty->display('homepage.tpl');
 }
 }
 ?>

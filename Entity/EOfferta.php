@@ -1,7 +1,5 @@
 <?php
-require_once 'EUtente.php';
-require_once 'EOpera.php';
-require_once 'EPrezzo.php';
+
 
 /**
  * Classe che modella una proposta di acquisto alternativa inviata da un utente.

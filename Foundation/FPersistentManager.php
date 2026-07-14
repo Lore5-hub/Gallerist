@@ -116,10 +116,43 @@ public static function getCategorieTutte(): array {
 }
 
 public static function getSegnalazioniTutte(): array {
-    $risultato = FSegnalazione::loadByField('stato', 'Aperta');
-    if ($risultato === null)                 return [];
-    if ($risultato instanceof ESegnalazione) return [$risultato];
-    return $risultato;
+    $db = FDataBase::getInstance();
+    $result = $db->queryDB(
+        "SELECT * FROM segnalazione ORDER BY dataSegnalazione DESC",
+        []
+    );
+    if (empty($result)) return [];
+    // Costruisci oggetti ESegnalazione
+    $segnalazioni = [];
+    foreach ($result as $row) {
+        $statoOggetto = match($row['stato']) {
+            'Aperta'     => new EStatoNuova(),
+            'Archiviata' => new EStatoArchiviata(),
+            'Risolta'    => new EStatoRisolta(''),
+            default      => new EStatoNuova(),
+        };
+        $seg = new ESegnalazione(
+            (int) $row['id'],
+            $row['motivo'],
+            $row['descrizione'] ?? '',
+            new DateTimeImmutable($row['dataSegnalazione']),
+            $row['tipoOggetto'],
+            (int) $row['idOggettoSegnalato'],
+            (int) $row['idSegnalatore']
+        );
+        $seg->setStato($statoOggetto);
+        $segnalazioni[] = $seg;
+    }
+    return $segnalazioni;
+}
+
+public static function contaAcquistiUtente(int $idUtente): int {
+    $db = FDataBase::getInstance();
+    $result = $db->queryDB(
+        "SELECT COUNT(*) as totale FROM ordine WHERE idUtente = :id",
+        [':id' => $idUtente]
+    );
+    return $result ? (int)$result[0]['totale'] : 0;
 }
 }
 ?>

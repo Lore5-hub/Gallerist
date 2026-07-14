@@ -23,9 +23,7 @@ class CFrontController {
         if (isset($segments[0]) && strtolower($segments[0]) === 'index.php') {
             array_shift($segments);
         }
-        if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+        
 // Timeout sessione: 30 minuti di inattività
 $timeoutMinuti = 30;
 $sessione = USession::getInstance();

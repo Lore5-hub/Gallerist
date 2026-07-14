@@ -122,32 +122,17 @@ $valuta = $_GET['valuta'] ?? 'EUR';
 $prezzoConvertito = null;
 
 if ($valuta !== 'EUR') {
-    require_once 'Control/CValutaService.php';
-    $prezzoConvertito = CValutaService::converti($opera->getPrezzo(), $valuta);
+    
+    $prezzoConvertito = UValutaService::converti($opera->getPrezzo(), $valuta);
 }
 
 $view->mostraSchedaDettaglio($opera, $altreOpere, false, $prezzoConvertito, $valuta);
     }
-    public function homepage() 
-    {
-        // PASSO 1: Recupera i dati che servono dal Database (Model/Foundation)
-        // Ad esempio, potresti voler mostrare le ultime 6 opere d'arte caricate nella galleria
-        // (Ipotizzo il nome di una classe Entity o Foundation, usa le tue)
-        $ultimeOpere = FOpera::loadPiuApprezzate(6); 
-
-        // PASSO 2: Prendi l'istanza di Smarty per gestire la View
-        // Nota: se avete creato una classe apposita per la View (es. VCatalogo), 
-        // userai i metodi di quella classe. Altrimenti istanzi Smarty direttamente:
-        $smarty = StartSmarty::configuration(); // o la vostra utility per richiamare Smarty
-
-        // PASSO 3: Passa i dati a Smarty e mostra la pagina
-        // Assegniamo l'array delle opere a una variabile Smarty che useremo nel template
-       $smarty->assign('opere_popolari', $ultimeOpere ?? []);
-        $smarty->assign('titolo', 'Benvenuti nella Galleria d\'Arte Gallerist');
-
-        // Diciamo a Smarty di renderizzare il file del template della homepage
-        $smarty->display('homepage.tpl');
-    }
+    public function homepage(): void {
+    $ultimeOpere = FOpera::loadPiuApprezzate(6);
+    $view = new VCatalogo();
+    $view->mostraHomepage($ultimeOpere ?? []);
+}
  public function visualizzaProfiloArtista(int $idArtista): void {
     $sessione = USession::getInstance();
     if ($sessione->esisteValore('utente_loggato')) {
@@ -178,12 +163,7 @@ $view->mostraSchedaDettaglio($opera, $altreOpere, false, $prezzoConvertito, $val
         }
 
         // Conta acquisti
-        $db = FDataBase::getInstance();
-        $resAcquisti = $db->queryDB(
-            "SELECT COUNT(*) as totale FROM ordine WHERE idUtente = :id",
-            [':id' => $idArtista]
-        );
-        $numeroAcquisti = $resAcquisti ? (int)$resAcquisti[0]['totale'] : 0;
+        $numeroAcquisti = FPersistentManager::contaAcquistiUtente($idArtista);
 
         $view = new VCatalogo();
         $view->mostraProfiloPubblico($utente, [], $recensioniScritte, $numeroAcquisti);

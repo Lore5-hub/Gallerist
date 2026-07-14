@@ -43,6 +43,7 @@ $sessione->setValue('flash_moderazione', $_GET['moderazione'] ?? null);
 
     // ✅ Control parla SOLO con FPersistentManager
     $artisitInAttesa = FPersistentManager::getArtistiInAttesa();
+    
     $artistiAttivi   = FPersistentManager::getArtistiAttivi();
     $utentiStandard  = FPersistentManager::getUtentiStandard();
     $segnalazioniList = FPersistentManager::getSegnalazioniAperte();
@@ -156,6 +157,7 @@ foreach ($provvedimenti as $prov) {
     $vAdmin->smarty->assign('moderazione', $_GET['moderazione'] ?? null);
     $vAdmin->smarty->assign('categorie', $categorie);
     $vAdmin->smarty->display('AdminDashboard.tpl');
+    
 }
 
     /**
@@ -457,6 +459,7 @@ public function mostraValidazione() {
     }
 
     $artista = FPersistentManager::load('EArtista', 'id', $id);
+    
     if (!$artista instanceof EArtista) {
         header('Location: /Gallerist/Admin/dashboard');
         exit;
@@ -480,6 +483,7 @@ public function mostraValidazione() {
         'note_admin'         => '',
         'carta_identita' => $artista->getCartaIdentita(),
         'url_documento'  => '/Gallerist/uploads/documenti/' . $artista->getCartaIdentita(),
+        'url_portfolio' => $artista->getPortfolio() ? '/Gallerist/uploads/portfolio/' . $artista->getPortfolio() : null,
     ];
 
     $vAdmin = new VAdmin();
@@ -744,10 +748,20 @@ public function processaModerazione() {
 
         // Aggiorna stato account utente a Bannato
         FPersistentManager::update('EUtente', 'stato_account', EUtente::STATO_BANNATO, 'id', $idUtente);
-    }
-    if ($azione === 'ban' && $idUtente > 0) {
-    // ... codice ban invariato
+        $utenteBannato = FPersistentManager::load('EUtente', 'id', $idUtente);
+if ($utenteBannato instanceof EUtente) {
+    UEmail::inviaEmail(
+        $utenteBannato->getEmail(),
+        "Provvedimento sul tuo account - Gallerist",
+        UEmail::corpoProvvedimento(
+            $utenteBannato->getNome(),
+            $tipoBan,
+            $nota
+        )
+    );
 }
+    }
+    
 
 // ✅ AGGIUNGI QUI
 // 1b. Rimuovi contenuto se richiesto

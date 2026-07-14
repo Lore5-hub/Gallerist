@@ -67,10 +67,16 @@
   {if $utente->isArtista() && $utente->getBiografia()}
     <hr>
     <div class="content mt-4">
-      <h3 class="title is-5">Biografia</h3>
-      <p class="has-text-justified">{$utente->getBiografia()}</p>
+        <h3 class="title is-5">Biografia</h3>
+        <p class="has-text-justified">{$utente->getBiografia()}</p>
+        {if $utente->getStileArtistico()}
+            <p class="has-text-grey is-size-6 mt-2">
+                <span class="icon"><i class="fas fa-paint-brush"></i></span>
+                <em>Stile: {$utente->getStileArtistico()}</em>
+            </p>
+        {/if}
     </div>
-  {/if}
+{/if}
 </div>
 
 {if $utente->isArtista()}

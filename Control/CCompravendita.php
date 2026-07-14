@@ -62,10 +62,7 @@ foreach ($opereArtista as $op) {
 }
 
 // Calcola valutazione media dell'artista
-if (count($tuttiCommenti) > 0) {
-    $somma = array_reduce($tuttiCommenti, fn($carry, $c) => $carry + $c->getValutazione(), 0);
-    $opera->getArtista()->setValutazioneMedia(round($somma / count($tuttiCommenti), 1));
-}
+
     $artista = FPersistentManager::load('EArtista', 'id', $opera->getArtista()->getId());
 if ($artista instanceof EArtista && count($tuttiCommenti) > 0) {
     $somma = array_reduce($tuttiCommenti, fn($carry, $c) => $carry + $c->getValutazione(), 0);
@@ -132,19 +129,7 @@ if (strlen($indirizzoSpedizione) < 10) {
     $view->mostraRiepilogoOrdine($utente, $opera, $prezzoSpedizione, null, 'Inserisci un indirizzo valido (almeno 10 caratteri).');
     return;
 }
-        // Salva ordine
-        $ordine = new EOrdine(
-            0,
-            new DateTimeImmutable(),
-            $_POST['metodo_pagamento'] ?? 'carta',
-            
-            $indirizzoSpedizione,
-            new EPrezzo(5.00),
-            $opera->getPrezzo(),
-            new EPrezzo(0.0),
-            $utente,
-            $opera
-        );
+        
         $stmt = $pdo->prepare(
     "INSERT INTO ordine (data, idUtente, idOpera, tipo, indirizzo_spedizione, metodo_pagamento) 
      VALUES (:data, :idUtente, :idOpera, :tipo, :indirizzo, :metodo)"
@@ -159,6 +144,15 @@ $stmt->execute([
 ]);
 
         $pdo->commit();
+        UEmail::inviaEmail(
+    $utente->getEmail(),
+    "Conferma acquisto - " . $opera->getTitolo(),
+    UEmail::corpoConfermaAcquisto(
+        $utente->getNome(),
+        $opera->getTitolo(),
+        $opera->getPrezzo()->getValore() + 5.00
+    )
+);
 
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -222,88 +216,23 @@ $stmt->execute([
     );
 
     FOfferta::store($offerta);
+    UEmail::inviaEmail(
+    $opera->getArtista()->getEmail(),
+    "Nuova offerta ricevuta per \"{$opera->getTitolo()}\"",
+    UEmail::corpoNotificaNuovaOfferta(
+        $opera->getArtista()->getNome(),
+        $opera->getTitolo(),
+        $prezzoOfferto,
+        $utente->getNickname(),
+        $messaggio
+    )
+);
 
     header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?offerta=inviata');
     exit;
 }
 
-    /**
-     * Operazione di sistema (Step 4): L'utente invia formalmente la cifra proposta.
-     *
-     * @param int    $idOpera       Identificativo dell'opera
-     * @param string $cifraProposta Cifra offerta come stringa dal form
-     * @param string $nota          Nota facoltativa per l'artista
-     */
-    public function inviaPropostaOfferta(
-        int    $idOpera,
-        string $cifraProposta = '',
-        string $nota          = ''
-    ): void {
-        $view = new VCompravendita();
-
-        // 1. Verifica sessione
-        $emailUtente = USession::getInstance()->getValore('utente_loggato');
-        if ($emailUtente === null) {
-            USession::getInstance()->impostaValore('redirect_dopo_login', "/Gallerist/Compravendita/avviaPropostaOfferta/$idOpera");
-            header('Location: /Gallerist/Accesso/login');
-            exit;
-        }
-
-        // 2. Caricamento utente e opera — CRUD standard: transitano dal Manager
-        $utente = FPersistentManager::load('EUtente', 'email', $emailUtente);
-        $opera  = FPersistentManager::load('EOpera', 'id', $idOpera);
-
-        if ($utente === null || $opera === null) {
-            $view->mostraErrore('opera_non_trovata');
-            return;
-        }
-
-        // 3. Validazione cifra proposta
-        $cifra = (float) $cifraProposta;
-        if ($cifra <= 0) {
-            $view->mostraModuloOfferta($opera, 'cifra_non_valida', [
-                'cifraProposta' => $cifraProposta,
-                'nota'          => $nota,
-            ]);
-            return;
-        }
-
-        // 4. Costruzione dell'oggetto EOfferta
-        $nuovaOfferta = new EOfferta(
-            0,                            // id: AUTO_INCREMENT sul DB
-            new EPrezzo($cifra),          // cifraProposta: EPrezzo
-            trim($nota),                  // nota: opzionale
-            EOfferta::STATO_INVIATA,      // stato: costante, non stringa magica
-            new DateTimeImmutable(),      // dataOfferta: DateTimeImmutable
-            $utente,
-            $opera
-        );
-
-        // 5. Persistenza della proposta — CRUD standard: transita dal Manager
-        $id = FPersistentManager::store($nuovaOfferta);
-        if ($id === null) {
-            error_log("CCompravendita::inviaPropostaOfferta - FOfferta::store fallita per opera: $idOpera");
-            $view->mostraErrore('errore_persistenza');
-            return;
-        }
-        $nuovaOfferta->setId((int) $id);
-
-        // 6. Notifica all'artista
-        UEmail::inviaEmail(
-            $opera->getArtista()->getEmail(),
-            "Nuova offerta ricevuta per \"{$opera->getTitolo()}\"",
-            UEmail::corpoNotificaNuovaOfferta(
-                $opera->getArtista()->getNome(),
-                $opera->getTitolo(),
-                $cifra,
-                $utente->getNickname(),
-                trim($nota)
-            )
-        );
-
-        // 7. Visualizzazione messaggio di conferma
-        $view->mostraConfermaInvioOfferta($nuovaOfferta);
-}
+    
 
 }
 ?>

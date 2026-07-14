@@ -37,7 +37,7 @@ class FDataBase
 	public static function getInstance ()
 	{
 		if (self::$instance == null) {
-			self::$instance = new FDatabase();
+			self::$instance = new FDataBase();
 		}
 		return self::$instance;
 	}

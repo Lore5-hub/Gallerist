@@ -1,12 +1,5 @@
 <?php
-require_once 'EArtista.php';
-require_once 'ECategoria.php';
-require_once 'EImmagine.php';
-require_once 'ETag.php';
-require_once 'ECommento.php';
-require_once 'ETecnica.php'; /* Include la classe associata per la tecnica */
-require_once 'EPrezzo.php'; /* Include la classe associata per il prezzo */
-require_once 'EStatoOpera.php'; /* Include la gestione dello State Pattern dell'opera */
+
 
 /**
  * Classe centrale che modella l'Opera d'Arte e ne aggrega i componenti correlati.

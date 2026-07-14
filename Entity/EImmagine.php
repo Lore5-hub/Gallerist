@@ -80,18 +80,6 @@ class EImmagine {
         return $mimeMap[$estensione] ?? 'image/jpeg';
     }
 
-    /**
-     * Indica se questa immagine è la copertina dell'opera.
-     * Per convenzione del progetto la copertina è la prima di EOpera::getImmagini().
-     * Questo metodo è un helper per i Controller che devono distinguere le immagini
-     * prima di aggiungerle all'opera (es. CGestioneProfiloPortfolio).
-     */
-    public function isCopertina(): bool {
-        // La copertina si determina dalla posizione nell'array di EOpera,
-        // non da un attributo interno. Questo metodo è mantenuto per compatibilità
-        // con il codice esistente in CGestioneProfiloPortfolio ma non va usato
-        // per logica di business: usare $opera->getImmagini()[0] per la copertina.
-        return false;
-    }
+    
 }
 ?>

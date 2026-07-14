@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/FDataBase.php';
-require_once __DIR__ . '/../Entity/ECategoria.php';
+
 
 /**
  * Classe Foundation per la gestione della persistenza dell'entità Categoria.
@@ -19,7 +18,7 @@ require_once __DIR__ . '/../Entity/ECategoria.php';
 class FCategoria {
 
     private static string $class  = "FCategoria";
-    private static string $table  = "CATEGORIA";
+    private static string $table  = "categoria";
     private static string $values = "(:id,:nome,:descrizione)";
 
     public function __construct() {}
@@ -125,7 +124,7 @@ class FCategoria {
      * Costruisce un'istanza di ECategoria da un array associativo del DB.
      */
     private static function creaEntitaDaArray(array $row): ECategoria {
-        return new ECategoria($row['nome']);
+        return new ECategoria($row['nome'], $row['descrizione'] ?? '');
     }
     public static function getIdByNome(string $nome): int {
     $db     = FDataBase::getInstance();

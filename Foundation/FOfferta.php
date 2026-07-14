@@ -196,7 +196,7 @@ class FOfferta {
     $artistaPlaceholder,
     new ECategoria('')
 );
-        $opera->setId((int) $row['opera_id']);
+        
 
         return new EOfferta(
             (int) $row['id'],

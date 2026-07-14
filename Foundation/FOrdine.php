@@ -1,8 +1,5 @@
 <?php
-require_once __DIR__ . '/FDataBase.php';
-require_once __DIR__ . '/FOpera.php';
-require_once __DIR__ . '/FUtente.php';
-require_once __DIR__ . '/../Entity/EOrdine.php';
+
 
 /**
  * La classe FOrdine fornisce query per gli oggetti EOrdine (UC6)
@@ -32,12 +29,12 @@ class FOrdine {
     public static function getValues() { return static::$values; }
 
     public static function store(EOrdine $ordine) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return $db->storeDB(static::getClass(), $ordine);
     }
 
 public static function loadByField($field, $id) {
-    $db     = FDatabase::getInstance();
+    $db     = FDataBase::getInstance();
     $result = $db->loadDB(static::getClass(), $field, $id);
 
     if ($result === null) {
@@ -73,7 +70,7 @@ public static function loadByField($field, $id) {
      */
     public static function loadVenditeByPeriodo($idArtista, $dataInizio, $dataFine) {
         $ordine = null;
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         
         // Supponiamo che FDatabase esponga un metodo per le query personalizzate sui periodi
         list($result, $rows_number) = $db->loadOrdiniFiltrati($idArtista, $dataInizio, $dataFine);
@@ -104,17 +101,17 @@ public static function loadByField($field, $id) {
     }
 
     public static function exist($field, $id) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return ($db->existDB(static::getClass(), $field, $id) != null);
     }
 
     public static function update($field, $newvalue, $pk, $id) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return $db->updateDB(static::getClass(), $field, $newvalue, $pk, $id);
     }
 
     public static function delete($field, $id) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return $db->deleteDB(static::getClass(), $field, $id);
     }
 }

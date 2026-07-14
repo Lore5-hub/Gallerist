@@ -95,7 +95,15 @@
                 </button>
               </div>
             </div>
-
+{if $utente.url_portfolio}
+    <div class="mt-4">
+        <h4 class="title is-6">Portfolio Opere</h4>
+        <a href="{$utente.url_portfolio}" target="_blank" class="button is-info is-outlined">
+            <span class="icon"><i class="fas fa-download"></i></span>
+            <span>Scarica Portfolio</span>
+        </a>
+    </div>
+{/if}
            
 
           </div>

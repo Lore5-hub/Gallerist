@@ -1,6 +1,6 @@
 <?php
 
-/*da ricontrollare*/
+
 
 /**
  * Classe che modella la categoria di un'opera d'arte.
@@ -19,6 +19,7 @@ class ECategoria {
     public function setNome(string $nome): void { $this->nome = $nome; }
 
     public function getDescrizione(): string { return $this->descrizione; }
+    public function setDescrizione(string $descrizione): void { $this->descrizione = $descrizione; }
     
 }
 ?>

@@ -27,7 +27,7 @@ class FCommento {
     public static function getValues() { return static::$values; }
 
     public static function store(ECommento $commento) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         // Controlliamo che l'utente autore esista davvero prima di inserire
         $utenteEsiste = FUtente::exist("id", $commento->getAutore()->getId());
         if ($utenteEsiste) {
@@ -37,7 +37,7 @@ class FCommento {
     }
 
 public static function loadByField($field, $id) {
-    $db     = FDatabase::getInstance();
+    $db     = FDataBase::getInstance();
     $result = $db->loadDB(static::getClass(), $field, $id);
 
     if ($result === null) {
@@ -68,17 +68,17 @@ public static function loadByField($field, $id) {
 }
 
     public static function exist($field, $id) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return ($db->existDB(static::getClass(), $field, $id) != null);
     }
 
     public static function update($field, $newvalue, $pk, $id) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return $db->updateDB(static::getClass(), $field, $newvalue, $pk, $id);
     }
 
     public static function delete($field, $id) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return $db->deleteDB(static::getClass(), $field, $id);
     }
 }

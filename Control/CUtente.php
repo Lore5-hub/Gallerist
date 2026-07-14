@@ -5,16 +5,7 @@ class CUtente
     // Questo è il metodo chiamato dall'URL /Gallerist/utente/login
     public function login() 
     {
-        // Se l'utente ha appena inviato il form di login (richiesta POST)
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'] ?? '';
-            $password = $_POST['password'] ?? '';
-
-            // Qui verificherai le credenziali sul Database tramite i tuoi Foundation
-            // Se sono corrette, salvi l'utente in $_SESSION ed effettui un redirect alla homepage
-        } 
         
-        // Se l'utente ha solo cliccato sull'omino (richiesta GET)
         $vUtente = new VUtente(); 
         $vUtente->mostraFormLogin();
     }
@@ -269,7 +260,27 @@ if (isset($_FILES['documento_identita']) && $_FILES['documento_identita']['error
                     $stile     = isset($_POST['stile']) ? trim($_POST['stile']) : '';
                     
                     // Recupero stringhe o percorsi dei file per i campi aggiuntivi
-                    $portfolio = $_FILES['portfolio']['name'] ?? '';
+                    $portfolio = '';
+if (isset($_FILES['portfolio']) && $_FILES['portfolio']['error'] === UPLOAD_ERR_OK) {
+    $fileTmpPath   = $_FILES['portfolio']['tmp_name'];
+    $fileName      = $_FILES['portfolio']['name'];
+    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+    $estensioniPermesse = ['pdf', 'zip'];
+    if (in_array($fileExtension, $estensioniPermesse)) {
+        $nuovoNomeFile = md5(time() . $fileName) . '.' . $fileExtension;
+        $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/portfolio/';
+
+        if (!is_dir($uploadFileDir)) {
+            mkdir($uploadFileDir, 0755, true);
+        }
+
+        $destPath = $uploadFileDir . $nuovoNomeFile;
+        if (move_uploaded_file($fileTmpPath, $destPath)) {
+            $portfolio = $nuovoNomeFile;
+        }
+    }
+}
                     //$documento = $_FILES['documento_identita']['name'] ?? '';
                     $statoValidazione = 'IN_ATTESA'; // Stato di default coerentemente con l'entità EArtista
 
@@ -291,7 +302,7 @@ if (isset($_FILES['documento_identita']) && $_FILES['documento_identita']['error
                         $documento, // mapped to carta_identita
                         $statoValidazione
                     );
-
+$nuovoArtista->setPortfolio($portfolio);
                     // Scrittura persistente sequenziale (UTENTE + ARTISTA) tramite FArtista
                     $risultato = FArtista::store($nuovoArtista);
 
@@ -341,8 +352,18 @@ if (isset($_FILES['documento_identita']) && $_FILES['documento_identita']['error
                    if ($ruoloDB === 'Artista') {
                         // ✨ Per l'artista attiviamo il banner "in attesa" che hai nel .tpl
                         $vUtente->smarty->assign('stato_registrazione', 'attesa');
+                        UEmail::inviaEmail(
+            ADMIN_EMAIL,
+            "Nuovo artista in attesa di validazione",
+            UEmail::corpoNotificaNuovoArtista($nome, $cognome, $email)
+        );
                     } else {
-                    $vUtente->smarty->assign('stato_registrazione', 'successo');}
+                    $vUtente->smarty->assign('stato_registrazione', 'successo');
+                    UEmail::inviaEmail(
+            $email,
+            "Benvenuto su Gallerist!",
+            UEmail::corpoBenvenutoUtente($nome)
+        );}
 
                 } else {
 
@@ -474,13 +495,7 @@ if ($stato === 'Venduta')    $guadagni += (float)$opera->getPrezzo()->getValore(
         $recensioniScritte = $commenti;
     }
 
-    // Conta acquisti
-    $db = FDataBase::getInstance();
-    $resAcquisti = $db->queryDB(
-        "SELECT COUNT(*) as totale FROM ordine WHERE idUtente = :id",
-        [':id' => $utente->getId()]
-    );
-    $numeroAcquisti = $resAcquisti ? (int)$resAcquisti[0]['totale'] : 0;
+    $numeroAcquisti = FPersistentManager::contaAcquistiUtente($utente->getId());
 
     $vUtente = new VUtente();
     $vUtente->smarty->assign('utente',             $utente);

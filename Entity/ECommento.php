@@ -1,6 +1,5 @@
 <?php
-require_once 'EUtente.php';
-require_once 'EOpera.php';
+
 
 
 

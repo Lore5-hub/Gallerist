@@ -1,8 +1,5 @@
 <?php
-require_once 'EUtente.php';
-require_once 'EOpera.php';
-require_once 'EPrezzo.php'; /* Include la classe associata per il prezzo */
-//da ricontrollare il tipo di dato della data ordine    
+
 
 /**
  * Classe che modella la transazione di acquisto diretto di un'opera.

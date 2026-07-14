@@ -43,59 +43,89 @@
       </div>
 
       <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3 h-full">
-          <span class="icon is-medium has-text-primary mb-1"><i class="fas fa-user-plus fa-lg"></i></span>
-          <p class="heading mb-1">Registrazioni</p>
-          <p class="title is-4 mb-2">{$stats.registrazioni}</p>
-          <p class="is-size-7 has-text-success">
-            <i class="fas fa-arrow-up"></i> {$stats.reg_perc}% <span class="has-text-grey">vs prec.</span>
-          </p>
-        </div>
-      </div>
-
-      <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3 h-full">
-          <span class="icon is-medium has-text-link mb-1"><i class="fas fa-eye fa-lg"></i></span>
-          <p class="heading mb-1">Vis. Pagina</p>
-          <p class="title is-4 mb-2">{$stats.vis_pagina}</p>
-          <p class="is-size-7 has-text-danger">
-            <i class="fas fa-arrow-down"></i> {$stats.vis_pag_perc}% <span class="has-text-grey">vs prec.</span>
-          </p>
-        </div>
-      </div>
-
-      <div class="column is-2-desktop is-half-tablet">
-       <div class="box has-text-centered p-3 h-full">
-    <span class="icon is-medium has-text-danger mb-1"><i class="fas fa-gavel fa-lg"></i></span>
-    <p class="heading mb-1">Opere Vendute</p>
-    <p class="title is-4 mb-2">{$stats.opere_vendute}</p>
-    <p class="is-size-7 has-text-success">
-        <i class="fas fa-arrow-up"></i> {$stats.vendute_perc}% <span class="has-text-grey">vs prec.</span>
-    </p>
+    <div class="box has-text-centered p-3 h-full">
+        <span class="icon is-medium has-text-primary mb-1"><i class="fas fa-user-plus fa-lg"></i></span>
+        <p class="heading mb-1">Registrazioni</p>
+        <p class="title is-4 mb-2">{$stats.registrazioni}</p>
+        {if $stats.reg_perc >= 0}
+            <p class="is-size-7 has-text-success">
+                <i class="fas fa-arrow-up"></i> {$stats.reg_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {else}
+            <p class="is-size-7 has-text-danger">
+                <i class="fas fa-arrow-down"></i> {$stats.reg_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {/if}
+    </div>
 </div>
-      </div>
 
       <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3 h-full">
-          <span class="icon is-medium has-text-danger mb-1"><i class="fas fa-exchange-alt fa-lg"></i></span>
-          <p class="heading mb-1">Movimenti Totali</p>
-          <p class="title is-4 mb-2">{$stats.movimenti}</p>
-          <p class="is-size-7 has-text-success">
-            <i class="fas fa-arrow-up"></i> {$stats.mov_perc}% <span class="has-text-grey">vs prec.</span>
-          </p>
-        </div>
-      </div>
+    <div class="box has-text-centered p-3 h-full">
+        <span class="icon is-medium has-text-link mb-1"><i class="fas fa-eye fa-lg"></i></span>
+        <p class="heading mb-1">Vis. Pagina</p>
+        <p class="title is-4 mb-2">{$stats.vis_pagina}</p>
+        {if $stats.vis_pag_perc >= 0}
+            <p class="is-size-7 has-text-success">
+                <i class="fas fa-arrow-up"></i> {$stats.vis_pag_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {else}
+            <p class="is-size-7 has-text-danger">
+                <i class="fas fa-arrow-down"></i> {$stats.vis_pag_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {/if}
+    </div>
+</div>
 
-      <div class="column is-2-desktop is-half-tablet">
-        <div class="box has-text-centered p-3 has-background-success-light h-full">
-          <span class="icon is-medium has-text-success mb-1"><i class="fas fa-coins fa-lg"></i></span>
-          <p class="heading mb-1">Guadagni Piattaforma</p>
-          <p class="title is-4 mb-2">€ {$stats.guadagni|number_format:2:',':'.'}</p>
-          <p class="is-size-7 has-text-success">
-            <i class="fas fa-arrow-up"></i> {$stats.guad_perc}% <span class="has-text-grey">vs prec.</span>
-          </p>
-        </div>
-      </div>
+<div class="column is-2-desktop is-half-tablet">
+    <div class="box has-text-centered p-3 h-full">
+        <span class="icon is-medium has-text-danger mb-1"><i class="fas fa-gavel fa-lg"></i></span>
+        <p class="heading mb-1">Opere Vendute</p>
+        <p class="title is-4 mb-2">{$stats.opere_vendute}</p>
+        {if $stats.vendute_perc >= 0}
+            <p class="is-size-7 has-text-success">
+                <i class="fas fa-arrow-up"></i> {$stats.vendute_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {else}
+            <p class="is-size-7 has-text-danger">
+                <i class="fas fa-arrow-down"></i> {$stats.vendute_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {/if}
+    </div>
+</div>
+
+<div class="column is-2-desktop is-half-tablet">
+    <div class="box has-text-centered p-3 h-full">
+        <span class="icon is-medium has-text-danger mb-1"><i class="fas fa-exchange-alt fa-lg"></i></span>
+        <p class="heading mb-1">Movimenti Totali</p>
+        <p class="title is-4 mb-2">{$stats.movimenti}</p>
+        {if $stats.mov_perc >= 0}
+            <p class="is-size-7 has-text-success">
+                <i class="fas fa-arrow-up"></i> {$stats.mov_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {else}
+            <p class="is-size-7 has-text-danger">
+                <i class="fas fa-arrow-down"></i> {$stats.mov_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {/if}
+    </div>
+</div>
+
+<div class="column is-2-desktop is-half-tablet">
+    <div class="box has-text-centered p-3 has-background-success-light h-full">
+        <span class="icon is-medium has-text-success mb-1"><i class="fas fa-coins fa-lg"></i></span>
+        <p class="heading mb-1">Guadagni Piattaforma</p>
+        <p class="title is-4 mb-2">€ {$stats.guadagni|number_format:2:',':'.'}</p>
+        {if $stats.guad_perc >= 0}
+            <p class="is-size-7 has-text-success">
+                <i class="fas fa-arrow-up"></i> {$stats.guad_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {else}
+            <p class="is-size-7 has-text-danger">
+                <i class="fas fa-arrow-down"></i> {$stats.guad_perc}% <span class="has-text-grey">vs prec.</span>
+            </p>
+        {/if}
+    </div>
+</div>
 
     </div>
 

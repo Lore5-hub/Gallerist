@@ -105,5 +105,55 @@ class UEmail {
     ";
     return self::inviaEmail($destinatario, $oggetto, $corpo);
 }
+public static function corpoNotificaNuovaOfferta(string $nomeArtista, string $titoloOpera, float $cifra, string $nicknameMittente, string $nota = ''): string {
+    $nomeEsc   = htmlspecialchars($nomeArtista, ENT_QUOTES, 'UTF-8');
+    $titoloEsc = htmlspecialchars($titoloOpera, ENT_QUOTES, 'UTF-8');
+    $noteEsc   = htmlspecialchars($nota, ENT_QUOTES, 'UTF-8');
+    $cifraFormattata = number_format($cifra, 2, ',', '.');
+
+    return "
+        <h2>Hai ricevuto una nuova offerta, {$nomeEsc}!</h2>
+        <p>L'utente <strong>{$nicknameMittente}</strong> ha proposto <strong>€ {$cifraFormattata}</strong> per la tua opera <strong>{$titoloEsc}</strong>.</p>
+        " . (!empty($nota) ? "<p><em>Nota: {$noteEsc}</em></p>" : "") . "
+        <p>Accedi alla tua dashboard per accettare o rifiutare l'offerta.</p>
+    ";
+}
+public static function corpoConfermaAcquisto(string $nomeAcquirente, string $titoloOpera, float $prezzoTotale): string {
+    $nomeEsc   = htmlspecialchars($nomeAcquirente, ENT_QUOTES, 'UTF-8');
+    $titoloEsc = htmlspecialchars($titoloOpera, ENT_QUOTES, 'UTF-8');
+    $prezzoFormattato = number_format($prezzoTotale, 2, ',', '.');
+
+    return "
+        <h2>Acquisto confermato, {$nomeEsc}!</h2>
+        <p>Il tuo acquisto di <strong>{$titoloEsc}</strong> è stato completato con successo.</p>
+        <p><strong>Totale pagato:</strong> € {$prezzoFormattato}</p>
+        <p>Riceverai l'opera all'indirizzo di spedizione indicato.</p>
+        <p>Grazie per aver acquistato su Gallerist!</p>
+    ";
+}
+public static function corpoOffertaAccettata(string $nomeAcquirente, string $titoloOpera, float $cifra): string {
+    $nomeEsc   = htmlspecialchars($nomeAcquirente, ENT_QUOTES, 'UTF-8');
+    $titoloEsc = htmlspecialchars($titoloOpera, ENT_QUOTES, 'UTF-8');
+    $cifraFormattata = number_format($cifra, 2, ',', '.');
+
+    return "
+        <h2>La tua offerta è stata accettata, {$nomeEsc}!</h2>
+        <p>L'artista ha accettato la tua offerta di <strong>€ {$cifraFormattata}</strong> per l'opera <strong>{$titoloEsc}</strong>.</p>
+        <p>L'acquisto è stato completato con successo.</p>
+        <p>Grazie per aver acquistato su Gallerist!</p>
+    ";
+}
+public static function corpoProvvedimento(string $nomeUtente, string $tipoBan, string $nota): string {
+    $nomeEsc = htmlspecialchars($nomeUtente, ENT_QUOTES, 'UTF-8');
+    $notaEsc = htmlspecialchars($nota, ENT_QUOTES, 'UTF-8');
+    $tipo    = $tipoBan === 'permanente' ? 'permanente' : 'temporaneo';
+
+    return "
+        <h2>Provvedimento sul tuo account, {$nomeEsc}</h2>
+        <p>Il tuo account su Gallerist è stato sospeso con un ban <strong>{$tipo}</strong>.</p>
+        " . (!empty($nota) ? "<p><strong>Motivazione:</strong> {$notaEsc}</p>" : "") . "
+        <p>Per contestare il provvedimento contatta l'amministrazione.</p>
+    ";
+}
 }
 ?>

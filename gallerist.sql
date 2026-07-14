@@ -32,7 +32,8 @@ CREATE TABLE `artista` (
   `biografia` text DEFAULT NULL,
   `stileArtistico` varchar(100) DEFAULT NULL,
   `carta_identita` varchar(255) DEFAULT NULL,
-  `stato_validazione` varchar(50) DEFAULT 'IN_ATTESA'
+  `stato_validazione` varchar(50) DEFAULT 'IN_ATTESA',
+  `portfolio` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

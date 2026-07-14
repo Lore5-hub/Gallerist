@@ -1,7 +1,4 @@
 <?php
-require_once __DIR__ . '/FDataBase.php';
-require_once __DIR__ . '/FUtente.php';
-require_once __DIR__ . '/../Entity/EArtista.php';
 
 /**
  * Classe Foundation per la persistenza dell'entità Artista.
@@ -13,7 +10,7 @@ class FArtista {
 
     private static string $class  = "FArtista";
     private static string $table  = "artista";
-    private static string $values = "(:id_utente, :biografia, :stile_artistico, :carta_identita, :stato_validazione)";
+    private static string $values = "(:id_utente, :biografia, :stile_artistico, :carta_identita, :stato_validazione, :portfolio)";
 
     public function __construct() {}
 
@@ -27,6 +24,7 @@ class FArtista {
         $stmt->bindValue(':stile_artistico',   $artista->getStileArtistico(),   PDO::PARAM_STR);
         $stmt->bindValue(':carta_identita',    $artista->getCartaIdentita(),    PDO::PARAM_STR);
         $stmt->bindValue(':stato_validazione', $artista->getStatoValidazione(), PDO::PARAM_STR);
+         $stmt->bindValue(':portfolio',         $artista->getPortfolio(),        PDO::PARAM_STR);
     }
 
     public static function getClass(): string  { return static::$class; }
@@ -92,7 +90,8 @@ class FArtista {
                  a.biografia, 
                  a.stileArtistico  AS stile_artistico,
                  a.carta_identita, 
-                 a.stato_validazione
+                 a.stato_validazione,
+                    a.portfolio
           FROM " . FUtente::getTable() . " u
           INNER JOIN " . static::$table . " a ON a.idUtente = u.id
           WHERE " . $alias . "." . $field . " = :id";
@@ -154,7 +153,7 @@ class FArtista {
      * FIX: aggiunto stato_account mancante, che EArtista eredita da EUtente.
      */
     private static function creaEntitaDaArray(array $row): EArtista { 
-        return new EArtista(
+        $artista = new EArtista(
             (int) $row['id'],
             $row['nome'],
             $row['cognome'],
@@ -171,6 +170,16 @@ class FArtista {
             $row['carta_identita'],
             $row['stato_validazione'] ?? EArtista::STATO_IN_ATTESA
         );
+        
+    
+    if (isset($row['data_registrazione'])) {
+        $artista->setDataRegistrazione(new DateTimeImmutable($row['data_registrazione']));
+    }
+    if (isset($row['portfolio'])) {
+    $artista->setPortfolio($row['portfolio']);
+}
+    return $artista;
+    
     }
 }
 ?>

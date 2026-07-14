@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/FDataBase.php';
-require_once __DIR__ . '/../Entity/EUtente.php';
+
 
 /**
  * Classe Foundation per la gestione della persistenza dell'entità Utente.

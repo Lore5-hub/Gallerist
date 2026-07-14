@@ -1,9 +1,5 @@
 <?php
-require_once __DIR__ . '/FDataBase.php';
-require_once __DIR__ . '/FCategoria.php';
-require_once __DIR__ . '/../Entity/EOpera.php';
-require_once __DIR__ . '/../Entity/EArtista.php';
-require_once __DIR__ . '/../Entity/EUtente.php';
+
 
 /**
  * Classe Foundation per la gestione della persistenza dell'entità Opera.
@@ -124,7 +120,7 @@ if (!FArtista::exist('idUtente', $opera->getArtista()->getId()))  {
                          u.email    AS artista_email,
                          u.nickname AS artista_nickname
                   FROM " . static::$table . " o
-                  INNER JOIN UTENTE u ON o.idArtista = u.id
+                  INNER JOIN utente u ON o.idArtista = u.id
                   WHERE o." . $field . " = :id";
 
         $db     = FDataBase::getInstance();
@@ -171,7 +167,7 @@ if (!FArtista::exist('idUtente', $opera->getArtista()->getId()))  {
                          u.nickname AS artista_nickname
                   FROM " . static::$table . " o
                   INNER JOIN " . FCategoria::getTable() . " c ON o.categoria = c.nome
-                  INNER JOIN UTENTE u ON o.idArtista = u.id
+                  INNER JOIN utente u ON o.idArtista = u.id
                   WHERE c.nome = :nome";
 
         $db     = FDataBase::getInstance();
@@ -226,7 +222,7 @@ if (!FArtista::exist('idUtente', $opera->getArtista()->getId()))  {
                          u.email    AS artista_email,
                          u.nickname AS artista_nickname
                   FROM " . static::$table . " o
-                  INNER JOIN UTENTE u ON o.idArtista = u.id
+                  INNER JOIN utente u ON o.idArtista = u.id
                   WHERE o.stato IN ('pubblicata', 'in_vendita')
                   AND u.stato_account != 'Bannato'
                   ORDER BY o.id DESC
@@ -261,7 +257,7 @@ if (!FArtista::exist('idUtente', $opera->getArtista()->getId()))  {
                  u.email    AS artista_email,
                  u.nickname AS artista_nickname
           FROM " . static::$table . " o
-          INNER JOIN UTENTE u ON o.idArtista = u.id
+          INNER JOIN utente u ON o.idArtista = u.id
           WHERE o.idArtista = :idArtista
             AND o.id        != :idEscluso
           ORDER BY o.id DESC";
@@ -306,7 +302,7 @@ if (!FArtista::exist('idUtente', $opera->getArtista()->getId()))  {
                          u.email    AS artista_email,
                          u.nickname AS artista_nickname
                   FROM " . static::$table . " o
-                  INNER JOIN UTENTE u ON o.idArtista = u.id
+                  INNER JOIN utente u ON o.idArtista = u.id
                   WHERE o.stato IN ('pubblicata','in_vendita')
                   AND u.stato_account != 'Bannato'";
 

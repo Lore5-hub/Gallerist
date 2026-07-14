@@ -5,7 +5,7 @@
 class EStatoRisolta extends EStatoSegnalazione {
     private string $provvedimentoPreso; // Memorizza la nota sul provvedimento amministrativo
 
-    public function __construct(string $provvedimento) {
+    public function __construct(string $provvedimento='') {
         $this->nomeStato = "Risolta con Provvedimento";
         $this->provvedimentoPreso = $provvedimento;
     }

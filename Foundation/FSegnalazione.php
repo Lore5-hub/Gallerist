@@ -29,12 +29,12 @@ class FSegnalazione {
     public static function getValues() { return static::$values; }
 
     public static function store(ESegnalazione $segnalazione) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return $db->storeDB(static::getClass(), $segnalazione);
     }
 
 public static function loadByField($field, $id) {
-    $db     = FDatabase::getInstance();
+    $db     = FDataBase::getInstance();
     $result = $db->loadDB(static::getClass(), $field, $id);
 
     if ($result === null) {
@@ -49,15 +49,17 @@ public static function loadByField($field, $id) {
             'Risolta'    => new EStatoRisolta(),
             default      => new EStatoNuova(),
         };
-        return new ESegnalazione(
-            (int) $result['id'],
-            $result['motivo'],
-            $result['descrizione'] ?? '',          // ← era 'nota'
-            new DateTimeImmutable($result['dataSegnalazione']), // ← era 'data'
-            $result['tipoOggetto'],
-            (int) $result['idOggettoSegnalato'],
-            (int) $result['idSegnalatore']
-        );
+        $seg = new ESegnalazione(
+    (int) $result['id'],
+    $result['motivo'],
+    $result['descrizione'] ?? '',
+    new DateTimeImmutable($result['dataSegnalazione']),
+    $result['tipoOggetto'],
+    (int) $result['idOggettoSegnalato'],
+    (int) $result['idSegnalatore']
+);
+$seg->setStato($statoOggetto); // ← unica riga aggiunta
+return $seg;
     }
 
     // Record multipli
@@ -69,31 +71,33 @@ public static function loadByField($field, $id) {
             'Risolta'    => new EStatoRisolta(),
             default      => new EStatoNuova(),
         };
-        $segnalazioni[] = new ESegnalazione(
-            (int) $row['id'],
-            $row['motivo'],
-            $row['descrizione'] ?? '',             // ← era 'nota'
-            new DateTimeImmutable($row['dataSegnalazione']), // ← era 'data'
-            $row['tipoOggetto'],
-            (int) $row['idOggettoSegnalato'],
-            (int) $row['idSegnalatore']
-        );
-    }
-    return $segnalazioni;
+        $istanza = new ESegnalazione(
+    (int) $row['id'],
+    $row['motivo'],
+    $row['descrizione'] ?? '',
+    new DateTimeImmutable($row['dataSegnalazione']),
+    $row['tipoOggetto'],
+    (int) $row['idOggettoSegnalato'],
+    (int) $row['idSegnalatore']
+);
+$istanza->setStato($statoOggetto);
+$segnalazioni[] = $istanza;  // ← dentro il foreach
+}  // ← chiude il foreach
+return $segnalazioni;
 }
 
     public static function exist($field, $id) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return ($db->existDB(static::getClass(), $field, $id) != null);
     }
 
     public static function update($field, $newvalue, $pk, $id) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return $db->updateDB(static::getClass(), $field, $newvalue, $pk, $id);
     }
 
     public static function delete($field, $id) {
-        $db = FDatabase::getInstance();
+        $db = FDataBase::getInstance();
         return $db->deleteDB(static::getClass(), $field, $id);
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Servizio per la conversione delle valute che si interfaccia con un Web Service REST esterno.
  */
-class CValutaService {
+class UValutaService {
 
     /**
      * Converte un oggetto EPrezzo in una nuova valuta interrogando un'API.

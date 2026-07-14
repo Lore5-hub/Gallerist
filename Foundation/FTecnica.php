@@ -5,7 +5,7 @@
  * Interagisce con la tabella 'tecnica' del database.
  * @package Foundation
  */
-class FTecnica extends FDataBase
+class FTecnica 
 {
 	/** @var string Nome della tabella sul database */
 	private static $table = "tecnica";

@@ -89,23 +89,7 @@ class VCompravendita
         $this->smarty->display('RiepilogoOrdine.tpl');
     }
 
-    // =========================================================================
-    //  UC3 — Step 2a/2b: L'utente conferma il pagamento — acquisto diretto
-    // =========================================================================
-
-    /**
-     * Mostra la pagina di conferma dopo un acquisto diretto completato con successo.
-     *
-     * Corrisponde al passo 2b dell'UC3: il sistema registra la transazione,
-     * aggiorna lo stato dell'opera e mostra la conferma all'utente.
-     *
-     * Espone tutti i dati dell'EOrdine (già persistito e con ID assegnato)
-     * per permettere al template di mostrare un riepilogo completo della ricevuta:
-     * numero ordine, data, metodo di pagamento, indirizzo di spedizione e importi.
-     *
-     * @param EOrdine $ordine L'ordine appena creato e persistito dal Control
-     */
-   
+    
 
     // =========================================================================
     //  UC3 — Step 3a/3b: L'utente clicca "Fai un'offerta" — flusso alternativo

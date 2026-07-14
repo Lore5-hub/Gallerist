@@ -13,8 +13,8 @@ class EArtista extends EUtente {
     private string $statoValidazione;
     private string $nazionalita = '';
     private float  $valutazioneMedia = 0.0;
-     public const STATO_IN_ATTESA = "In attesa di validazione";  /* attivo e bannato sono in utente */
-
+     public const STATO_IN_ATTESA = "IN_ATTESA";  /* attivo e bannato sono in utente */
+private string $portfolio = '';
     
 
     /**
@@ -58,5 +58,6 @@ public function setNazionalita(string $nazionalita): void { $this->nazionalita =
 
 public function getValutazioneMedia(): float { return $this->valutazioneMedia; }
 public function setValutazioneMedia(float $media): void { $this->valutazioneMedia = $media; }
-    
+    public function getPortfolio(): string { return $this->portfolio; }
+public function setPortfolio(string $portfolio): void { $this->portfolio = $portfolio; }
 }   

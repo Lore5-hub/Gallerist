@@ -1,6 +1,6 @@
 <?php
 
-require_once 'StartSmarty.php';
+
 
 class VErrore {
     private $smarty;
