@@ -22,7 +22,7 @@ private string $unitaMisura = 'cm';
 private int $idCategoria   = 0;
 private int $idTecnica     = 0;
 
-    // Associazioni dirette ed aggregazioni di tipo strutturato (Slide 13 del PPT 10)
+    // Associazioni dirette ed aggregazioni di tipo strutturato 
     private EArtista $artista;
     private ECategoria $categoria;
     private array $immagini = []; // Contiene oggetti di tipo EImmagine
@@ -55,7 +55,7 @@ private int $idTecnica     = 0;
 }
     /**
      * Calcola dinamicamente la valutazione media ciclando sulle recensioni associate.
-     * Sostituisce l'attributo statico rimosso su indicazione del professore.
+     
      */
     public function getValutazioneMedia(): float {
         if (empty($this->commenti)) {

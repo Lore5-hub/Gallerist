@@ -44,7 +44,7 @@ class EOfferta {
     // --- GETTER & SETTER ---
 
     public function getId(): int { return $this->id; }
-    // FIX: aggiunto setId() mancante — necessario dopo lastInsertId() nella Foundation
+    // FIX: aggiunto setId() mancante 
     public function setId(int $id): void { $this->id = $id; }
 
     public function getCifraProposta(): EPrezzo { return $this->cifraProposta; }

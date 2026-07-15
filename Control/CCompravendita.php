@@ -53,7 +53,7 @@ foreach ($opereArtista as $op) {
         if (!is_array($commentiOpera)) $commentiOpera = [$commentiOpera];
         foreach ($commentiOpera as $commento) {
             $tuttiCommenti[] = $commento;
-            // ✅ Se è l'opera corrente, aggiungila anche ad essa
+            
             if ($op->getId() === $opera->getId()) {
                 $opera->addCommento($commento);
             }
@@ -120,7 +120,7 @@ if ($artista instanceof EArtista && count($tuttiCommenti) > 0) {
         // Aggiorna stato opera a Venduta
         $pdo->prepare("UPDATE opera SET stato = 'Venduta' WHERE id = :id")
             ->execute([':id' => $idOpera]);
-// ✅ Leggi indirizzo dal form — può essere diverso da quello del profilo
+//  Leggi indirizzo dal form — può essere diverso da quello del profilo
 $indirizzoSpedizione = trim($_POST['indirizzo_spedizione'] ?? $utente->getIndirizzo());
 if (strlen($indirizzoSpedizione) < 10) {
     $pdo->rollBack();

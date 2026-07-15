@@ -54,7 +54,7 @@ class CUtente
         return;}
     }
                 
-    // ✅ Se è un artista, ricaricalo come EArtista
+    //  Se è un artista, ricaricalo come EArtista
     if ($utente->getRuolo() === EUtente::RUOLO_ARTISTA) {
         $artista = FPersistentManager::load('EArtista', 'id', $utente->getId());
         if ($artista instanceof EArtista) {
@@ -69,7 +69,7 @@ class CUtente
         $vUtente->smarty->display('Login.tpl');
         return;
     }
-                // 🟢 CREDENZIALI CORRETTE!
+                
                 
                 // Salviamo i dati dell'utente nella sessione
                 $sessione = USession::getInstance();
@@ -84,7 +84,7 @@ class CUtente
                 exit; 
                 
             } else {
-                // 🔴 CREDENZIALI ERRATE!
+                
                 $vUtente = new VUtente();
                 $vUtente->smarty->assign('errore_login', true);
                 $vUtente->smarty->assign('email_inserita', $email); 
@@ -92,7 +92,7 @@ class CUtente
             }
             
         } else {
-            // 🔵 RICHIESTA GET
+            //  RICHIESTA GET
             $vUtente = new VUtente();
             $vUtente->smarty->display('Login.tpl');
         }
@@ -225,7 +225,7 @@ class CUtente
 
             }
 
-            // Dopo il codice dell'immagine profilo, aggiungi:
+            
 $documento = '';
 if (isset($_FILES['documento_identita']) && $_FILES['documento_identita']['error'] === UPLOAD_ERR_OK) {
     $fileTmpPath  = $_FILES['documento_identita']['tmp_name'];
@@ -255,7 +255,7 @@ if (isset($_FILES['documento_identita']) && $_FILES['documento_identita']['error
                 $statoIniziale = EUtente::STATO_ATTIVO;
 
               if ($ruoloDB === 'Artista') {
-                    // 🟢 GESTIONE ARTISTA: Recuperiamo i campi extra definiti nel form HTML
+                    // GESTIONE ARTISTA: Recuperiamo i campi extra definiti nel form HTML
                     $biografia = isset($_POST['biografia']) ? trim($_POST['biografia']) : '';
                     $stile     = isset($_POST['stile']) ? trim($_POST['stile']) : '';
                     
@@ -348,9 +348,9 @@ $nuovoArtista->setPortfolio($portfolio);
 
                 if ($risultato !== null) {
 
-                    // 🟢 REGISTRAZIONE AVVENUTA CON SUCCESSO!
+                    
                    if ($ruoloDB === 'Artista') {
-                        // ✨ Per l'artista attiviamo il banner "in attesa" che hai nel .tpl
+                        // ✨ Per l'artista attiviamo il banner "in attesa" che è nel .tpl
                         $vUtente->smarty->assign('stato_registrazione', 'attesa');
                         UEmail::inviaEmail(
             ADMIN_EMAIL,
@@ -682,7 +682,7 @@ foreach ($resTipi ?? [] as $row) {
     if ($row['tipo'] === 'offerta')  $venditeOfferta = (int)$row['num'];
 }
 
-// Aggiungi questa query in storicoVendite()
+
 $resCategorie = $db->queryDB(
     "SELECT o.categoria, SUM(o.prezzo) as totale
      FROM ordine ord

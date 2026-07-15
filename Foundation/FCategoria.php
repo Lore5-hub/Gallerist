@@ -5,7 +5,7 @@
  * Classe Foundation per la gestione della persistenza dell'entità Categoria.
  *
  * Note architetturali:
- *  - La tabella CATEGORIA ha un'unica colonna: nome (PK stringa).
+ *  - La tabella categoria ha un'unica colonna: nome (PK stringa).
  *    Non esiste un id numerico, quindi bind() non gestisce alcun :id.
  *  - update() è assente intenzionalmente: il nome è la PK, modificarlo
  *    avrebbe effetti a cascata su tutte le opere collegate e va gestito
@@ -86,9 +86,7 @@ class FCategoria {
      * Elimina una categoria dal database tramite un campo e valore.
      * Usato solo dall'admin (CGestionePiattaforma).
      *
-     * ATTENZIONE: se sul DB è definito ON DELETE RESTRICT sulla FK
-     * tra OPERA.categoria e CATEGORIA.nome, l'eliminazione fallirà
-     * finché esistono opere associate. Gestire l'errore lato Control.
+     * 
      */
     public static function delete(string $field, mixed $id): ?bool {
         $db = FDataBase::getInstance();

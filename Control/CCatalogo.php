@@ -44,13 +44,13 @@ class CCatalogo {
     string $ordinamento  = 'recenti'
 ): void {
     
-    // 🟢 LA MODIFICA: Se i dati arrivano dalla barra URL (?categoria=... o ?parola_chiave=...)
+    //   MODIFICA: Se i dati arrivano dalla barra URL (?categoria=... o ?parola_chiave=...)
     // li prendiamo da $_GET, altrimenti teniamo il valore di default passato dal Front Controller.
     $parolaChiave = isset($_GET['parola_chiave']) ? $_GET['parola_chiave'] : $parolaChiave;
     $categoria    = isset($_GET['categoria'])    ? $_GET['categoria']    : $categoria;
     $ordinamento  = isset($_GET['ordinamento'])  ? $_GET['ordinamento']  : $ordinamento;
 
-    // ... Tutto il resto del tuo codice rimane identico ed è perfetto!
+    
     $ordinamentiValidi = ['recenti', 'prezzo_asc', 'prezzo_desc'];
     $parametriPuliti   = [
         'parola_chiave' => trim($parolaChiave),

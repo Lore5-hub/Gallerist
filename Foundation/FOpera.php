@@ -69,7 +69,7 @@ class FOpera {
     public static function store(EOpera $opera): ?string {
         $db = FDataBase::getInstance();
 
-        // ✅ CORRETTO
+        
 if (!FArtista::exist('idUtente', $opera->getArtista()->getId()))  {
             error_log("FOpera::store - Artista non esistente per email: " . $opera->getArtista()->getEmail());
             return null;
@@ -356,9 +356,7 @@ if (!empty($parametri['prezzo_max'])) {
      * I campi dell'artista sono aliasati (artista_nome, artista_cognome…)
      * per evitare conflitti con le colonne omonime di OPERA.
      *
-     * ATTENZIONE: EArtista è costruito con i soli campi disponibili dalla JOIN.
-     * Non chiamare getArtista()->getBiografia() o ->getCartaIdentita() su oggetti
-     * restituiti da questo metodo: i campi non estratti dalla query saranno vuoti.
+     * 
      */
     private static function creaOperaDaArray(array $row): EOpera {
         $artista = new EArtista(

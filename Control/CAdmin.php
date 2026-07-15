@@ -18,8 +18,8 @@ class CAdmin {
         $utente = $sessione->getValore('utente_loggato');
         
         // 2. Verifichiamo se l'utente ha il ruolo di admin
-        // NOTA: Assicurati che la tua entità EUtente abbia il metodo getRuolo() 
-        // o che restituisca 'admin'
+        
+        
         if ($utente instanceof EUtente && $utente->getRuolo() === 'Amministratore') {
             return true;
         }
@@ -419,13 +419,12 @@ public function verificaArtista() {
     }
 
     // Aggiorna stato_validazione ad APPROVATO
-    // FPersistentManager::load usa FArtista::loadByField che fa JOIN su idUtente
-    // quindi la PK per la tabella artista è idUtente
+    
+    
     $ok = FPersistentManager::update('EArtista', 'stato_validazione', 'APPROVATO', 'idUtente', $id);
 
     if ($ok) {
-        // Aggiorna anche stato_account in utente → da 'attivo' rimane attivo,
-        // ma se avessi messo uno stato 'in_attesa' anche lì va aggiornato
+        
         FPersistentManager::update('EUtente', 'stato_account', EUtente::STATO_ATTIVO, 'id', $id);
 
         // Notifica l'artista dell'avvenuta approvazione
@@ -488,7 +487,7 @@ public function mostraValidazione() {
 
     $vAdmin = new VAdmin();
     $vAdmin->smarty->assign('utente',          $utente);
-    $vAdmin->smarty->assign('opere_portfolio', []); // mock — nessun portfolio caricato
+    $vAdmin->smarty->assign('opere_portfolio', []); 
     $vAdmin->smarty->display('AdminValidazione.tpl');
 }
 /**
@@ -512,7 +511,7 @@ public function mostraSegnalazione() {
         header('Location: /Gallerist/Admin/dashboard');
         exit;
     }
-    // Dopo aver caricato $seg
+    
 $testoIncriminato = '';
 $titoloOpera = '';
 $urlAnteprimaOpera = '/Gallerist/img/default_opera.png';
@@ -533,7 +532,7 @@ if ($seg->getTipoTarget() === 'Commento') {
         $idAutoreCommento = $commento->getAutore()->getId();
     }
 }
-// Dopo aver caricato $seg
+
 
 
 if ($seg->getTipoTarget() === 'Opera') {
@@ -763,7 +762,7 @@ if ($utenteBannato instanceof EUtente) {
     }
     
 
-// ✅ AGGIUNGI QUI
+
 // 1b. Rimuovi contenuto se richiesto
 if ($rimuoviContenuto) {
     $db = FDataBase::getInstance();
@@ -783,7 +782,7 @@ if ($rimuoviContenuto) {
                 [':id' => $idOggetto]
             );
         }
-        // Opera e Profilo: il ban nasconde già il contenuto automaticamente
+        
     }
 }
 

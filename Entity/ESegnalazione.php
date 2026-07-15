@@ -13,7 +13,7 @@ class ESegnalazione {
     private string $tipoTarget; // 'opera', 'utente', 'commento'
     private int $idTarget; // L'ID effettivo dell'oggetto segnalato
     private int $idSegnalatore; // L'utente che ha inviato la segnalazione
-    private EStatoSegnalazione $stato; // Gestito tramite State Pattern come richiesto dal prof
+    private EStatoSegnalazione $stato; // Gestito tramite State Pattern 
 
     public function __construct(
         int $id, string $motivo, string $notaOpzionale, DateTimeImmutable $dataSegnalazione, 

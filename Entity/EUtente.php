@@ -4,7 +4,7 @@
  * @package Entity
  */
 class EUtente {
-    // Attributi dedotti dal diagramma ER
+    
     private ?int $id = null; 
     private string $nome;
     private string $cognome;
@@ -16,13 +16,13 @@ class EUtente {
     private string $password;
     private ?string $immagineProfilo; 
     private string $statoAccount; 
-    private string $ruolo; // 🟢 NUOVO ATTRIBUTO
+    private string $ruolo;
     private DateTimeImmutable $dataRegistrazione;
     // Costanti per lo Stato Account
     public const STATO_ATTIVO  = "attivo";
     public const STATO_BANNATO = "Bannato";
 
-    // 🟢 COSTANTI PER I RUOLI
+    // COSTANTI PER I RUOLI
     public const RUOLO_USER  = "Utente registrato";
     public const RUOLO_ADMIN = "Amministratore";
     public const RUOLO_ARTISTA = 'Artista';
@@ -35,7 +35,7 @@ class EUtente {
     string $indirizzo, string $nickname, string $telefono, string $email,
     string $password, ?string $immagineProfilo, string $statoAccount = self::STATO_ATTIVO,
     string $ruolo = self::RUOLO_USER,
-    ?DateTimeImmutable $dataRegistrazione = null  // ← aggiunto come opzionale
+    ?DateTimeImmutable $dataRegistrazione = null  
 )  {
         $this->id = $id;
         $this->nome = $nome;
@@ -48,7 +48,7 @@ class EUtente {
         $this->password = $password; 
         $this->immagineProfilo = $immagineProfilo;
         $this->statoAccount = $statoAccount;
-        $this->setRuolo($ruolo); // 🟢 Utilizza il setter per validare il ruolo
+        $this->setRuolo($ruolo); //  Utilizza il setter per validare il ruolo
          $this->dataRegistrazione = $dataRegistrazione ?? new DateTimeImmutable();
     }
 
@@ -72,7 +72,7 @@ class EUtente {
 
     public function getTelefono(): string { return $this->telefono; }
     public function setTelefono(string $telefono): void {
-    // ✅ Accetta stringa vuota (telefono non disponibile)
+    
     if ($telefono === '') {
         $this->telefono = '';
         return;
@@ -101,7 +101,7 @@ class EUtente {
         $this->statoAccount = $stato;
     }
 
-    // 🟢 NUOVI GETTER & SETTER PER IL RUOLO
+    //  NUOVI GETTER & SETTER PER IL RUOLO
     public function getRuolo(): string { return $this->ruolo; }
     public function setRuolo(string $ruolo): void {
         $ruoliValidi = [self::RUOLO_USER, self::RUOLO_ARTISTA, self::RUOLO_ADMIN];

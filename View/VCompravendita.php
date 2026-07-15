@@ -10,10 +10,10 @@
  *  - Mostrare il modulo per l'inserimento di una proposta d'offerta alternativa
  *  - Confermare l'invio della proposta d'offerta all'artista
  *  - Gestire e comunicare tutti gli errori del flusso (opera non disponibile,
- *    dati mancanti, cifra non valida, errori di persistenza)
+ *    dati mancanti, cifra non valida)
  *
  * Accessibile solo da utenti loggati (precondizione dell'UC3).
- * Lo stato di sessione viene verificato centralmente tramite CUtente::isLogged().
+ * 
  *
  * @package View
  */
@@ -23,7 +23,7 @@ class VCompravendita
     private $smarty;
 
     /**
-     * Inizializza e configura Smarty tramite il factory centralizzato del progetto.
+     * Inizializza e configura Smarty.
      */
     public function __construct()
     {
@@ -79,7 +79,7 @@ class VCompravendita
         $this->smarty->assign('prezzoSpedizione', $prezzoSpedizione);
 
         // Totale ordine calcolato qui nella View sommando i due EPrezzo
-        // (il Control non ha ancora un EOrdine in questo step: lo crea solo alla conferma)
+        
         $totale = new EPrezzo(
             $opera->getPrezzo()->getValore() + $prezzoSpedizione->getValore(),
             $opera->getPrezzo()->getValuta()
@@ -278,7 +278,7 @@ class VCompravendita
     /**
      * Codifica una singola immagine in Base64, con fallback all'immagine di default.
      *
-     * Segue il pattern consolidato di VOpera, VRegistrazione e VCatalogo.
+     * 
      *
      * @param mixed  $immagine    Oggetto EImmagine (getData(), getType()) oppure null
      * @param string $tipoDefault Contesto: 'opera' | 'avatar'

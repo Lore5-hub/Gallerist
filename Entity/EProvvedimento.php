@@ -14,7 +14,7 @@ class EProvvedimento {
     private DateTimeImmutable $dataFine;     // Formato 'Y-m-d'
     private string $motivo;
 
-    // Associazione diretta verso l'utente sanzionato (Slide 13 del PPT 10)
+    // Associazione diretta verso l'utente sanzionato 
     private EUtente $utenteSanzionato;
 
     /**

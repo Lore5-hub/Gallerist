@@ -5,7 +5,7 @@ class CFrontController {
 
     public function run($path)
     { 
-        // 🟢 NUOVA MODIFICA: Se nell'URL c'è un punto interrogativo (richiesta GET), 
+        //  Se nell'URL c'è un punto interrogativo (richiesta GET), 
         // tagliamo via tutto ciò che viene dopo prima di analizzare i segmenti.
         if (strpos($path, '?') !== false) {
             $path = explode('?', $path)[0];

@@ -20,7 +20,7 @@ class VCatalogo
     private $smarty;
 
     /**
-     * Inizializza e configura Smarty tramite il factory centralizzato del progetto.
+     * Inizializza e configura Smarty.
      */
     public function __construct()
     {
@@ -38,8 +38,7 @@ class VCatalogo
      * con barra di ricerca, filtri per categoria, criteri di ordinamento e griglia
      * iniziale di opere popolari/recenti.
      *
-     * Accessibile anche da utenti non loggati: lo stato di sessione viene verificato
-     * tramite CUtente::isLogged() (fonte di verità centralizzata).
+     * Accessibile anche da utenti non loggati.
      *
      * @param array $categorie  Array di oggetti ECategoria per popolare il menu filtri
      * @param array $opere      Array di oggetti EOpera per la griglia iniziale
@@ -270,8 +269,7 @@ if ($prezzoConvertito !== null) {
     /**
      * Codifica una singola immagine in Base64, con fallback all'immagine di default.
      *
-     * Segue lo stesso pattern di VOpera::codificaImmagine() e VRegistrazione::codificaImmagine()
-     * per coerenza con il resto del progetto.
+     * 
      *
      * @param mixed  $immagine    Oggetto EImmagine (con getData() e getType()), oppure null
      * @param string $tipoDefault Contesto di default: 'opera' | 'avatar'

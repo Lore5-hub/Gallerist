@@ -86,8 +86,8 @@ $opera = new EOpera(
     $altezza,
     $profondita,
     $unitaMisura,
-    $idCategoria, // ← reale
-    $idTecnica    // ← reale
+    $idCategoria, 
+    $idTecnica    
 );
 
     // Salva nel DB
@@ -233,7 +233,7 @@ public function rispondiOfferta(): void {
             [':id' => $offerta->getOpera()->getId()]
         );
 
-        // ✅ Crea ordine con tipo 'offerta'
+        //  Crea ordine con tipo 'offerta'
         $ordine = new EOrdine(
             0,
             new DateTimeImmutable(),

@@ -4,7 +4,7 @@
 /**
  * Classe Foundation per la gestione della persistenza dell'entità EOfferta.
  *
- * Segue il pattern consolidato del progetto (FUtente, FOpera, FOrdine):
+ * 
  *  - bind()            → lega i valori di EOfferta ai parametri PDO
  *  - store()           → INSERT via FDataBase::storeDB()
  *  - loadByField()     → SELECT con JOIN via FDataBase::queryDB()
@@ -153,8 +153,7 @@ class FOfferta {
      * a partire da un array prodotto dalla query JOIN di loadByField().
      *
      * NOTA: EUtente (offerente) ed EOpera vengono costruiti con i soli campi
-     * disponibili dalla JOIN. Non chiamare metodi che accedono a campi non
-     * estratti (es. getPassword(), getDescrizione()) su questi oggetti.
+     * disponibili dalla JOIN. 
      */
     private static function creaOffertaDaArray(array $row): EOfferta {
         // Offerente: solo i campi estratti dalla JOIN
@@ -162,7 +161,7 @@ class FOfferta {
     (int) $row['offerente_id'],
     $row['offerente_nome'],
     $row['offerente_cognome'],
-    new DateTimeImmutable('1990-01-01'), // ← fix
+    new DateTimeImmutable('1990-01-01'), 
     '',
     $row['offerente_nickname'],
     '+39 0000000000', // ← placeholder valido
@@ -178,14 +177,14 @@ class FOfferta {
         $artistaPlaceholder = new EArtista(
     (int) $row['opera_idArtista'],
     '', '',
-    new DateTimeImmutable('1990-01-01'), // ← fix
+    new DateTimeImmutable('1990-01-01'), 
     '', '', '+39 0000000000', '', '', null,
     '', '', '',
     EArtista::STATO_IN_ATTESA
 );
 
         $opera = new EOpera(
-    (int) $row['opera_id'],              // ← id prima
+    (int) $row['opera_id'],              
     $row['opera_titolo'],
     0,
     new ETecnica(0, ''),

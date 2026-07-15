@@ -6,7 +6,7 @@ require_once 'EUtente.php'; /*include il contenuto di un altro file nel file cor
  * @package Entity
  */
 class EArtista extends EUtente {
-    // Attributi specifici dedotti dal diagramma ER
+    
     private string $biografia;
     private string $stileArtistico;
     private string $cartaIdentita; // Es. URL o nome file del documento

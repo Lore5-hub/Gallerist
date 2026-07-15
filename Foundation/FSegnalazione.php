@@ -58,7 +58,7 @@ public static function loadByField($field, $id) {
     (int) $result['idOggettoSegnalato'],
     (int) $result['idSegnalatore']
 );
-$seg->setStato($statoOggetto); // ← unica riga aggiunta
+$seg->setStato($statoOggetto); 
 return $seg;
     }
 
@@ -81,8 +81,8 @@ return $seg;
     (int) $row['idSegnalatore']
 );
 $istanza->setStato($statoOggetto);
-$segnalazioni[] = $istanza;  // ← dentro il foreach
-}  // ← chiude il foreach
+$segnalazioni[] = $istanza;  
+}  
 return $segnalazioni;
 }
 

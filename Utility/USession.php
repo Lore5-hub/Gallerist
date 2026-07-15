@@ -12,7 +12,7 @@ class USession {
                 'path'     => '/',
                 'domain'   => '',       // vuoto = dominio corrente
                 'secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
-                'httponly' => true, //serve per evitare XXS con javascript che permetterebbe di leggere i cookie, così il coockie è visibile solo dal server nelle ichieste HTTP
+                'httponly' => true, //serve per evitare XSS con javascript che permetterebbe di leggere i cookie, così il coockie è visibile solo dal server nelle richieste HTTP
                 'samesite' => 'Lax',
             ]);
             session_start();

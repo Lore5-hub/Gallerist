@@ -126,7 +126,7 @@ class FArtista {
 
     /**
      * Aggiorna un singolo attributo dell'artista nel database.
-     * Utile per cambiare stato_validazione da CGestionePiattaforma.
+     
      */
     public static function update(string $field, mixed $newvalue, string $pk, mixed $id): bool {
         $db = FDataBase::getInstance();
@@ -164,7 +164,7 @@ class FArtista {
             $row['email'],
             $row['password'],
             $row['immagine_profilo']  ?? null,
-           // $row['stato_account']     ?? EUtente::STATO_ATTIVO,  // FIX: campo mancante
+           // $row['stato_account']     ?? EUtente::STATO_ATTIVO,  
             $row['biografia'],
             $row['stile_artistico'],
             $row['carta_identita'],

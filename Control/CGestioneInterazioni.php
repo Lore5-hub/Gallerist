@@ -10,13 +10,13 @@ class CGestioneInterazioni {
     
 
     /**
-     * Operazione di sistema: L'utente invia una segnalazione di violazione[cite: 45, 53].
+     * Operazione di sistema: L'utente invia una segnalazione di violazione.
      * Può essere invocata sia dalla pagina di un'opera che dal profilo di un artista.
      * @param array $datiSegnalazione Contiene:
      * - 'tipo_target': string ('opera' o 'utente') 
      * - 'id_target': int/string (ID dell'opera o nickname dell'utente) 
-     * - 'categoria': string (il caso specifico selezionato per categoria) [cite: 56]
-     * - 'nota': string (nota facoltativa inserita dall'utente) [cite: 56]
+     * - 'categoria': string (il caso specifico selezionato per categoria) 
+     * - 'nota': string (nota facoltativa inserita dall'utente) 
      */
     public function inviaSegnalazione(): void {
     $sessione = USession::getInstance();
@@ -55,7 +55,7 @@ class CGestioneInterazioni {
 
     FPersistentManager::store($segnalazione);
 
-// ✅ Redirect corretto in base al tipo
+//  Redirect corretto in base al tipo
 if ($tipo === 'Opera') {
     header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idSegnalato . '?segnalazione=inviata');
 } elseif ($tipo === 'Commento') {
@@ -96,7 +96,7 @@ public function salvaRecensione(): void {
         header('Location: /Gallerist/catalogo/esploraCatalogo');
         exit;
     }
-    // Dopo aver caricato $opera
+    
 if ($opera->getArtista()->getId() === $utente->getId()) {
     header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=propria_opera');
     exit;

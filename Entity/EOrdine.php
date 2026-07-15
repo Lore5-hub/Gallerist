@@ -15,7 +15,7 @@ class EOrdine {
     private EPrezzo $totaleOrdine;
     private EPrezzo $commissionePiattaforma;
     private string $tipo;
-    // Associazioni come tipi di riferimento (Slide 4 del PPT 04)
+    // Associazioni come tipi di riferimento 
     private EUtente $acquirente;
     private EOpera $opera;
 
@@ -46,7 +46,7 @@ class EOrdine {
     $this->commissionePiattaforma = $commissionePiattaforma;
     $this->acquirente = $acquirente;
     $this->opera = $opera;
-    $this->tipo = $tipo;  // ← aggiunto
+    $this->tipo = $tipo; 
 
     $this->totaleOrdine = $this->calcolaTotaleOrdine();
     $this->commissionePiattaforma = $this->calcolaTrattenuta();

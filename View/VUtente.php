@@ -7,8 +7,7 @@ class VUtente
     public function __construct() 
     {
         // Inizializziamo Smarty. 
-        // Se nel tuo progetto usi una classe dedicata (es. StartSmarty), usa quella!
-        // Esempio: $this->smarty = StartSmarty::configuration();
+        
         $this->smarty =StartSmarty::configuration();
         
         

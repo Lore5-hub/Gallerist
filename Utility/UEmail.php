@@ -1,6 +1,6 @@
 <?php
 // NOTA: richiede che 'vendor/autoload.php' (Composer) sia stato incluso
-// a monte (tipicamente dentro il tuo autoload.php custom), in modo da
+// a monte in modo da
 // avere disponibili le classi PHPMailer\PHPMailer\PHPMailer e Exception.
 
 use PHPMailer\PHPMailer\PHPMailer;

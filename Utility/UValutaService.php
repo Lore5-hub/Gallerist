@@ -26,7 +26,7 @@ class UValutaService {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout di 5 secondi per non bloccare il sito
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // ← AGGIUNGI questa riga
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         // Esegue la richiesta HTTP GET
         $response = curl_exec($ch);

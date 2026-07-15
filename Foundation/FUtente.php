@@ -3,7 +3,7 @@
 
 /**
  * Classe Foundation per la gestione della persistenza dell'entità Utente.
- * Segue il pattern degli altri Foundation del progetto (FOpera, FOrdine, ecc.)
+ 
  * delegando le operazioni CRUD generiche a FDataBase.
  * @package Foundation
  */
@@ -23,8 +23,7 @@ class FUtente {
      * oppure null (AUTO_INCREMENT) se l'id non è ancora assegnato.
      */
     public static function bind($stmt, EUtente $utente): void {
-        // FIX: id non più hardcoded a null — supporta sia AUTO_INCREMENT (id=0)
-        // sia un id esplicito (es. ripristino dati).
+        
         $id = $utente->getId();
         $stmt->bindValue(':id',              $id === 0 ? null : $id,        $id === 0 ? PDO::PARAM_NULL : PDO::PARAM_INT);
         $stmt->bindValue(':nome',            $utente->getNome(),             PDO::PARAM_STR);
