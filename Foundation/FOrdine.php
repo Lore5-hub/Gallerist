@@ -9,7 +9,8 @@ class FOrdine {
 
     private static $class = "FOrdine";
     private static $table = "ordine";
-    private static $values = "(:id, :data, :idUtente, :idOpera, :tipo, :indirizzo_spedizione, :metodo_pagamento)";
+    private static $values = "(:id, :data, :idUtente, :idOpera, :tipo, :indirizzo_spedizione, :metodo_pagamento, 
+    :totale_articolo, :commissione_piattaforma, :titolo_opera_snapshot, :id_artista_snapshot)";
 
     public function __construct() {}
 
@@ -21,6 +22,13 @@ class FOrdine {
     $stmt->bindValue(':tipo',     $ordine->getTipo(),                               PDO::PARAM_STR);
     $stmt->bindValue(':indirizzo_spedizione', $ordine->getIndirizzoSpedizione(), PDO::PARAM_STR);
     $stmt->bindValue(':metodo_pagamento', $ordine->getMetodoPagamento(), PDO::PARAM_STR);
+    
+    // valori congelati al momento della vendita, sopravvivono
+    // anche se l'opera viene cancellata in seguito.
+    $stmt->bindValue(':totale_articolo', $ordine->getTotaleArticolo()->getValore(), PDO::PARAM_STR);
+    $stmt->bindValue(':commissione_piattaforma', $ordine->getCommissionePiattaforma()->getValore(), PDO::PARAM_STR);
+    $stmt->bindValue(':titolo_opera_snapshot', $ordine->getOpera()->getTitolo(), PDO::PARAM_STR);
+    $stmt->bindValue(':id_artista_snapshot', $ordine->getOpera()->getArtista()->getId(), PDO::PARAM_INT);
     
 }
 

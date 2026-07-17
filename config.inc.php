@@ -6,7 +6,7 @@ $GLOBALS['password'] = '';
 
 // --- Configurazione SMTP (Mailtrap) ---
 define('SMTP_HOST', 'sandbox.smtp.mailtrap.io');
-define('SMTP_PORT', 2525);
+define('SMTP_PORT', 587);
 define('SMTP_USER', 'bbb3b62a076d8d');
 define('SMTP_PASS', '4f270dd32f84f6');
 define('SMTP_SECURE', 'tls');

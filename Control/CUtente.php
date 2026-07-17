@@ -469,8 +469,16 @@ foreach ($mieOpere as $opera) {
         $stato = $opera->getStatoOpera()->getNomeStato();
 if ($stato === 'pubblicata') $pubblicate++;
 if ($stato === 'in_vendita') { $pubblicate++; $inVendita++; }
-if ($stato === 'Venduta')    $guadagni += (float)$opera->getPrezzo()->getValore();
     }
+
+    // Guadagni letti da ordine (non dalle opere correnti): restano corretti
+    // anche se l'artista in seguito cancella un'opera già venduta.
+    $db = FDataBase::getInstance();
+    $resGuadagniArtista = $db->queryDB(
+        "SELECT COALESCE(SUM(totale_articolo), 0) as guadagni FROM ordine WHERE id_artista_snapshot = :idArtista",
+        [':idArtista' => $artistaId]
+    );
+    $guadagni = $resGuadagniArtista ? (float)$resGuadagniArtista[0]['guadagni'] : 0.0;
 
     $statistiche = [
         'pubblicate'       => $pubblicate,
@@ -628,15 +636,18 @@ public function storicoVendite(): void {
         $filtroData = "AND ord.data >= :dataInizio";
         $params[':dataInizio'] = date('Y-m-d', strtotime("-{$periodo} days"));
     }
-    // Storico vendite reale
+    // Storico vendite reale — letto dagli snapshot congelati su ordine,
+    // così resta corretto anche se l'opera viene poi cancellata.
     $resVendite = $db->queryDB(
-        "SELECT o.titolo as titolo_opera, o.categoria, o.prezzo,
+        "SELECT COALESCE(o.titolo, ord.titolo_opera_snapshot) as titolo_opera,
+                o.categoria as categoria,
+                ord.totale_articolo as prezzo,
                 ord.data,
-                o.prezzo * 0.15 as commissione,
-                o.prezzo * 0.85 as netto
+                ord.commissione_piattaforma as commissione,
+                (ord.totale_articolo - ord.commissione_piattaforma) as netto
          FROM ordine ord
-         INNER JOIN opera o ON o.id = ord.idOpera
-          WHERE o.idArtista = :id {$filtroData}
+         LEFT JOIN opera o ON o.id = ord.idOpera
+          WHERE ord.id_artista_snapshot = :id {$filtroData}
          ORDER BY ord.data DESC",
          $params
     
@@ -668,9 +679,8 @@ public function storicoVendite(): void {
     $votoMedio = $resVoti ? round((float)$resVoti[0]['media'], 1) : 0.0;
 $resTipi = $db->queryDB(
     "SELECT tipo, COUNT(*) as num
-     FROM ordine ord
-     INNER JOIN opera o ON o.id = ord.idOpera
-     WHERE o.idArtista = :id
+     FROM ordine
+     WHERE id_artista_snapshot = :id
      GROUP BY tipo",
     [':id' => $artista->getId()]
 );
@@ -684,11 +694,11 @@ foreach ($resTipi ?? [] as $row) {
 
 
 $resCategorie = $db->queryDB(
-    "SELECT o.categoria, SUM(o.prezzo) as totale
+    "SELECT COALESCE(o.categoria, 'Non disponibile') as categoria, SUM(ord.totale_articolo) as totale
      FROM ordine ord
-     INNER JOIN opera o ON o.id = ord.idOpera
-     WHERE o.idArtista = :id
-     GROUP BY o.categoria",
+     LEFT JOIN opera o ON o.id = ord.idOpera
+     WHERE ord.id_artista_snapshot = :id
+     GROUP BY COALESCE(o.categoria, 'Non disponibile')",
     [':id' => $artista->getId()]
 );
 

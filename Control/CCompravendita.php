@@ -120,7 +120,7 @@ if ($artista instanceof EArtista && count($tuttiCommenti) > 0) {
         // Aggiorna stato opera a Venduta
         $pdo->prepare("UPDATE opera SET stato = 'Venduta' WHERE id = :id")
             ->execute([':id' => $idOpera]);
-//  Leggi indirizzo dal form — può essere diverso da quello del profilo
+//Leggi indirizzo dal form — può essere diverso da quello del profilo
 $indirizzoSpedizione = trim($_POST['indirizzo_spedizione'] ?? $utente->getIndirizzo());
 if (strlen($indirizzoSpedizione) < 10) {
     $pdo->rollBack();
@@ -131,8 +131,10 @@ if (strlen($indirizzoSpedizione) < 10) {
 }
         
         $stmt = $pdo->prepare(
-    "INSERT INTO ordine (data, idUtente, idOpera, tipo, indirizzo_spedizione, metodo_pagamento) 
-     VALUES (:data, :idUtente, :idOpera, :tipo, :indirizzo, :metodo)"
+    "INSERT INTO ordine (data, idUtente, idOpera, tipo, indirizzo_spedizione, metodo_pagamento, 
+    totale_articolo, commissione_piattaforma, titolo_opera_snapshot, id_artista_snapshot) 
+     VALUES (:data, :idUtente, :idOpera, :tipo, :indirizzo, :metodo, 
+     :totale_articolo, :commissione_piattaforma, :titolo_opera_snapshot, :id_artista_snapshot)"
 );
 $stmt->execute([
     ':data'     => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
@@ -141,6 +143,10 @@ $stmt->execute([
     ':tipo'     => 'diretto',
     ':indirizzo' => $indirizzoSpedizione,
     ':metodo'   => $_POST['metodo_pagamento'] ?? 'carta',
+    ':totale_articolo' => $opera->getPrezzo()->getValore(),
+    ':commissione_piattaforma' => 0.1 * $opera->getPrezzo()->getValore(),
+    ':titolo_opera_snapshot' => $opera->getTitolo(),
+    ':id_artista_snapshot' => $opera->getArtista()->getId()
 ]);
 
         $pdo->commit();

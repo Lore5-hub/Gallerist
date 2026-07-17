@@ -166,7 +166,18 @@ public function eliminaOpera(): void {
         exit;
     }
 
-    FPersistentManager::delete('EOpera', 'id', $idOpera);
+// Le offerte collegate a questa opera non hanno ON DELETE CASCADE
+    // (a differenza di commento, immagine, opera_tag, ordine), quindi vanno
+    // rimosse esplicitamente prima, altrimenti il DELETE su opera fallisce
+    // per vincolo di chiave esterna.
+    FPersistentManager::delete('EOfferta', 'idOpera', $idOpera);
+
+    $eliminata = FPersistentManager::delete('EOpera', 'id', $idOpera);
+
+    if ($eliminata !== true) {
+        header('Location: /Gallerist/utente/profilo?opera=errore_eliminazione');
+        exit;
+    }
 
     header('Location: /Gallerist/utente/profilo?opera=eliminata');
     exit;

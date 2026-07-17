@@ -15,7 +15,7 @@
           <form action="/Gallerist/catalogo/filtraCatalogo" method="GET">
             <div class="field has-addons">
               <div class="control is-expanded has-icons-left">
-                <input class="input is-medium" type="text" name="parola_chiave" placeholder="Cerca un'opera, un artista o una tecnica...">
+                <input class="input is-medium" type="text" name="parola_chiave" placeholder="Cerca un'opera">
                 <span class="icon is-small is-left">
                   <i class="fas fa-search"></i>
                 </span>

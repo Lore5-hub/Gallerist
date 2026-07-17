@@ -18,8 +18,8 @@ class CAdmin {
         $utente = $sessione->getValore('utente_loggato');
         
         // 2. Verifichiamo se l'utente ha il ruolo di admin
-        
-        
+        // NOTA: Assicurati che la tua entità EUtente abbia il metodo getRuolo() 
+        // o che restituisca 'admin'
         if ($utente instanceof EUtente && $utente->getRuolo() === 'Amministratore') {
             return true;
         }
@@ -249,22 +249,20 @@ $resOrdiniPrec = $db->queryDB(
 $totaleMovimentiPrec = $resOrdiniPrec ? (int)$resOrdiniPrec[0]['totale'] : 0;
 
 
-    // Guadagni reali — 10% commissione su ogni opera venduta nel periodo
+    // Guadagni reali — commissione già congelata su ogni ordine al momento della vendita
     $resGuadagni = $db->queryDB(
-    "SELECT COALESCE(SUM(o.prezzo * 0.10), 0) as guadagni
-     FROM ordine ord
-     INNER JOIN opera o ON o.id = ord.idOpera
-     WHERE ord.data >= :data",
+    "SELECT COALESCE(SUM(commissione_piattaforma), 0) as guadagni
+     FROM ordine
+     WHERE data >= :data",
     [':data' => $dataInizio]
 );
 $guadagni = $resGuadagni ? (float)$resGuadagni[0]['guadagni'] : 0.0;
 
 // Guadagni periodo precedente
 $resGuadagniPrec = $db->queryDB(
-    "SELECT COALESCE(SUM(o.prezzo * 0.10), 0) as guadagni
-     FROM ordine ord
-     INNER JOIN opera o ON o.id = ord.idOpera
-     WHERE ord.data >= :dal AND ord.data < :al",
+    "SELECT COALESCE(SUM(commissione_piattaforma), 0) as guadagni
+     FROM ordine
+     WHERE data >= :dal AND data < :al",
     [':dal' => $dataPrecInizio, ':al' => $dataPrecFine]
 );
 $guadagniPrec = $resGuadagniPrec ? (float)$resGuadagniPrec[0]['guadagni'] : 0.0;
@@ -373,10 +371,9 @@ $opereVendutePrec = $resVendutePrec ? (int)$resVendutePrec[0]['totale'] : 0;
     $datiVisite[] = $resV ? (int)$resV[0]['visite']    : 0;
 
     $resG = $db->queryDB(
-        "SELECT COALESCE(SUM(o.prezzo * 0.10), 0) as tot
-         FROM ordine ord
-         INNER JOIN opera o ON o.id = ord.idOpera
-         WHERE ord.data >= :dal AND ord.data < :al",
+        "SELECT COALESCE(SUM(commissione_piattaforma), 0) as tot
+         FROM ordine
+         WHERE data >= :dal AND data < :al",
         [':dal' => $dal . ' 00:00:00', ':al' => $al . ' 00:00:00']
     );
     $datiGuadagni[] = $resG ? round((float)$resG[0]['tot'], 2) : 0;
@@ -419,12 +416,13 @@ public function verificaArtista() {
     }
 
     // Aggiorna stato_validazione ad APPROVATO
-    
-    
+    // FPersistentManager::load usa FArtista::loadByField che fa JOIN su idUtente
+    // quindi la PK per la tabella artista è idUtente
     $ok = FPersistentManager::update('EArtista', 'stato_validazione', 'APPROVATO', 'idUtente', $id);
 
     if ($ok) {
-        
+        // Aggiorna anche stato_account in utente → da 'attivo' rimane attivo,
+        // ma se avessi messo uno stato 'in_attesa' anche lì va aggiornato
         FPersistentManager::update('EUtente', 'stato_account', EUtente::STATO_ATTIVO, 'id', $id);
 
         // Notifica l'artista dell'avvenuta approvazione
@@ -487,7 +485,7 @@ public function mostraValidazione() {
 
     $vAdmin = new VAdmin();
     $vAdmin->smarty->assign('utente',          $utente);
-    $vAdmin->smarty->assign('opere_portfolio', []); 
+    $vAdmin->smarty->assign('opere_portfolio', []); // mock — nessun portfolio caricato
     $vAdmin->smarty->display('AdminValidazione.tpl');
 }
 /**
@@ -511,7 +509,7 @@ public function mostraSegnalazione() {
         header('Location: /Gallerist/Admin/dashboard');
         exit;
     }
-    
+    // Dopo aver caricato $seg
 $testoIncriminato = '';
 $titoloOpera = '';
 $urlAnteprimaOpera = '/Gallerist/img/default_opera.png';
@@ -532,7 +530,7 @@ if ($seg->getTipoTarget() === 'Commento') {
         $idAutoreCommento = $commento->getAutore()->getId();
     }
 }
-
+// Dopo aver caricato $seg
 
 
 if ($seg->getTipoTarget() === 'Opera') {
@@ -762,7 +760,7 @@ if ($utenteBannato instanceof EUtente) {
     }
     
 
-
+// ✅ AGGIUNGI QUI
 // 1b. Rimuovi contenuto se richiesto
 if ($rimuoviContenuto) {
     $db = FDataBase::getInstance();
@@ -782,7 +780,7 @@ if ($rimuoviContenuto) {
                 [':id' => $idOggetto]
             );
         }
-        
+        // Opera e Profilo: il ban nasconde già il contenuto automaticamente
     }
 }
 

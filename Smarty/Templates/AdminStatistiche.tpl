@@ -111,8 +111,8 @@
 </div>
 
 <div class="column is-2-desktop is-half-tablet">
-    <div class="box has-text-centered p-3 has-background-success-light h-full">
-        <span class="icon is-medium has-text-success mb-1"><i class="fas fa-coins fa-lg"></i></span>
+<div class="box has-text-centered p-3 h-full" style="background-color: #1e4d3a;">
+    <span class="icon is-medium mb-1" style="color: #4ade80;"><i class="fas fa-coins fa-lg"></i></span>
         <p class="heading mb-1">Guadagni Piattaforma</p>
         <p class="title is-4 mb-2">€ {$stats.guadagni|number_format:2:',':'.'}</p>
         {if $stats.guad_perc >= 0}
