@@ -1,0 +1,108 @@
+# Step 6 — Progettazione dello Strato di Persistenza
+
+## Approccio adottato
+
+Come indicato nelle slide del corso, il progetto adotta l'approccio
+**OO-first**: prima è stato progettato il modello a oggetti (Entity),
+poi è stato derivato lo schema relazionale più adatto a persisterne lo stato.
+
+## Object-Relational Mapping
+
+### Classi indipendenti → tabella diretta
+
+| Classe Entity | Tabella DB |
+|--------------|------------|
+| `EUtente` | `utente` |
+| `ECategoria` | `categoria` |
+| `ETecnica` | `tecnica` |
+| `ETag` | `tag` |
+| `EVisita` | `visita` |
+| `EPrezzo` | (Value Object — nessuna tabella) |
+
+### Gerarchia di classi → due tabelle (strategia 1)
+
+`EArtista extends EUtente` è mappata su due tabelle collegate da FK:
+`FArtista::store()` gestisce l'inserimento sequenziale:
+prima `FUtente::store()` per la riga in `utente`,
+poi `FDataBase::storeDB()` per la riga in `artista`.
+
+### Relazione uno-a-molti
+
+| Relazione | Tabelle |
+|-----------|---------|
+| Opera → Immagini | `opera` ← `immagine.idOpera` |
+| Opera → Commenti | `opera` ← `commento.idOpera` |
+| Utente → Ordini | `utente` ← `ordine.idUtente` |
+| Utente → Offerte | `utente` ← `offerta.idOfferente` |
+
+### Relazione molti-a-molti
+
+`EOpera` ↔ `ETag` è mappata tramite tabella di join:
+`FTag::store()` gestisce entrambe le tabelle:
+inserisce il tag in `tag` (o riusa quello esistente)
+e crea il legame in `opera_tag`.
+
+### State Pattern → colonna ENUM
+
+`EStatoOpera` (astratta) con sottoclassi `EStatoInserito`,
+`EStatoInVendita`, `EStatoVenduto` è mappata su una singola
+colonna `stato` nella tabella `opera`:
+Stesso approccio per `EStatoSegnalazione`:
+## Struttura del Sottosistema Foundation
+
+### Una classe Foundation per ogni classe Entity
+
+| Classe Entity | Classe Foundation |
+|--------------|------------------|
+| `EUtente` | `FUtente` |
+| `EArtista` | `FArtista` |
+| `EOpera` | `FOpera` |
+| `ECommento` | `FCommento` |
+| `EOfferta` | `FOfferta` |
+| `EOrdine` | `FOrdine` |
+| `ESegnalazione` | `FSegnalazione` |
+| `ECategoria` | `FCategoria` |
+| `ETecnica` | `FTecnica` |
+| `ETag` | `FTag` |
+| `EImmagine` | `FImmagine` |
+| `EVisita` | `FVisita` |
+
+### Metodi CRUD comuni
+
+Ogni classe Foundation espone:
+- `store($obj)` — INSERT
+- `loadByField($field, $id)` — SELECT
+- `exist($field, $id)` — verifica esistenza
+- `update($field, $newvalue, $pk, $id)` — UPDATE
+- `delete($field, $id)` — DELETE
+
+Più metodi specifici dove necessario
+(es. `FOpera::loadRecenti()`, `FTag::loadByOpera()`).
+
+### Classe dedicata alla connessione — `FDataBase`
+
+Implementa il pattern **Singleton** ed espone metodi generici:
+- `storeDB($class, $obj)` — INSERT generico via reflection
+- `loadDB($class, $field, $id)` — SELECT generico
+- `queryDB($sql, $params)` — query JOIN personalizzate
+- `existDB`, `updateDB`, `deleteDB`
+
+### PersistentManager — unico punto di accesso
+
+Come suggerito nelle slide, è stata implementata la classe
+`FPersistentManager` come **Facade** dell'intero strato Foundation:
+
+```php
+FPersistentManager::store($oggetto);
+FPersistentManager::load('EUtente', 'id', 5);
+FPersistentManager::update('EOpera', 'stato', 'Venduta', 'id', 3);
+FPersistentManager::delete('ECommento', 'id', 7);
+```
+
+Il mapping Entity → Foundation avviene automaticamente
+sostituendo la prima lettera: `EUtente` → `FUtente`.
+
+Gli strati Control non conoscono le singole classi Foundation
+ma comunicano esclusivamente tramite `FPersistentManager`,
+con le eccezioni documentate per i metodi di dominio specifici
+non astraibili dal Manager.

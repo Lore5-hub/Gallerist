@@ -18,7 +18,7 @@
                             </div>
                         {/if}
 
-                        <form method="POST" action="/Gallerist/utente/resetPassword?token={$token}">
+                        <form method="POST" action="/utente/resetPassword?token={$token}">
                             <div class="field">
                                 <label class="label">Nuova Password</label>
                                 <div class="control has-icons-left">

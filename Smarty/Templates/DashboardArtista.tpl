@@ -12,12 +12,12 @@
         title="Cambia foto profilo"
         onclick="document.getElementById('input-avatar').click()">
     <img class="is-rounded" 
-         src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}">
+         src="{$utente->getImmagineProfilo()|default:'/img/default_avatar.png'}">
     <div class="artist-avatar-overlay is-flex is-align-items-center is-justify-content-center is-rounded">
         <i class="fas fa-camera fa-2x has-text-white"></i>
     </div>
 </figure>
-<form method="POST" action="/Gallerist/utente/cambiaFotoProfilo" 
+<form method="POST" action="/utente/cambiaFotoProfilo" 
       enctype="multipart/form-data" id="form-avatar">
     <input type="file" id="input-avatar" name="immagine_profilo" 
            accept="image/*" style="display:none"
@@ -92,7 +92,7 @@
       </div>
 
       <div class="column is-one-fifth-desktop is-half-tablet">
-    <a href="/Gallerist/utente/storicoVendite" class="box has-text-centered is-block">
+    <a href="/utente/storicoVendite" class="box has-text-centered is-block">
         <span class="icon is-large has-text-success mb-2"><i class="fas fa-euro-sign fa-2x"></i></span>
         <p class="heading">Guadagni Totali</p>
         <p class="title is-3">€ {$statistiche.guadagni|number_format:2:',':'.'}</p>
@@ -113,7 +113,7 @@
         </div>
       </div>
       <div class="level-right">
-        <a href="/Gallerist/gestioneProfiloPortfolio/mostraFormOpera" class="button is-success is-medium">
+        <a href="/gestioneProfiloPortfolio/mostraFormOpera" class="button is-success is-medium">
           <span class="icon"><i class="fas fa-plus"></i></span>
           <span>Nuova Opera</span>
         </a>
@@ -129,13 +129,13 @@
                         {assign var='immagini' value=$opera->getImmagini()}
                         {if $immagini|@count > 0}
                             {assign var='prima' value=$immagini[0]}
-                            <img src="/Gallerist/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}">
+                            <img src="/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}">
                         {else}
-                            <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}">
+                            <img src="/img/default_opera.png" alt="{$opera->getTitolo()}">
                         {/if}
                     </figure>
                     <div class="artist-work-delete-wrapper">
-                        <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/eliminaOpera" 
+                        <form method="POST" action="/gestioneProfiloPortfolio/eliminaOpera" 
                               onsubmit="return confirm('Sei sicuro di voler eliminare questa opera?');">
                             <input type="hidden" name="id_opera" value="{$opera->getId()}">
                             <button type="submit" class="button is-danger is-small is-rounded" title="Elimina Opera">
@@ -172,14 +172,14 @@
         <article class="media mb-5 artist-review-article">
           <figure class="media-left">
             <p class="image is-48x48">
-              <img class="is-rounded" src="{$recensione->getAutore()->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}">
+              <img class="is-rounded" src="{$recensione->getAutore()->getImmagineProfilo()|default:'/img/default_avatar.png'}">
             </p>
           </figure>
           <div class="media-content">
             <div class="content">
               <p>
                 <strong>
-    <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$recensione->getAutore()->getId()}">
+    <a href="/catalogo/visualizzaProfiloArtista/{$recensione->getAutore()->getId()}">
         {$recensione->getAutore()->getNome()} {$recensione->getAutore()->getCognome()}
     </a>
 </strong>
@@ -219,7 +219,7 @@
                     </p>
                 </div>
                 <div class="buttons">
-                    <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/rispondiOfferta">
+                    <form method="POST" action="/gestioneProfiloPortfolio/rispondiOfferta">
                         <input type="hidden" name="id_offerta" value="{$offerta->getId()}">
                         <input type="hidden" name="risposta" value="accettata">
                         <button type="submit" class="button is-success is-small">
@@ -227,7 +227,7 @@
                             <span>Accetta</span>
                         </button>
                     </form>
-                    <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/rispondiOfferta">
+                    <form method="POST" action="/gestioneProfiloPortfolio/rispondiOfferta">
                         <input type="hidden" name="id_offerta" value="{$offerta->getId()}">
                         <input type="hidden" name="risposta" value="rifiutata">
                         <button type="submit" class="button is-danger is-small is-outlined">
@@ -244,7 +244,7 @@
 </div>
     <hr class="mt-6 mb-5">
     <div class="has-text-centered pb-6">
-      <form method="POST" action="/Gallerist/gestioneProfiloPortfolio/eliminaProfilo" onsubmit="return confirm('ATTENZIONE: Questa azione è irreversibile. Tutte le tue opere e i tuoi dati andranno persi. Vuoi davvero eliminare il tuo profilo?');">
+      <form method="POST" action="/gestioneProfiloPortfolio/eliminaProfilo" onsubmit="return confirm('ATTENZIONE: Questa azione è irreversibile. Tutte le tue opere e i tuoi dati andranno persi. Vuoi davvero eliminare il tuo profilo?');">
         <button type="submit" class="button is-danger is-outlined">
           <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
           <span>Elimina definitivamente il mio profilo</span>
@@ -261,7 +261,7 @@
             <button class="delete" onclick="this.closest('.modal').classList.remove('is-active')"></button>
         </header>
         <section class="modal-card-body">
-            <form method="POST" action="/Gallerist/utente/modificaNickname">
+            <form method="POST" action="/utente/modificaNickname">
                 <div class="field">
                     <label class="label">Nuovo Nickname</label>
                     <div class="control has-icons-left">
@@ -283,7 +283,7 @@
             <button class="delete" onclick="this.closest('.modal').classList.remove('is-active')"></button>
         </header>
         <section class="modal-card-body">
-            <form method="POST" action="/Gallerist/utente/modificaBiografia">
+            <form method="POST" action="/utente/modificaBiografia">
                 <div class="field">
                     <label class="label">Biografia</label>
                     <div class="control">

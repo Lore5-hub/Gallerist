@@ -11,9 +11,9 @@
             title="Cambia foto profilo"
             onclick="document.getElementById('input-avatar-profilo').click()">
         <img class="is-rounded public-profile-avatar" 
-             src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}" alt="Profilo" />
+             src="{$utente->getImmagineProfilo()|default:'/img/default_avatar.png'}" alt="Profilo" />
     </figure>
-    <form method="POST" action="/Gallerist/utente/cambiaFotoProfilo" 
+    <form method="POST" action="/utente/cambiaFotoProfilo" 
           enctype="multipart/form-data" id="form-avatar-profilo">
         <input type="file" id="input-avatar-profilo" name="immagine_profilo" 
                accept="image/*" style="display:none"
@@ -21,7 +21,7 @@
     </form>
 {else}
     <img class="is-rounded public-profile-avatar" 
-         src="{$utente->getImmagineProfilo()|default:'/Gallerist/img/default_avatar.png'}" alt="Profilo" />
+         src="{$utente->getImmagineProfilo()|default:'/img/default_avatar.png'}" alt="Profilo" />
 {/if}
         </p>
       </figure>
@@ -86,7 +86,7 @@
   <div class="columns is-multiline">
     {foreach from=$opere item=opera}
       <div class="column is-4">
-        <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$opera->getId()}">
+        <a href="/catalogo/visualizzaDettagliOpera/{$opera->getId()}">
           <div class="card is-shadowless" style="background: transparent;">
             
             <div class="card-image box p-1 is-relative portfolio-card-img-box">
@@ -94,9 +94,9 @@
                 {assign var='immagini' value=$opera->getImmagini()}
 {if $immagini|@count > 0}
     {assign var='prima' value=$immagini[0]}
-    <img src="/Gallerist/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="portfolio-card-img">
+    <img src="/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="portfolio-card-img">
 {else}
-    <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}" class="portfolio-card-img">
+    <img src="/img/default_opera.png" alt="{$opera->getTitolo()}" class="portfolio-card-img">
 {/if}
               </figure>
               
@@ -147,7 +147,7 @@
     {foreach from=$recensioni_scritte item=rec}
       <div class="box mb-3">
         <div class="is-flex is-justify-content-space-between mb-2">
-          <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$rec->getOpera()->getId()}" class="has-text-weight-bold">
+          <a href="/catalogo/visualizzaDettagliOpera/{$rec->getOpera()->getId()}" class="has-text-weight-bold">
             {$rec->getOpera()->getTitolo()}
           </a>
           <span class="has-text-warning">
@@ -183,5 +183,5 @@
   </div>
 </div>
 
-<script src="/Gallerist/js/profiloPubblico.js"></script>
+<script src="/js/profiloPubblico.js"></script>
 {/block}

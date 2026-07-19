@@ -15,7 +15,7 @@ class VErrore {
         $this->smarty->assign('titolo', $titolo);
         $this->smarty->assign('messaggio', $messaggio);
         $this->smarty->assign('codice', $codice);
-        $this->smarty->display('errore.tpl');
+        $this->smarty->display('Errore.tpl');
     }
 }
 ?>

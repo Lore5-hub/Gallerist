@@ -1,0 +1,32 @@
+Gallerist
+Descrizione sintetica: 
+L’idea è una piattaforma dove artisti (pittori, scultori, fotografi, digital artists) possono esporre le proprie opere e ricevere recensioni e critiche da parte degli utenti.  L’applicazione permette anche la compravendita delle opere.
+Tipologie di utenti:
+ •Amministratore
+• Artista
+• Utente registrato
+• Utente non registrato
+Obiettivi degli utenti:
+•Utente non registrato: 
+          -può registrarsi, può visualizzare commenti e valutazione media delle opere dell’artista presenti nell’applicazione
+•Utente registrato:
+         -ha accesso alle possibilità offerte all’utente non registrato, può cercare le opere filtrando per categoria; i risultati possono essere ordinati secondo vari criteri (ad esempio data di caricamento)
+        -può inserire un commento per ciascuna opera e lasciare una recensione (da 1 a 5 stelle)
+       -ha la possibilità di comprare opere in vendita al prezzo deciso dall’artista oppure proporre offerte
+       -può segnalare altri utenti per comportamenti scorretti
+•Artista:
+      -ha accesso a tutte le funzionalità dell’utente registrato
+      -deve effettuare la registrazione con il ruolo di artista, che sarà eventualmente validata dall’amministratore
+      -ha la possibilità di avere un profilo contenente le sue opere pubblicate e una descrizione del suo stile
+     -può replicare a un commento ricevuto da un utente registrato
+     -può pubblicare le sue opere ed eventualmente scegliere di venderle o meno
+     -può visualizzare lo storico delle entrate derivanti dalle vendite e analizzarle tramite dati e grafici
+     -può rimuovere il proprio profilo (con tutte le sue opere) oppure le opere singolarmente
+•Amministratore 
+     -gestisce le categorie degli artisti
+     -verifica i profili degli artisti al momento della registrazione
+     -può cancellare commenti degli utenti nel momento in cui lo ritenga necessario, gestendoli eventualmente con un ban nel caso di comportamento inappropriato
+     -ha la possibilità di visualizzare (tramite grafici e dati) le interazioni che ci sono state con il sito in un determinato periodo (come ad esempio visite al sito da parte degli utenti e quante registrazioni ci sono state)
+     
+
+

@@ -5,14 +5,14 @@
     <title>{block name=title}Gallerist{/block}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="/Gallerist/css/main.css"> 
+    <link rel="stylesheet" href="/css/main.css"> 
 </head>
 <body>
 
     <nav class="navbar is-black" role="navigation" aria-label="main navigation">
         <div class="container">
             <div class="navbar-brand">
-                <a class="navbar-item has-text-weight-bold is-size-4" href="/Gallerist/">
+                <a class="navbar-item has-text-weight-bold is-size-4" href="/">
     <span class="icon mr-2"><i class="fas fa-home"></i></span>
     Gallerist
 </a>
@@ -20,7 +20,7 @@
 
             <div class="navbar-menu">
             <div class="navbar-start">
-        <a href="/Gallerist/catalogo/esploraCatalogo" class="navbar-item has-text-light">
+        <a href="/catalogo/esploraCatalogo" class="navbar-item has-text-light">
             <span class="icon mr-1"><i class="fas fa-palette"></i></span> Catalogo
         </a>
     </div>
@@ -40,28 +40,28 @@
         </div>
         <hr class="navbar-divider">
         {if $utente_loggato->getRuolo() == 'Amministratore'}
-            <a href="/Gallerist/Admin/dashboard" class="navbar-item has-text-light">
+            <a href="/Admin/dashboard" class="navbar-item has-text-light">
                 <span class="icon mr-1"><i class="fas fa-cog"></i></span> Dashboard Admin
             </a>
         {elseif $utente_loggato->getRuolo() == 'Artista'}
-    <a href="/Gallerist/utente/profilo" class="navbar-item has-text-light">
+    <a href="/utente/profilo" class="navbar-item has-text-light">
         <span class="icon mr-1"><i class="fas fa-palette"></i></span> Il mio profilo
     </a>
         {elseif $utente_loggato->getRuolo() == 'Utente registrato'}
-            <a href="/Gallerist/utente/profilo" class="navbar-item has-text-light">
+            <a href="/utente/profilo" class="navbar-item has-text-light">
                 <span class="icon mr-1"><i class="fas fa-user"></i></span> Il mio profilo
             </a>
         {/if}
         <hr class="navbar-divider">
-        <a href="/Gallerist/utente/logout" class="navbar-item has-text-danger">
+        <a href="/utente/logout" class="navbar-item has-text-danger">
             <span class="icon mr-1"><i class="fas fa-sign-out-alt"></i></span> Logout
         </a>
     {else}
         {* Utente non loggato *}
-        <a href="/Gallerist/utente/login" class="navbar-item has-text-light">
+        <a href="/utente/login" class="navbar-item has-text-light">
             Accedi
         </a>
-        <a href="/Gallerist/utente/registrazione" class="navbar-item has-text-light">
+        <a href="/utente/registrazione" class="navbar-item has-text-light">
             Registrati
         </a>
     {/if}

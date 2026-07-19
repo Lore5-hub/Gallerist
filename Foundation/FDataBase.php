@@ -23,7 +23,7 @@ class FDataBase
 	{
 		try {
 			// Connessione al database usando le variabili globali definite in config.inc.php
-			$this->db = new PDO ("mysql:dbname=".$GLOBALS['database'].";host=localhost; charset=utf8;", $GLOBALS['username'], $GLOBALS['password']);
+			$this->db = new PDO ("mysql:dbname=".$GLOBALS['database'].";host=".$GLOBALS['db_host']."; charset=utf8;", $GLOBALS['username'], $GLOBALS['password']);
 		} catch (PDOException $e) {
 			echo "Attenzione errore in connessione: " . $e->getMessage();
 			die;

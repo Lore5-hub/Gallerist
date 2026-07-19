@@ -9,7 +9,7 @@
         <p class="subtitle is-5 has-text-grey mt-3">
             {$errore}
         </p>
-        <a href="/Gallerist/catalogo/esploraCatalogo" class="button is-primary is-large mt-4">
+        <a href="/catalogo/esploraCatalogo" class="button is-primary is-large mt-4">
             <span class="icon"><i class="fas fa-palette"></i></span>
             <span>Torna al Catalogo</span>
         </a>

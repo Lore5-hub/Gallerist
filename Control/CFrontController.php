@@ -32,13 +32,17 @@ if ($sessione->esisteValore('ultimo_accesso')) {
     $inattivita = time() - $sessione->getValore('ultimo_accesso');
     if ($inattivita > ($timeoutMinuti * 60)) {
         $sessione->distruggi();
-        header('Location: /Gallerist/utente/login?sessione=scaduta');
+        header('Location: /utente/login?sessione=scaduta');
         exit;
     }
 }
 $sessione->setValue('ultimo_accesso', time());
-         $visita = new EVisita(0, $path, new DateTimeImmutable(), session_id());
-FPersistentManager::store($visita);
+         $estensioniStatiche = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'css', 'js'];
+$estensione = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+if (!in_array($estensione, $estensioniStatiche)) {
+    $visita = new EVisita(0, $path, new DateTimeImmutable(), session_id());
+    FPersistentManager::store($visita);
+}
         // 3. Identifica Controller, Metodo e Parametri
         $controllerName = "C" . ucfirst($segments[0] ?? "Catalogo");
         $method         = $segments[1] ?? "homepage";

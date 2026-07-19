@@ -9,7 +9,7 @@
       </div>
       
       
-<form method="GET" action="/Gallerist/Admin/statistiche">
+<form method="GET" action="/Admin/statistiche">
   <div class="field mb-0">
     <div class="control has-icons-left">
       <div class="select is-info">
@@ -160,7 +160,7 @@
         <div class="box mb-4">
           <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <h2 class="title is-5 mb-0">Pagine più visitate</h2>
-            <a href="/Gallerist/Admin/dashboard" class="button is-small is-link is-outlined">Vedi tutte</a>
+            <a href="/Admin/dashboard" class="button is-small is-link is-outlined">Vedi tutte</a>
           </div>
           
           <table class="table is-fullwidth is-narrow is-hoverable mb-0">
@@ -178,7 +178,7 @@
         <div class="box">
           <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <h2 class="title is-5 mb-0">Azioni principali</h2>
-            <a href="/Gallerist/Admin/dashboard" class="button is-small is-info is-outlined">Vedi tutte le azioni</a>
+            <a href="/Admin/dashboard" class="button is-small is-info is-outlined">Vedi tutte le azioni</a>
           </div>
 
           <div class="content">

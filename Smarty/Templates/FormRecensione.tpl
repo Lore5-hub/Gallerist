@@ -2,7 +2,7 @@
 <div class="box has-background-light artwork-review-form">
   <h4 class="title is-4 mb-4 has-text-black">Lascia una recensione</h4>
   
-  <form method="POST" action="/Gallerist/gestioneInterazioni/salvaRecensione">
+  <form method="POST" action="/gestioneInterazioni/salvaRecensione">
     
     <input type="hidden" name="id_opera" value="{$opera->getId()}">
 

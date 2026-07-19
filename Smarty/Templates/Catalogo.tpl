@@ -6,7 +6,7 @@
     <div class="box filter-sidebar">
       <h3 class="title is-4 mb-4">Filtra Opere</h3>
       
-      <form method="GET" action="/Gallerist/catalogo/filtraCatalogo">
+      <form method="GET" action="/catalogo/filtraCatalogo">
         
         <div class="field">
           <label class="label">Categoria</label>
@@ -69,16 +69,16 @@
                {if $opera->getImmagini()|@count > 0}
     {assign var='immagini' value=$opera->getImmagini()}
     {assign var='prima' value=$immagini[0]}
-    <img src="/Gallerist/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="artwork-img">
+    <img src="/uploads/opere/{$prima->getUrlFile()}" alt="{$opera->getTitolo()}" class="artwork-img">
 {else}
-    <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}" class="artwork-img">
+    <img src="/img/default_opera.png" alt="{$opera->getTitolo()}" class="artwork-img">
 {/if}
               </figure>
             </div>
             
             <div class="card-content is-flex-grow-1">
               <p class="title is-5 mb-1">{$opera->getTitolo()}</p>
-              <p class="subtitle is-6 mb-3">di <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$opera->getArtista()->getId()}">{$opera->getArtista()->getNome()}</a></p>
+              <p class="subtitle is-6 mb-3">di <a href="/catalogo/visualizzaProfiloArtista/{$opera->getArtista()->getId()}">{$opera->getArtista()->getNome()}</a></p>
               
               <div class="tags">
                 <span class="tag is-light">{$opera->getDimensioni()}</span>
@@ -90,7 +90,7 @@
             </div>
             
             <footer class="card-footer">
-              <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$opera->getId()}" class="card-footer-item has-background-light has-text-dark has-text-weight-bold">
+              <a href="/catalogo/visualizzaDettagliOpera/{$opera->getId()}" class="card-footer-item has-background-light has-text-dark has-text-weight-bold">
                 Vedi Dettagli
               </a>
             </footer>

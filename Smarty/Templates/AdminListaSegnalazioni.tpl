@@ -8,7 +8,7 @@
         <h1 class="title is-3 mb-1">Tutte le Segnalazioni</h1>
         <p class="subtitle is-6 has-text-grey">Elenco completo delle segnalazioni ricevute</p>
       </div>
-      <a href="/Gallerist/Admin/dashboard" class="button is-light">
+      <a href="/Admin/dashboard" class="button is-light">
         <span class="icon"><i class="fas fa-arrow-left"></i></span>
         <span>Torna alla Dashboard</span>
       </a>
@@ -43,7 +43,7 @@
                 {/if}
               </td>
               <td class="has-text-right">
-                <a href="/Gallerist/Admin/mostraSegnalazione?id={$segnalazione.id}" 
+                <a href="/Admin/mostraSegnalazione?id={$segnalazione.id}" 
                    class="button is-small is-link is-light" title="Vedi Dettaglio">
                   <span class="icon"><i class="fas fa-eye"></i></span>
                 </a>

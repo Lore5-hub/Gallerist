@@ -6,7 +6,7 @@
     <div class="is-flex is-justify-content-space-between is-align-items-center mb-6">
       <h1 class="title is-3 has-text-dark mb-0">Storico Vendite e Guadagni</h1>
       
-      <form method="GET" action="/Gallerist/utente/storicoVendite">
+      <form method="GET" action="/utente/storicoVendite">
         <div class="field mb-0">
           <div class="control has-icons-left">
             <div class="select is-info">

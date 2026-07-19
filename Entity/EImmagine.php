@@ -48,7 +48,7 @@ class EImmagine {
      */
     public function getData(): ?string {
     // Prova prima il path assoluto, poi relativo
-    $pathAssoluto = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/opere/' . basename($this->urlFile);
+    $pathAssoluto = $_SERVER['DOCUMENT_ROOT'] . '/uploads/opere/' . basename($this->urlFile);
     
     if (file_exists($pathAssoluto)) {
         return file_get_contents($pathAssoluto);

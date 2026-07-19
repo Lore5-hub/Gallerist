@@ -14,12 +14,12 @@
       
       <div class="buttons">
         <!-- Torna alla Dashboard (sezione utenti in attesa) -->
-        <a href="/Gallerist/Admin/dashboard" class="button is-light">
+        <a href="/Admin/dashboard" class="button is-light">
           <span class="icon"><i class="fas fa-arrow-left"></i></span>
           <span>Torna indietro</span>
         </a>
         <!-- Approva e Attiva -->
-        <a href="/Gallerist/Admin/verificaArtista?id={$utente.id}" class="button is-success">
+        <a href="/Admin/verificaArtista?id={$utente.id}" class="button is-success">
           <span class="icon"><i class="fas fa-user-check"></i></span>
           <span>Approva e attiva</span>
         </a>
@@ -176,7 +176,7 @@
     <p class="image">
         {if $utente.carta_identita}
             <div class="has-text-centered p-4">
-                <a href="/Gallerist/uploads/documenti/{$utente.carta_identita}" 
+                <a href="/uploads/documenti/{$utente.carta_identita}" 
                    target="_blank" class="button is-info is-medium">
                     <span class="icon"><i class="fas fa-file-alt"></i></span>
                     <span>Apri documento</span>
@@ -189,5 +189,5 @@
 </div>
   <button class="modal-close is-large" aria-label="close" id="chiudi-modal-btn"></button>
 </div>
-<script src="/Gallerist/js/adminValidazione.js"></script>
+<script src="/js/adminValidazione.js"></script>
 {/block}

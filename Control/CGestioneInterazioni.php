@@ -22,7 +22,7 @@ class CGestioneInterazioni {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -32,13 +32,13 @@ class CGestioneInterazioni {
     $descrizione = trim($_POST['descrizione']        ?? '');
 
     if ($idSegnalato === 0 || empty($tipo) || empty($descrizione)) {
-        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        header('Location: /catalogo/esploraCatalogo');
         exit;
     }
     if ($tipo === 'Commento') {
     $commento = FPersistentManager::load('ECommento', 'id', $idSegnalato);
     if ($commento instanceof ECommento && $commento->getAutore()->getId() === $segnalante->getId()) {
-        header('Location: /Gallerist/catalogo/esploraCatalogo?errore=segnalazione_propria');
+        header('Location: /catalogo/esploraCatalogo?errore=segnalazione_propria');
         exit;
     }
 }
@@ -57,12 +57,12 @@ class CGestioneInterazioni {
 
 //  Redirect corretto in base al tipo
 if ($tipo === 'Opera') {
-    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idSegnalato . '?segnalazione=inviata');
+    header('Location: /catalogo/visualizzaDettagliOpera/' . $idSegnalato . '?segnalazione=inviata');
 } elseif ($tipo === 'Commento') {
-    header('Location: /Gallerist/catalogo/esploraCatalogo?segnalazione=inviata');
+    header('Location: /catalogo/esploraCatalogo?segnalazione=inviata');
 } else {
     // Profilo
-    header('Location: /Gallerist/catalogo/visualizzaProfiloArtista/' . $idSegnalato . '?segnalazione=inviata');
+    header('Location: /catalogo/visualizzaProfiloArtista/' . $idSegnalato . '?segnalazione=inviata');
 }
 exit;
 }
@@ -70,13 +70,13 @@ public function salvaRecensione(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
     $utente     = $sessione->getValore('utente_loggato');
     if ($utente->getRuolo() === EUtente::RUOLO_ADMIN) {
-    header('Location: /Gallerist/Admin/dashboard');
+    header('Location: /Admin/dashboard');
     exit;
 }
     $idOpera    = (int)($_POST['id_opera']    ?? 0);
@@ -84,7 +84,7 @@ public function salvaRecensione(): void {
     $commento   = trim($_POST['commento']     ?? '');
 
     if ($idOpera === 0 || $valutazione < 1 || $valutazione > 5 || empty($commento)) {
-        header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera);
+        header('Location: /catalogo/visualizzaDettagliOpera/' . $idOpera);
         exit;
     }
 
@@ -93,12 +93,12 @@ public function salvaRecensione(): void {
     $autore  = FPersistentManager::load('EUtente', 'id', $utente->getId());
 
     if (!$opera instanceof EOpera || !$autore instanceof EUtente) {
-        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        header('Location: /catalogo/esploraCatalogo');
         exit;
     }
     
 if ($opera->getArtista()->getId() === $utente->getId()) {
-    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=propria_opera');
+    header('Location: /catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=propria_opera');
     exit;
 }
 
@@ -113,7 +113,7 @@ if ($opera->getArtista()->getId() === $utente->getId()) {
 
     FPersistentManager::store($recensione);
 
-    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?recensione=aggiunta');
+    header('Location: /catalogo/visualizzaDettagliOpera/' . $idOpera . '?recensione=aggiunta');
     exit;
 }
 }

@@ -24,7 +24,7 @@
          src="data:{$immaginiOpera[0].type};base64,{$immaginiOpera[0].pic64}"
          alt="{$opera->getTitolo()}" />
 {else}
-    <img src="/Gallerist/img/default_opera.png" alt="{$opera->getTitolo()}" />
+    <img src="/img/default_opera.png" alt="{$opera->getTitolo()}" />
 {/if}
 </figure>
 
@@ -71,7 +71,7 @@
     </button>
 {/if}
     <h2 class="subtitle is-4 mt-0">
-      di <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$opera->getArtista()->getId()}" class="has-text-link">{$opera->getArtista()->getNome()}</a>
+      di <a href="/catalogo/visualizzaProfiloArtista/{$opera->getArtista()->getId()}" class="has-text-link">{$opera->getArtista()->getNome()}</a>
     </h2>
 
     <div class="tags are-medium mt-4">
@@ -94,7 +94,7 @@
         {/if}
     </p>
     
-    <form method="GET" action="/Gallerist/catalogo/visualizzaDettagliOpera/{$opera->getId()}" class="mt-2">
+    <form method="GET" action="/catalogo/visualizzaDettagliOpera/{$opera->getId()}" class="mt-2">
         <div class="field has-addons">
             <div class="control">
                 <div class="select">
@@ -125,7 +125,7 @@
 {elseif isset($utente_loggato) && $utente_loggato->getId() == $opera->getArtista()->getId()}
     <button class="button is-large is-fullwidth" disabled>Opera tua</button>
 {else}
-    <form method="POST" action="/Gallerist/compravendita/avviaAcquisto/{$opera->getId()}" class="mb-3">
+    <form method="POST" action="/compravendita/avviaAcquisto/{$opera->getId()}" class="mb-3">
         <button type="submit" class="button is-black is-large is-fullwidth">Acquista Ora</button>
     </form>
     <button id="btn-apri-offerta" class="button is-white is-large is-fullwidth has-border">Fai un'offerta</button>
@@ -144,7 +144,7 @@
     </header>
     
     <section class="modal-card-body">
-      <form id="form-offerta" method="POST" action="/Gallerist/compravendita/avviaPropostaOfferta/{$opera->getId()}">
+      <form id="form-offerta" method="POST" action="/compravendita/avviaPropostaOfferta/{$opera->getId()}">
         
         <div class="field">
     <label class="label">La tua offerta (€)</label>
@@ -196,13 +196,13 @@
     <div class="box mb-4 artwork-review-box">
         <div class="is-flex is-justify-content-space-between is-align-items-center">
             <p class="has-text-weight-bold">
-                <a href="/Gallerist/catalogo/visualizzaProfiloArtista/{$recensione->getAutore()->getId()}">
+                <a href="/catalogo/visualizzaProfiloArtista/{$recensione->getAutore()->getId()}">
                     {$recensione->getAutore()->getNome()} {$recensione->getAutore()->getCognome()}
                 </a>
                 <span class="has-text-grey is-size-7 ml-2">{$recensione->getData()|date_format:"%d/%m/%Y"}</span>
             </p>
             {if isset($utente_loggato) && $utente_loggato->getRuolo() != 'Amministratore' && $utente_loggato->getId() != $recensione->getAutore()->getId()}
-    <form method="POST" action="/Gallerist/gestioneInterazioni/inviaSegnalazione" style="display:inline;">
+    <form method="POST" action="/gestioneInterazioni/inviaSegnalazione" style="display:inline;">
         <input type="hidden" name="id_segnalato" value="{$recensione->getId()}">
         <input type="hidden" name="tipo_segnalazione" value="Commento">
         <input type="hidden" name="descrizione" value="Commento inappropriato segnalato dall'utente">
@@ -243,9 +243,9 @@
       {assign var='immagini_altra' value=$altra_opera->getImmagini()}
 {if $immagini_altra|@count > 0}
     {assign var='prima_altra' value=$immagini_altra[0]}
-    <img src="/Gallerist/uploads/opere/{$prima_altra->getUrlFile()}" alt="{$altra_opera->getTitolo()}" class="artwork-img">
+    <img src="/uploads/opere/{$prima_altra->getUrlFile()}" alt="{$altra_opera->getTitolo()}" class="artwork-img">
 {else}
-    <img src="/Gallerist/img/default_opera.png" alt="{$altra_opera->getTitolo()}" class="artwork-img">
+    <img src="/img/default_opera.png" alt="{$altra_opera->getTitolo()}" class="artwork-img">
 {/if}
     </figure>
   </div>
@@ -253,7 +253,7 @@
             <p class="title is-5 mb-1">{$altra_opera->getTitolo()}</p>
             <p class="subtitle is-6 mb-3 has-text-grey">{$altra_opera->getDimensioni()}</p>
             <p class="is-size-5 has-text-weight-bold">€ {$altra_opera->getPrezzo()->getValore()|number_format:2:',':'.'}</p>
-            <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$altra_opera->getId()}" class="button is-small is-outlined is-fullwidth mt-3">Vedi dettagli</a>
+            <a href="/catalogo/visualizzaDettagliOpera/{$altra_opera->getId()}" class="button is-small is-outlined is-fullwidth mt-3">Vedi dettagli</a>
           </div>
         </div>
       </div>
@@ -272,7 +272,7 @@
             <button class="delete" onclick="this.closest('.modal').classList.remove('is-active')"></button>
         </header>
         <section class="modal-card-body">
-            <form method="POST" action="/Gallerist/gestioneInterazioni/inviaSegnalazione">
+            <form method="POST" action="/gestioneInterazioni/inviaSegnalazione">
                 <input type="hidden" name="id_segnalato" value="{$opera->getId()}">
                 <input type="hidden" name="tipo_segnalazione" value="Opera">
                 
@@ -297,5 +297,5 @@ document.getElementById('btn-segnala-opera')?.addEventListener('click', () => {
     document.getElementById('modal-segnalazione-opera').classList.add('is-active');
 });
 </script>
-<script src="/Gallerist/js/dettaglioOpera.js"></script>
+<script src="/js/dettaglioOpera.js"></script>
 {/block}

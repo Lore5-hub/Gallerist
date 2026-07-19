@@ -29,11 +29,11 @@ class CAdmin {
 
     /**
      * Mostra la Dashboard principale dell'Amministratore
-     * Risponde all'URL: /Gallerist/Admin/dashboard
+     * Risponde all'URL: /Admin/dashboard
      */
     public function dashboard() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/Utente/login');
+        header('Location: /Utente/login');
         exit;
     }
  $sessione  = USession::getInstance();
@@ -162,11 +162,11 @@ foreach ($provvedimenti as $prov) {
 
     /**
      * Esempio di altra funzione protetta: Gestione degli Utenti
-     * Risponde all'URL: /Gallerist/Admin/gestioneUtenti
+     * Risponde all'URL: /Admin/gestioneUtenti
      */
     public function gestioneUtenti() {
         if (!self::checkAdmin()) {
-            header('Location: /Gallerist/Utente/login');
+            header('Location: /Utente/login');
             exit;
         }
 
@@ -174,11 +174,11 @@ foreach ($provvedimenti as $prov) {
     }
     /**
  * Mostra le statistiche della piattaforma.
- * Risponde all'URL: /Gallerist/Admin/statistiche
+ * Risponde all'URL: /Admin/statistiche
  */
 public function statistiche() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/Utente/login');
+        header('Location: /Utente/login');
         exit;
     }
 
@@ -391,18 +391,18 @@ $opereVendutePrec = $resVendutePrec ? (int)$resVendutePrec[0]['totale'] : 0;
 }
 /**
  * Valida un artista in attesa di approvazione.
- * Risponde all'URL: /Gallerist/Admin/verificaArtista?id=X
+ * Risponde all'URL: /Admin/verificaArtista?id=X
  */
 public function verificaArtista() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/Utente/login');
+        header('Location: /Utente/login');
         exit;
     }
 
     $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
     if ($id === 0) {
-        header('Location: /Gallerist/Admin/dashboard');
+        header('Location: /Admin/dashboard');
         exit;
     }
 
@@ -411,7 +411,7 @@ public function verificaArtista() {
 
     // Sicurezza: verifica che esista e sia effettivamente in attesa
     if (!$artista instanceof EArtista || $artista->getStatoValidazione() !== 'IN_ATTESA') {
-        header('Location: /Gallerist/Admin/dashboard');
+        header('Location: /Admin/dashboard');
         exit;
     }
 
@@ -436,29 +436,29 @@ public function verificaArtista() {
     // Torna alla dashboard con un parametro di feedback
    $sessione = USession::getInstance();
 $sessione->setValue('flash_verifica', $ok ? 'successo' : 'errore');
-header('Location: /Gallerist/Admin/dashboard');
+header('Location: /Admin/dashboard');
 exit;
 }
 /**
  * Mostra la pagina di validazione di un artista.
- * Risponde all'URL: /Gallerist/Admin/mostraValidazione?id=X
+ * Risponde all'URL: /Admin/mostraValidazione?id=X
  */
 public function mostraValidazione() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
     $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
     if ($id === 0) {
-        header('Location: /Gallerist/Admin/dashboard');
+        header('Location: /Admin/dashboard');
         exit;
     }
 
     $artista = FPersistentManager::load('EArtista', 'id', $id);
     
     if (!$artista instanceof EArtista) {
-        header('Location: /Gallerist/Admin/dashboard');
+        header('Location: /Admin/dashboard');
         exit;
     }
 
@@ -479,8 +479,8 @@ public function mostraValidazione() {
         'data_documento'     => date('Y-m-d'), // mock
         'note_admin'         => '',
         'carta_identita' => $artista->getCartaIdentita(),
-        'url_documento'  => '/Gallerist/uploads/documenti/' . $artista->getCartaIdentita(),
-        'url_portfolio' => $artista->getPortfolio() ? '/Gallerist/uploads/portfolio/' . $artista->getPortfolio() : null,
+        'url_documento'  => '/uploads/documenti/' . $artista->getCartaIdentita(),
+        'url_portfolio' => $artista->getPortfolio() ? '/uploads/portfolio/' . $artista->getPortfolio() : null,
     ];
 
     $vAdmin = new VAdmin();
@@ -490,29 +490,29 @@ public function mostraValidazione() {
 }
 /**
  * Mostra il dettaglio di una segnalazione.
- * Risponde all'URL: /Gallerist/Admin/mostraSegnalazione?id=X
+ * Risponde all'URL: /Admin/mostraSegnalazione?id=X
  */
 public function mostraSegnalazione() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
     $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
     if ($id === 0) {
-        header('Location: /Gallerist/Admin/dashboard');
+        header('Location: /Admin/dashboard');
         exit;
     }
 
     $seg = FPersistentManager::load('ESegnalazione', 'id', $id);
     if (!$seg instanceof ESegnalazione) {
-        header('Location: /Gallerist/Admin/dashboard');
+        header('Location: /Admin/dashboard');
         exit;
     }
     // Dopo aver caricato $seg
 $testoIncriminato = '';
 $titoloOpera = '';
-$urlAnteprimaOpera = '/Gallerist/img/default_opera.png';
+$urlAnteprimaOpera = '/img/default_opera.png';
 
 $categoriaOpera = '';
 $idOpera = 0;
@@ -545,17 +545,22 @@ if ($seg->getTipoTarget() === 'Opera') {
         if ($immagini !== null) {
             if (!is_array($immagini)) $immagini = [$immagini];
             if (!empty($immagini)) {
-                $urlAnteprimaOpera = '/Gallerist/uploads/opere/' . $immagini[0]->getUrlFile();
+                $urlAnteprimaOpera = '/uploads/opere/' . $immagini[0]->getUrlFile();
             }
         }
     }
 }
     if ($seg->getTipoTarget() === 'Commento' && isset($idAutoreCommento)) {
     $utenteSegnalato = FPersistentManager::load('EUtente', 'id', $idAutoreCommento);
+} elseif ($seg->getTipoTarget() === 'Opera') {
+    $opera = FPersistentManager::load('EOpera', 'id', $seg->getIdTarget());
+    if ($opera instanceof EOpera) {
+        $utenteSegnalato = FPersistentManager::load('EUtente', 'id', $opera->getArtista()->getId());
+    }
 } else {
     $utenteSegnalato = FPersistentManager::load('EUtente', 'id', $seg->getIdTarget());
 }
-    $utenteSegnalante = FPersistentManager::load('EUtente', 'id', $seg->getIdSegnalatore());
+$utenteSegnalante = FPersistentManager::load('EUtente', 'id', $seg->getIdSegnalatore());
 
     // Storico segnalazioni reale
     $db = FDataBase::getInstance();
@@ -612,11 +617,11 @@ if ($seg->getTipoTarget() === 'Opera') {
 
 /**
  * Mostra la lista di tutti gli utenti bannati/provvedimenti.
- * Risponde all'URL: /Gallerist/Admin/bannati
+ * Risponde all'URL: /Admin/bannati
  */
 public function bannati() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -629,11 +634,11 @@ public function bannati() {
 
 /**
  * Mostra e gestisce le categorie.
- * Risponde all'URL: /Gallerist/Admin/gestisciCategorie
+ * Risponde all'URL: /Admin/gestisciCategorie
  */
 public function gestisciCategorie() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -646,7 +651,7 @@ public function gestisciCategorie() {
             $categoria = new ECategoria($nome);
             FPersistentManager::store($categoria);
         }
-        header('Location: /Gallerist/Admin/gestisciCategorie');
+        header('Location: /Admin/gestisciCategorie');
         exit;
     }
 
@@ -659,11 +664,11 @@ public function gestisciCategorie() {
 
 /**
  * Mostra tutte le segnalazioni.
- * Risponde all'URL: /Gallerist/Admin/tutteSegnalazioni
+ * Risponde all'URL: /Admin/tutteSegnalazioni
  */
 public function tutteSegnalazioni() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -690,7 +695,7 @@ public function tutteSegnalazioni() {
 }
 public function eliminaCategoria() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -699,16 +704,16 @@ public function eliminaCategoria() {
         FPersistentManager::delete('ECategoria', 'nome', $nome);
     }
 
-    header('Location: /Gallerist/Admin/gestisciCategorie');
+    header('Location: /Admin/gestisciCategorie');
     exit;
 }
 /**
  * Processa l'azione di moderazione su una segnalazione.
- * Risponde all'URL: /Gallerist/Admin/processaModerazione
+ * Risponde all'URL: /Admin/processaModerazione
  */
 public function processaModerazione() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -760,7 +765,7 @@ if ($utenteBannato instanceof EUtente) {
     }
     
 
-// ✅ AGGIUNGI QUI
+
 // 1b. Rimuovi contenuto se richiesto
 if ($rimuoviContenuto) {
     $db = FDataBase::getInstance();
@@ -793,12 +798,12 @@ if ($rimuoviContenuto) {
         );
     }
 
-    header('Location: /Gallerist/Admin/dashboard?moderazione=completata');
+    header('Location: /Admin/dashboard?moderazione=completata');
     exit;
 }
 public function aggiungiCategoria() {
     if (!self::checkAdmin()) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -810,7 +815,7 @@ public function aggiungiCategoria() {
         FPersistentManager::store($categoria);
     }
 
-    header('Location: /Gallerist/Admin/dashboard');
+    header('Location: /Admin/dashboard');
     exit;
 }
 }

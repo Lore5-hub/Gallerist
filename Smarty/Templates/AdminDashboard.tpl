@@ -10,7 +10,7 @@
         <p class="subtitle is-6 has-text-grey">Dashboard operativa e controllo attività</p>
       </div>
       
-      <a href="/Gallerist/Admin/statistiche" class="button is-info is-medium">
+      <a href="/Admin/statistiche" class="button is-info is-medium">
         <span class="icon"><i class="fas fa-chart-bar"></i></span>
         <span>Visualizza Statistiche</span>
       </a>
@@ -120,7 +120,7 @@
                     <td>{$utente.data_registrazione|date_format:"%d/%m/%Y"}</td>
                     <td><span class="tag is-warning is-light">In attesa</span></td>
                     <td class="has-text-right">
-                      <a href="/Gallerist/Admin/mostraValidazione?id={$utente.id}" class="button is-small is-info">
+                      <a href="/Admin/mostraValidazione?id={$utente.id}" class="button is-small is-info">
     <span class="icon"><i class="fas fa-eye"></i></span>
     <span>Verifica</span>
 </a>
@@ -164,10 +164,10 @@
                     <td><strong>{$categoria.nome}</strong></td>
                     <td>{$categoria.num_opere}</td>
                     <td class="has-text-right">
-    <a href="/Gallerist/Admin/gestisciCategorie" class="button is-small is-ghost has-text-info px-1" title="Modifica">
+    <a href="/Admin/gestisciCategorie" class="button is-small is-ghost has-text-info px-1" title="Modifica">
         <i class="fas fa-pencil-alt"></i>
     </a>
-    <form method="POST" action="/Gallerist/Admin/eliminaCategoria" style="display:inline;"
+    <form method="POST" action="/Admin/eliminaCategoria" style="display:inline;"
           onsubmit="return confirm('Eliminare la categoria {$categoria.nome}?');">
         <input type="hidden" name="nome" value="{$categoria.nome}">
         <button type="submit" class="button is-small is-ghost has-text-danger px-1" title="Rimuovi"
@@ -182,7 +182,7 @@
             </table>
           </div>
           
-          <a href="/Gallerist/Admin/gestisciCategorie" class="button is-small is-fullwidth is-info is-outlined">Gestisci tutte</a>
+          <a href="/Admin/gestisciCategorie" class="button is-small is-fullwidth is-info is-outlined">Gestisci tutte</a>
 
         </div>
       </div>
@@ -196,7 +196,7 @@
           
           <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <h2 class="title is-5 mb-0"><i class="fas fa-flag has-text-danger mr-2"></i> Segnalazioni Recenti</h2>
-            <a href="/Gallerist/Admin/tutteSegnalazioni" class="button is-small is-link is-outlined">Vedi tutte</a>
+            <a href="/Admin/tutteSegnalazioni" class="button is-small is-link is-outlined">Vedi tutte</a>
           </div>
 
           <div class="table-container">
@@ -226,7 +226,7 @@
                       {/if}
                     </td>
                     <td class="has-text-right">
-                      <a href="/Gallerist/Admin/mostraSegnalazione?id={$segnalazione.id}" class="button is-small is-link is-light" title="Vedi Dettaglio">
+                      <a href="/Admin/mostraSegnalazione?id={$segnalazione.id}" class="button is-small is-link is-light" title="Vedi Dettaglio">
                         <span class="icon"><i class="fas fa-eye"></i></span>
                       </a>
                     </td>
@@ -248,7 +248,7 @@
           
           <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
             <h2 class="title is-5 mb-0"><i class="fas fa-ban has-text-danger mr-2"></i> Utenti Bannati</h2>
-            <a href="/Gallerist/Admin/bannati" class="button is-small is-link is-outlined">Vedi tutti</a>
+            <a href="/Admin/bannati" class="button is-small is-link is-outlined">Vedi tutti</a>
           </div>
 
           <div class="table-container">
@@ -302,7 +302,7 @@
             <tr>
               <td><strong>@{$utente.nickname}</strong></td>
               <td>{$utente.data_registrazione|date_format:"%d/%m/%Y"}</td>
-              <td><a href="/Gallerist/Admin/mostraValidazione?id={$utente.id}" class="button is-small is-success">Verifica</a></td>
+              <td><a href="/Admin/mostraValidazione?id={$utente.id}" class="button is-small is-success">Verifica</a></td>
             </tr>
           {foreachelse}
             <tr><td colspan="3" class="has-text-centered has-text-grey">Nessun artista in attesa.</td></tr>
@@ -326,7 +326,7 @@ document.getElementById('btn-vedi-tutti-attesa').addEventListener('click', () =>
       <button class="delete" onclick="this.closest('.modal').classList.remove('is-active')"></button>
     </header>
     <section class="modal-card-body">
-      <form method="POST" action="/Gallerist/Admin/aggiungiCategoria">
+      <form method="POST" action="/Admin/aggiungiCategoria">
         <div class="field">
           <label class="label">Nome Categoria</label>
           <div class="control">

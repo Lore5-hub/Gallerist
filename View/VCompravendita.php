@@ -292,7 +292,7 @@ class VCompravendita
             $b64  = base64_encode($dati);
             $mime = $immagine->getType();
         } else {
-            $percorso  = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/img/default_opera.png';
+            $percorso  = $_SERVER['DOCUMENT_ROOT'] . '/img/default_opera.png';
             $contenuto = file_get_contents($percorso);
             $b64       = base64_encode($contenuto !== false ? $contenuto : '');
             $mime      = 'image/png';
@@ -302,7 +302,7 @@ class VCompravendita
             ? 'default_avatar.png'
             : 'default_opera.png';
 
-        $percorso  = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/img/' . $nomeDefault;
+        $percorso  = $_SERVER['DOCUMENT_ROOT'] . '/img/' . $nomeDefault;
         $contenuto = file_get_contents($percorso);
         $b64       = base64_encode($contenuto !== false ? $contenuto : '');
         $mime      = 'image/png';

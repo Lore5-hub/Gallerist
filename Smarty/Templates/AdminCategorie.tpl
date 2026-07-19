@@ -8,7 +8,7 @@
         <h1 class="title is-3 mb-1">Gestione Categorie</h1>
         <p class="subtitle is-6 has-text-grey">Aggiungi, modifica o rimuovi le categorie del catalogo</p>
       </div>
-      <a href="/Gallerist/Admin/dashboard" class="button is-light">
+      <a href="/Admin/dashboard" class="button is-light">
         <span class="icon"><i class="fas fa-arrow-left"></i></span>
         <span>Torna alla Dashboard</span>
       </a>
@@ -36,7 +36,7 @@
                   <td class="has-text-grey">{$categoria.descrizione|default:'—'}</td>
                   <td>{$categoria.num_opere}</td>
                   <td class="has-text-right">
-                    <form method="POST" action="/Gallerist/Admin/eliminaCategoria" 
+                    <form method="POST" action="/Admin/eliminaCategoria" 
                           onsubmit="return confirm('Sei sicuro di voler eliminare questa categoria?');"
                           style="display:inline;">
                       <input type="hidden" name="nome" value="{$categoria.nome}">
@@ -66,7 +66,7 @@
             <span class="icon has-text-success mr-1"><i class="fas fa-plus-circle"></i></span>
             Aggiungi Categoria
           </h2>
-          <form method="POST" action="/Gallerist/Admin/gestisciCategorie">
+          <form method="POST" action="/Admin/gestisciCategorie">
             <div class="field">
               <label class="label">Nome <span class="has-text-danger">*</span></label>
               <div class="control">

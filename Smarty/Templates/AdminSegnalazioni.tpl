@@ -1,6 +1,6 @@
 {extends file='layout.tpl'}
 {block name=content}
-<form method="POST" action="/Gallerist/Admin/processaModerazione">
+<form method="POST" action="/Admin/processaModerazione">
   <input type="hidden" name="id_segnalazione" value="{$segnalazione.id}">
   <input type="hidden" name="id_utente_segnalato" value="{$autore_contenuto.id}">
 
@@ -97,7 +97,7 @@
 
             <!-- Il pulsante per vedere l'opera nel contesto del sito c'è sempre -->
             {if $segnalazione.id_opera > 0}
-    <a href="/Gallerist/catalogo/visualizzaDettagliOpera/{$segnalazione.id_opera}" target="_blank" class="button is-small is-link is-light is-fullwidth mt-3">
+    <a href="/catalogo/visualizzaDettagliOpera/{$segnalazione.id_opera}" target="_blank" class="button is-small is-link is-light is-fullwidth mt-3">
         <span class="icon"><i class="fas fa-external-link-alt"></i></span>
         <span>Visualizza l'opera sul sito</span>
     </a>
@@ -194,6 +194,8 @@
                           <span class="has-text-danger"><i class="fas fa-gavel"></i> Bannato</span>
                         {elseif $past_ticket.stato_azione == 'Contenuto Rimosso'}
                           <span class="has-text-warning"><i class="fas fa-trash-alt"></i> Contenuto Rimosso</span>
+                          {elseif $past_ticket.stato_azione == 'Aperta'}
+    <span class="has-text-info"><i class="fas fa-clock"></i> In gestione</span>
                         {else}
                           <span class="has-text-success"><i class="fas fa-check-circle"></i> Archiviata</span>
                         {/if}
@@ -293,7 +295,7 @@
           <!-- Pulsanti di Conferma / Annulla (Subito sotto il riquadro sanzioni) -->
           <div class="columns is-mobile">
             <div class="column is-6">
-              <a href="/Gallerist/Admin/dashboard" class="button is-light is-fullwidth">Annulla</a>
+              <a href="/Admin/dashboard" class="button is-light is-fullwidth">Annulla</a>
             </div>
             <div class="column is-6">
               <button type="submit" class="button is-success is-fullwidth has-text-weight-bold">Conferma azione</button>

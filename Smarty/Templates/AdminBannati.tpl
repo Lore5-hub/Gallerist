@@ -8,7 +8,7 @@
         <h1 class="title is-3 mb-1">Utenti Bannati</h1>
         <p class="subtitle is-6 has-text-grey">Elenco dei provvedimenti disciplinari attivi</p>
       </div>
-      <a href="/Gallerist/Admin/dashboard" class="button is-light">
+      <a href="/Admin/dashboard" class="button is-light">
         <span class="icon"><i class="fas fa-arrow-left"></i></span>
         <span>Torna alla Dashboard</span>
       </a>

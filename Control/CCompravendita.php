@@ -5,6 +5,7 @@
  * Classe di controllo dedicata alla gestione degli ordini e delle offerte d'acquisto (UC3).
  * @package Control
  */
+
 class CCompravendita {
 
     /**
@@ -19,12 +20,12 @@ class CCompravendita {
     // 1. Verifica sessione
     $utente = USession::getInstance()->getValore('utente_loggato');
     if ($utente === null) {
-        USession::getInstance()->setValue('redirect_dopo_login', "/Gallerist/compravendita/avviaAcquisto/$idOpera");
-        header('Location: /Gallerist/utente/login');
+        USession::getInstance()->setValue('redirect_dopo_login', "/compravendita/avviaAcquisto/$idOpera");
+        header('Location: /utente/login');
         exit;
     }
     if ($utente->getRuolo() === EUtente::RUOLO_ADMIN) {
-    header('Location: /Gallerist/Admin/dashboard');
+    header('Location: /Admin/dashboard');
     exit;
 }
     // 2. Carica solo l'opera dal DB — l'utente è già in sessione
@@ -35,7 +36,7 @@ class CCompravendita {
         return;
     }
     if ($opera->getArtista()->getId() === $utente->getId()) {
-    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera);
+    header('Location: /catalogo/visualizzaDettagliOpera/' . $idOpera);
     exit;
 }
 
@@ -90,7 +91,7 @@ if ($artista instanceof EArtista && count($tuttiCommenti) > 0) {
 
     $utente = $sessione->getValore('utente_loggato');
     if ($utente === null) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -179,7 +180,7 @@ $stmt->execute([
     $view     = new VCompravendita();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -202,11 +203,11 @@ $stmt->execute([
     $messaggio     = trim($_POST['messaggio'] ?? '');
 
     if ($prezzoOfferto <= 0) {
-        header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=offerta_non_valida');
+        header('Location: /catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=offerta_non_valida');
         exit;
     }
     if ($prezzoOfferto >= $opera->getPrezzo()->getValore()) {
-    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=offerta_troppo_alta');
+    header('Location: /catalogo/visualizzaDettagliOpera/' . $idOpera . '?errore=offerta_troppo_alta');
     exit;
 }
 
@@ -234,7 +235,7 @@ $stmt->execute([
     )
 );
 
-    header('Location: /Gallerist/catalogo/visualizzaDettagliOpera/' . $idOpera . '?offerta=inviata');
+    header('Location: /catalogo/visualizzaDettagliOpera/' . $idOpera . '?offerta=inviata');
     exit;
 }
 

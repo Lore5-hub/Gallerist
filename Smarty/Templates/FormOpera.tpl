@@ -1,6 +1,6 @@
 {extends file='layout.tpl'}
 {block name=content}
-<form method="POST" action="/Gallerist/gestioneProfiloPortfolio/salvaOpera" enctype="multipart/form-data">
+<form method="POST" action="/gestioneProfiloPortfolio/salvaOpera" enctype="multipart/form-data">
   
   <div class="columns is-variable is-6 mt-4">
     
@@ -172,5 +172,5 @@
 
     </div> </div>
 </form>
-<script src="/Gallerist/js/formOpera.js"></script>
+<script src="/js/formOpera.js"></script>
 {/block}

@@ -7,19 +7,19 @@ class CGestioneProfiloPortfolio {
     
 /**
  * Mostra il form per aggiungere una nuova opera.
- * Risponde all'URL: /Gallerist/gestioneProfiloPortfolio/mostraFormOpera
+ * Risponde all'URL: /gestioneProfiloPortfolio/mostraFormOpera
  */
 public function mostraFormOpera(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
     $utente = $sessione->getValore('utente_loggato');
     if ($utente->getRuolo() !== EUtente::RUOLO_ARTISTA) {
-        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        header('Location: /catalogo/esploraCatalogo');
         exit;
     }
     $categorie = FCategoria::loadAll() ?? [];
@@ -32,19 +32,19 @@ public function mostraFormOpera(): void {
 
 /**
  * Processa il form e salva la nuova opera nel DB.
- * Risponde all'URL: /Gallerist/gestioneProfiloPortfolio/salvaOpera
+ * Risponde all'URL: /gestioneProfiloPortfolio/salvaOpera
  */
 public function salvaOpera(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
     $artista = $sessione->getValore('utente_loggato');
     if ($artista->getRuolo() !== EUtente::RUOLO_ARTISTA) {
-        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        header('Location: /catalogo/esploraCatalogo');
         exit;
     }
 
@@ -102,7 +102,7 @@ $opera = new EOpera(
 
     // Gestione upload immagini
     if (isset($_FILES['immagini_opera']) && !empty($_FILES['immagini_opera']['name'][0])) {
-        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/opere/';
+        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/opere/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
@@ -132,37 +132,37 @@ $opera = new EOpera(
         }
     }
 
-    header('Location: /Gallerist/utente/profilo?opera=aggiunta');
+    header('Location: /utente/profilo?opera=aggiunta');
     exit;
 }
 /**
  * Elimina un'opera dal portfolio dell'artista.
- * Risponde all'URL: /Gallerist/gestioneProfiloPortfolio/eliminaOpera
+ * Risponde all'URL: /gestioneProfiloPortfolio/eliminaOpera
  */
 public function eliminaOpera(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
     $artista = $sessione->getValore('utente_loggato');
     if ($artista->getRuolo() !== EUtente::RUOLO_ARTISTA) {
-        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        header('Location: /catalogo/esploraCatalogo');
         exit;
     }
 
     $idOpera = (int)($_POST['id_opera'] ?? 0);
     if ($idOpera === 0) {
-        header('Location: /Gallerist/utente/profilo');
+        header('Location: /utente/profilo');
         exit;
     }
 
     // Verifica che l'opera appartenga all'artista loggato
     $opera = FPersistentManager::load('EOpera', 'id', $idOpera);
     if (!$opera instanceof EOpera || $opera->getArtista()->getId() !== $artista->getId()) {
-        header('Location: /Gallerist/utente/profilo');
+        header('Location: /utente/profilo');
         exit;
     }
 
@@ -175,29 +175,29 @@ public function eliminaOpera(): void {
     $eliminata = FPersistentManager::delete('EOpera', 'id', $idOpera);
 
     if ($eliminata !== true) {
-        header('Location: /Gallerist/utente/profilo?opera=errore_eliminazione');
+        header('Location: /utente/profilo?opera=errore_eliminazione');
         exit;
     }
 
-    header('Location: /Gallerist/utente/profilo?opera=eliminata');
+    header('Location: /utente/profilo?opera=eliminata');
     exit;
 }
 
 /**
  * Elimina il profilo dell'artista.
- * Risponde all'URL: /Gallerist/gestioneProfiloPortfolio/eliminaProfilo
+ * Risponde all'URL: /gestioneProfiloPortfolio/eliminaProfilo
  */
 public function eliminaProfilo(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
     $artista = $sessione->getValore('utente_loggato');
     if ($artista->getRuolo() !== EUtente::RUOLO_ARTISTA) {
-        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        header('Location: /catalogo/esploraCatalogo');
         exit;
     }
 
@@ -210,14 +210,14 @@ public function eliminaProfilo(): void {
     // Distruggi la sessione
     $sessione->distruggi();
 
-    header('Location: /Gallerist/');
+    header('Location: /');
     exit;
 }
 public function rispondiOfferta(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -225,7 +225,7 @@ public function rispondiOfferta(): void {
     $risposta  = trim($_POST['risposta']    ?? '');
 
     if ($idOfferta === 0 || !in_array($risposta, ['accettata', 'rifiutata'])) {
-        header('Location: /Gallerist/utente/profilo');
+        header('Location: /utente/profilo');
         exit;
     }
 
@@ -270,7 +270,7 @@ public function rispondiOfferta(): void {
     }
 }
 
-    header('Location: /Gallerist/utente/profilo');
+    header('Location: /utente/profilo');
     exit;
 }
 }

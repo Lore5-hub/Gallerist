@@ -2,7 +2,7 @@
 
 class CUtente 
 {
-    // Questo è il metodo chiamato dall'URL /Gallerist/utente/login
+    // Questo è il metodo chiamato dall'URL /utente/login
     public function login() 
     {
         
@@ -10,7 +10,7 @@ class CUtente
         $vUtente->mostraFormLogin();
     }
 
-    // Questo sarà il metodo chiamato dall'URL /Gallerist/utente/registrazione
+    // Questo sarà il metodo chiamato dall'URL /utente/registrazione
     public function registrazione() 
     {
         $vUtente = new VUtente();
@@ -77,9 +77,9 @@ class CUtente
                 
                 // ✨ FIX: Controlliamo il ruolo usando la stringa esatta dell'ENUM del DB ('Amministratore')
                 if ($utente->getRuolo() === 'Amministratore') {
-                    header('Location: /Gallerist/Admin/dashboard');
+                    header('Location: /Admin/dashboard');
                 } else {
-                    header('Location: /Gallerist/catalogo/esploraCatalogo');
+                    header('Location: /catalogo/esploraCatalogo');
                 }
                 exit; 
                 
@@ -201,7 +201,7 @@ class CUtente
 
                     $nuovoNomeFile = md5(time() . $fileName) . '.' . $fileExtension;
 
-                    $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/profilo/';
+                    $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/profilo/';
 
                    
 
@@ -217,7 +217,7 @@ class CUtente
 
                     if (move_uploaded_file($fileTmpPath, $destPath)) {
 
-                        $immagineProfilo = '/Gallerist/uploads/profilo/' . $nuovoNomeFile;
+                        $immagineProfilo = '/uploads/profilo/' . $nuovoNomeFile;
 
                     }
 
@@ -235,7 +235,7 @@ if (isset($_FILES['documento_identita']) && $_FILES['documento_identita']['error
     $estensioniPermesse = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
     if (in_array($fileExtension, $estensioniPermesse)) {
         $nuovoNomeFile = md5(time() . $fileName) . '.' . $fileExtension;
-        $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/documenti/';
+        $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/documenti/';
 
         if (!is_dir($uploadFileDir)) {
             mkdir($uploadFileDir, 0755, true);
@@ -269,7 +269,7 @@ if (isset($_FILES['portfolio']) && $_FILES['portfolio']['error'] === UPLOAD_ERR_
     $estensioniPermesse = ['pdf', 'zip'];
     if (in_array($fileExtension, $estensioniPermesse)) {
         $nuovoNomeFile = md5(time() . $fileName) . '.' . $fileExtension;
-        $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/portfolio/';
+        $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/portfolio/';
 
         if (!is_dir($uploadFileDir)) {
             mkdir($uploadFileDir, 0755, true);
@@ -404,14 +404,14 @@ $nuovoArtista->setPortfolio($portfolio);
     }
 /**
  * Mostra il profilo/dashboard dell'artista loggato.
- * Risponde all'URL: /Gallerist/utente/profilo
+ * Risponde all'URL: /utente/profilo
  */
 public function profilo() {
     $sessione = USession::getInstance();
 
     // Solo utenti loggati
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -514,14 +514,14 @@ if ($stato === 'in_vendita') { $pubblicate++; $inVendita++; }
     }}
 public function logout() {
     USession::getInstance()->distruggi();
-    header('Location: /Gallerist/utente/login');
+    header('Location: /utente/login');
     exit;
 }
 public function modificaNickname(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -540,14 +540,14 @@ public function modificaNickname(): void {
         $sessione->setValue('utente_loggato', $utente);
     }
 
-    header('Location: /Gallerist/utente/profilo');
+    header('Location: /utente/profilo');
     exit;
 }
 public function modificaBiografia(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -566,14 +566,14 @@ public function modificaBiografia(): void {
         $sessione->setValue('utente_loggato', $utente);
     }
 
-    header('Location: /Gallerist/utente/profilo');
+    header('Location: /utente/profilo');
     exit;
 }
 public function cambiaFotoProfilo(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
@@ -587,7 +587,7 @@ public function cambiaFotoProfilo(): void {
         $estensioniPermesse = ['jpg', 'jpeg', 'png', 'webp'];
         if (in_array($fileExtension, $estensioniPermesse)) {
             $nuovoNomeFile = md5(time() . $fileName) . '.' . $fileExtension;
-            $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallerist/uploads/profilo/';
+            $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/profilo/';
 
             if (!is_dir($uploadFileDir)) {
                 mkdir($uploadFileDir, 0755, true);
@@ -595,7 +595,7 @@ public function cambiaFotoProfilo(): void {
 
             $destPath = $uploadFileDir . $nuovoNomeFile;
             if (move_uploaded_file($fileTmpPath, $destPath)) {
-                $nuovoPath = '/Gallerist/uploads/profilo/' . $nuovoNomeFile;
+                $nuovoPath = '/uploads/profilo/' . $nuovoNomeFile;
 
                 // Aggiorna nel DB
                 $db = FDataBase::getInstance();
@@ -611,20 +611,20 @@ public function cambiaFotoProfilo(): void {
         }
     }
 
-    header('Location: /Gallerist/utente/profilo');
+    header('Location: /utente/profilo');
     exit;
 }
 public function storicoVendite(): void {
     $sessione = USession::getInstance();
 
     if (!$sessione->esisteValore('utente_loggato')) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 
     $artista = $sessione->getValore('utente_loggato');
     if ($artista->getRuolo() !== EUtente::RUOLO_ARTISTA) {
-        header('Location: /Gallerist/catalogo/esploraCatalogo');
+        header('Location: /catalogo/esploraCatalogo');
         exit;
     }
     $periodo = $_GET['periodo'] ?? 'all';
@@ -729,7 +729,7 @@ $statistiche['dati_categorie']   = $datiCategorie;
 }
 /**
  * Mostra il form per il recupero password.
- * Risponde all'URL: /Gallerist/utente/recuperoPassword
+ * Risponde all'URL: /utente/recuperoPassword
  */
 public function recuperoPassword(): void {
     $vUtente = new VUtente();
@@ -738,7 +738,7 @@ public function recuperoPassword(): void {
 
 /**
  * Invia il link di reset via email.
- * Risponde all'URL: /Gallerist/utente/inviaLinkReset
+ * Risponde all'URL: /utente/inviaLinkReset
  */
 public function inviaLinkReset(): void {
     $email = trim($_POST['email'] ?? '');
@@ -766,7 +766,7 @@ public function inviaLinkReset(): void {
             [':email' => $email, ':token' => $token, ':scadenza' => $scadenza]
         );
 
-        $linkReset = "http://localhost/Gallerist/utente/resetPassword?token=" . $token;
+        $linkReset = "https://gallerist.infinityfree.io/utente/resetPassword?token=" . $token;
         UEmail::inviaEmailRecuperoPassword($email, $linkReset);
     }
 
@@ -776,14 +776,14 @@ public function inviaLinkReset(): void {
 
 /**
  * Mostra il form per inserire la nuova password.
- * Risponde all'URL: /Gallerist/utente/resetPassword?token=xxx
+ * Risponde all'URL: /utente/resetPassword?token=xxx
  */
 public function resetPassword(): void {
     $token   = trim($_GET['token'] ?? '');
     $vUtente = new VUtente();
 
     if (empty($token)) {
-        header('Location: /Gallerist/utente/login');
+        header('Location: /utente/login');
         exit;
     }
 

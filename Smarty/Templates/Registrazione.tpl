@@ -42,7 +42,7 @@
     </div>
 {/if}
 
-              <form method="POST" action="/Gallerist/utente/verificaRegistrazione" enctype="multipart/form-data">          
+              <form method="POST" action="/utente/verificaRegistrazione" enctype="multipart/form-data">          
                  
                 <div class="field mb-5">
                   <label class="label has-text-dark">Tipo di Account <span class="has-text-danger">*</span></label>
@@ -220,7 +220,7 @@
                 <div class="has-text-centered mt-4">
                   <p class="has-text-grey">
                     Hai già un account? 
-                    <a href="/Gallerist/utente/login" class="has-text-link has-text-weight-bold">Accedi qui</a>
+                    <a href="/utente/login" class="has-text-link has-text-weight-bold">Accedi qui</a>
                   </p>
                 </div>
 
@@ -235,5 +235,5 @@
   </div>
 </section>
 
-<script src="/Gallerist/js/registrazione.js"></script>
+<script src="/js/registrazione.js"></script>
 {/block}

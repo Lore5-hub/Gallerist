@@ -35,7 +35,7 @@
               <p class="subtitle is-6 has-text-grey">Inserisci le tue credenziali per accedere</p>
             </div>
 
-            <form method="POST" action="/Gallerist/Utente/verifica">
+            <form method="POST" action="/Utente/verifica">
               
               <div class="field">
                 <label class="label has-text-dark">Email</label>
@@ -70,11 +70,11 @@
             <div class="has-text-centered">
               <p class="is-size-6">
                 Sei nuovo qui? 
-                <a href="/Gallerist/utente/registrazione" class="has-text-info has-text-weight-bold">Registrati ora</a>
+                <a href="/utente/registrazione" class="has-text-info has-text-weight-bold">Registrati ora</a>
               </p>
             </div>
             <div class="has-text-right mt-2 mb-4">
-    <a href="/Gallerist/utente/recuperoPassword" class="is-size-7 has-text-grey">
+    <a href="/utente/recuperoPassword" class="is-size-7 has-text-grey">
         Password dimenticata?
     </a>
 </div>

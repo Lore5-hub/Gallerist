@@ -1,1 +1,0 @@
-<?php define('COOKIE_EXP_TIME', 3600); $GLOBALS['database'] = 'gallerist'; $GLOBALS['username'] = 'root'; $GLOBALS['password'] = ''; ?>

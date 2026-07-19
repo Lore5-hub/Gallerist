@@ -1,0 +1,50 @@
+Registrazione (UC1)
+registrazione()
+verificaRegistrazione()
+verifica()
+logout()
+recuperoPassword()
+inviaLinkReset()
+resetPassword()
+
+Catalogo (UC2)
+homepage()
+esploraCatalogo()
+filtraCatalogo()
+visualizzaDettagliOpera()
+visualizzaProfiloArtista()
+
+Compravendita (UC3)
+avviaAcquisto()
+confermaAcquisto()
+avviaPropostaOfferta()
+
+GestioneInterazioni
+inserisciCommento()
+inviaRecensione()
+SegnalaUtente()
+ScegliPerCategoria()
+
+GestioneProfiloPortfolio
+gestisciPortfolio() (o profilo)
+inserisciOpera()
+vendiOpera()
+inserisciReplica()
+rimuoviOpera() (o profilo)
+
+ConsultazioneStoricoVendite
+VisualizzaStorico()
+RichiediAnalisi()
+
+Gestione piattaforma 
+Getlistaartisti () 
+Verificaartista (IDartista, note)
+Getsegnalizioni ()
+Archiviosegnalazione (segnalazioneID)
+Restrizioni (utenteID, tipoban, duratta, comentoadmin, segnalazioneID)
+
+Statistiche Piattaforma
+inizializzaDashboardStatistiche ()
+impostaPeriodoTempo (dataInizio, dataFine)
+recuperaEAggregaStatistiche ()
+generaGraficiVisivi ()

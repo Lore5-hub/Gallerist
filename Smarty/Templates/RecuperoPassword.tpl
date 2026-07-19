@@ -25,7 +25,7 @@
                             </div>
                         {/if}
 
-                        <form method="POST" action="/Gallerist/utente/inviaLinkReset">
+                        <form method="POST" action="/utente/inviaLinkReset">
                             <div class="field">
                                 <label class="label">Email</label>
                                 <div class="control has-icons-left">
@@ -45,7 +45,7 @@
 
                         <hr class="mt-5 mb-4">
                         <div class="has-text-centered">
-                            <a href="/Gallerist/utente/login" class="has-text-info">
+                            <a href="/utente/login" class="has-text-info">
                                 Torna al login
                             </a>
                         </div>

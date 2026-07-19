@@ -138,7 +138,7 @@ $view->mostraSchedaDettaglio($opera, $altreOpere, false, $prezzoConvertito, $val
     if ($sessione->esisteValore('utente_loggato')) {
         $utente = $sessione->getValore('utente_loggato');
         if ($utente->getId() === $idArtista) {
-            header('Location: /Gallerist/utente/profilo');
+            header('Location: /utente/profilo');
             exit;
         }
     }

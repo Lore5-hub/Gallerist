@@ -4,7 +4,7 @@
     <span class="icon mr-2"><i class="fas fa-exclamation-triangle"></i></span>Invia una Segnalazione
   </h4>
   
-  <form method="POST" action="/Gallerist/gestioneInterazioni/inviaSegnalazione">
+  <form method="POST" action="/gestioneInterazioni/inviaSegnalazione">
   <input type="hidden" name="id_segnalato" value="{$utente->getId()}">
     
     <input type="hidden" name="tipo_segnalazione" value="Profilo">

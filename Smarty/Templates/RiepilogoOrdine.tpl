@@ -1,6 +1,6 @@
 {extends file='layout.tpl'}
 {block name=content}
-<form method="POST" action="/Gallerist/compravendita/confermaAcquisto/{$opera->getId()}">
+<form method="POST" action="/compravendita/confermaAcquisto/{$opera->getId()}">
 
   <div class="columns is-variable is-6 mt-4">
     
@@ -23,7 +23,7 @@
               {if $copertina}
                 <img src="data:{$copertina.type};base64,{$copertina.pic64}" alt="Immagine dell'opera" class="checkout-artwork-img">
               {else}
-                <img src="/Gallerist/img/default_opera.png" alt="Immagine dell'opera" class="checkout-artwork-img">
+                <img src="/img/default_opera.png" alt="Immagine dell'opera" class="checkout-artwork-img">
               {/if}
             </p>
           </figure>

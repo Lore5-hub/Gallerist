@@ -1,0 +1,130 @@
+1.	Utente non registrato
+UC1: Registrazione account
+Questo caso d'uso copre la funzionalità in cui un utente non registrato crea un profilo.
+o	Precondizione: L'utente non è loggato e si trova nella homepage o nella pagina di login.
+
+o	Scenario principale di successo:
+o	1a. L'utente chiede al sistema di potersi registrare cliccando sull'apposito pulsante (es. "Registrati").
+o	1b. Il sistema mostra un form per l'inserimento dei dati e la scelta del ruolo ("Utente registrato" o "Artista").
+o	2a. L'utente inserisce i propri dati: nome, cognome, data di nascita, indirizzo, nickname, telefono, email, password; seleziona il ruolo di "Utente registrato" e invia il form di registrazione.
+o	2b. Il sistema valida i dati inseriti, crea il nuovo account utente, effettua il login automatico e reindirizza l'utente alla homepage mostrando un messaggio di successo, inviando una mail di avvenuta registrazione.
+o	Registrazione come Artista (flusso alt.):
+o	3a. L'utente inserisce i propri dati, seleziona il ruolo di "Artista" e invia il form inserendo: nome, cognome, data di nascita, indirizzo, nickname, telefono, email, password, biografia, stile artistico dichiarato, portfolio opere, foto documento di riconoscimento.
+o	3b. Il sistema salva i dati, crea il profilo con lo stato "In attesa di validazione", avvisa l'utente tramite un messaggio a schermo che l'account necessita di verifica da parte dell'amministratore e invia una notifica al sistema di amministrazione.
+
+o	Postcondizioni: Il sistema ha registrato un nuovo account (attivo se utente standard, in sospeso se artista).
+
+UC2: Esplorazione e Visualizzazione Catalogo
+
+Questo caso d'uso copre le funzionalità di ricerca, applicazione filtri e consultazione delle opere d'arte.
+•	Precondizione: Il sistema è funzionante e il database contiene opere d'arte e profili di artisti pubblicati. (L'utente può essere loggato o non loggato)
+
+•	Scenario principale di successo:
+o	1a. L'utente chiede al sistema di visualizzare il catalogo o esplorare le opere mediante il click sul pulsante ”Esplora catalogo”, trovandosi nella home page in cui vede categorie, barra di ricerca e opere popolari.
+o	1b. Il sistema mostra la pagina di esplorazione contenente una barra di ricerca, i filtri (es. per categoria), i criteri di ordinamento (es. data di caricamento) e una griglia iniziale di opere.
+o	2a. L'utente, può inserire una parola chiave, può applicare filtri, può selezionare una specifica categoria e sceglie di ordinare i risultati in base a ciò che preferisce. I risultati sono delle card caratterizzate da: copertina, titolo, autore, dimensione e prezzo.
+o	2b. Il sistema elabora la richiesta, filtra il database e visualizza le opere corrispondenti ordinate secondo il criterio specificato dall'utente.
+o	3a. L'utente clicca su un'opera specifica dall'elenco per vederne i dettagli quali: titolo, artista, categoria, dimensione, prezzo, descrizione, valutazione media, commenti ad esso associati (che comprende nickname, foto profilo, descrizione commento facoltativa, valutazione dell’opera), altre opere dell’artista(con relativa copertina, titolo, prezzo e dimensione).
+o	3b. Il sistema apre la pagina dell'opera mostrando l'immagine, il titolo, il profilo dell'artista, i commenti testuali lasciati dagli altri utenti e la valutazione media espressa in stelle.
+
+•	Postcondizioni: L'utente ha visualizzato con successo le opere e le relative informazioni di dettaglio; il sistema rimane in attesa di una nuova azione.
+
+2. Utente Registrato 
+UC3: Compravendita Opera d'Arte
+
+Questo caso d'uso descrive il processo di acquisto di un'opera o la proposta di un'offerta alternativa.
+•	Precondizione: L'utente ha effettuato il login e sta visualizzando la pagina di dettaglio di un'opera contrassegnata come "in vendita" dall'artista.
+
+•	Scenario principale di successo:
+o	1a. L'utente chiede al sistema di acquistare l'opera accettando il prezzo fissato dall'artista cliccando sul tasto acquista.
+o	1b. Il sistema mostra il riepilogo dell'ordine e richiede la conferma del pagamento.
+o	2a. L'utente conferma l'acquisto, specificando il metodo di pagamento, e visualizzando totale dell’articolo, l’indirizzo di spedizione (con nome, cognome e indirizzo) e il prezzo della spedizione. I dati personali per la spedizione vengono presi direttamente dai dati del profilo, eventualmente modificabili.
+o	2b. Il sistema registra la transazione, aggiorna lo stato dell'opera, invia una notifica all'artista e mostra una conferma all'utente.
+•	Proposta di Offerta (flusso alt.):
+o	3a. L'utente chiede al sistema di inviare una proposta di acquisto alternativa, cliccando sul tasto fai un’offerta.
+o	3b. Il sistema mostra un modulo per l'inserimento della cifra proposta.
+o	4a. L'utente inserisce il prezzo che vuole offrire, con eventualmente una nota (facoltativa), e conferma l'invio.
+o	4b. Il sistema inoltra la proposta all'artista per la valutazione e conferma l'invio all'utente.
+
+•	Postcondizioni: Il sistema ha registrato l'acquisto o la proposta di acquisto nelle informazioni associate agli utenti coinvolti.
+
+UC4: Gestione Interazioni (Recensioni e Segnalazioni)
+Questo caso d'uso copre la gestione del feedback sulle opere e la sicurezza della piattaforma.
+•	Precondizione: L'utente ha effettuato il login e si trova sulla pagina di un'opera o sul profilo di un altro utente.
+
+•	Scenario principale di successo (Inserimento Recensione):
+o	1a. L'utente chiede al sistema di inserire un commento su un'opera.
+o	1b. Il sistema mostra un modulo per l'inserimento del testo e la selezione di una valutazione da 1 a 5 stelle.
+o	2a. L'utente scrive il commento, seleziona il numero di stelle e conferma l'invio, nel commento verranno inseriti anche la sua immagine profilo e il suo nickname.
+o	2b. Il sistema pubblica il commento sotto l'opera, aggiorna la valutazione media dell'artista e notifica l'autore dell'opera.
+•	Segnalazione Utente (flusso alt.):
+o	3a. L'utente chiede al sistema di segnalare un altro utente per comportamenti scorretti, cliccando sull’apposito tasto sul profilo.
+o	3b. Il sistema mostra un modulo per specificare il motivo della segnalazione.
+o	4a. L'utente sceglie per categoria di segnalazione, scegliendo all’interno della categoria il caso specifica che si applica per il suo caso e invia la segnalazione, con eventuale nota facoltativa.
+o	4b. Il sistema registra la segnalazione nel pannello di moderazione dell'amministratore e conferma la ricezione all'utente.
+
+•	Postcondizioni: Il sistema ha pubblicato il nuovo contenuto o registrato la segnalazione per l'analisi da parte dell'amministratore.
+
+3. Artista:
+UC5: Gestione Profilo e Portfolio Artistico
+Questo caso d'uso accorpa la pubblicazione delle opere, la descrizione dello stile e la gestione della vendita.
+•	Precondizione: l'utente deve aver effettuato il login come "Artista".
+
+•	Scenario principale di successo:
+o	1a. L'artista chiede al sistema di gestire il proprio portfolio o profilo.
+o	1b. Il sistema mostra l'interfaccia di gestione con le opere già caricate e i dati del profilo.
+o	2a. L'artista preme il tasto per inserire una nuova opera, aggiungendo: titolo, anno di realizzazione, tecnica, dimensioni (larghezza, altezza, profondità e unità di misura), descrizione, categoria, tag (opzionale), 4 immagini (tra cui la prima come copertina), opzione per la vendita con eventuale prezzo di vendita.
+o	2b. Il sistema salva le modifiche e chiede all'artista se desidera mettere l'opera in vendita.
+o	3a. L'artista sceglie attivamente di mettere in vendita l'opera e accetta/imposta il prezzo.
+o	3b. Il sistema pubblica l'opera nel catalogo con lo stato "In vendita" e aggiorna il profilo pubblico dell'artista.
+•	Gestione delle recensioni (flusso alt.):
+o	4a. l'artista seleziona un commento ricevuto e inserisce una replica. 
+o	4b. Il sistema pubblica la risposta sotto l'opera.
+o	5a. l'artista seleziona un'opera o l'intero profilo per la rimozione.
+o	5b. Il sistema elimina i dati e conferma l'operazione.
+
+•	Postcondizioni: il sistema ha aggiornato il portfolio e le informazioni del profilo, rendendoli visibili agli altri utenti.
+
+UC6: Consultazione Storico Vendite
+Questo caso d'uso descrive l'attività di monitoraggio economico delle proprie transazioni.
+•	Precondizione: l'utente ha effettuato il login come "Artista" e ha effettuato almeno una vendita sulla piattaforma.
+
+•	Scenario principale di successo:
+o	1a. L'artista chiede al sistema di visualizzare lo storico delle vendite.
+o	1b. Il sistema recupera i dati delle transazioni associate all'artista.
+o	2a. L'artista richiede l'analisi delle entrate per un determinato periodo, selezionando il periodo attraverso l’apposito pulsante calendario.
+o	2b. Il sistema genera e visualizza grafici e dati statistici relativi alle vendite e alle entrate monitorate.
+
+•	Postcondizioni: l'artista ha ottenuto una panoramica chiara delle proprie entrate tramite l'analisi dei dati forniti dal sistema.
+Amministratore:
+UC7: Moderazione e Gestione Piattaforma
+Questo caso d'uso accorpa le attività di amministrazione, validazione degli utenti e controllo dei contenuti segnalati o inappropriati.
+•	Precondizione: L'utente ha effettuato il login al sistema con i privilegi di Amministratore e si trova nel pannello di controllo.
+
+•	Scenario principale di successo (Validazione Artisti e Categorie):
+o	1a. L'amministratore chiede al sistema di gestire i nuovi profili in attesa di verifica o di gestire le categorie degli artisti.
+o	1b. Il sistema mostra la lista delle registrazioni degli artisti da validare e le categorie attualmente presenti.
+o	2a. L'amministratore seleziona il profilo di un nuovo artista (cliccando sull’apposito tasto “verifica”), ne verifica i dati e conferma la validazione della registrazione, inserendo eventuali note amministrative.
+o	2b. Il sistema aggiorna lo stato dell'account dell'artista in "Attivo", invia una notifica all'interessato e aggiorna la lista nel pannello di controllo.
+•	Moderazione Contenuti e Ban (flusso alt.):
+o	3a. L'amministratore chiede al sistema di gestire le segnalazioni pervenute (premendo sul pulsante che raffigura un occhio) o analizzare i commenti degli utenti.
+o	3b. Il sistema mostra la dashboard con l'elenco dei contenuti segnalati e i relativi dettagli.
+o	4a. L'amministratore rileva un comportamento scorretto o inappropriato e può sceglie di non applicare provvedimenti oppure decide di bannare l’utente specificando il tipo di ban, la durata e la nota amministrativa (opzionale). Infine può rimuovere il contenuto avvisando l’utente di ciò e conclude l’operazione cliccando sul tasto specifico.
+o	4b. Il sistema cancella i commenti selezionati, disabilita l'accesso all'account dell'utente bannato e aggiorna lo stato delle segnalazioni gestite.
+
+•	Postcondizioni: Il sistema ha aggiornato i profili (validandoli o bloccandoli) e ha rimosso i contenuti non conformi, modificando lo stato generale del database.
+
+UC8: Analisi Statistiche Piattaforma
+Questo caso d'uso descrive il processo tramite cui l'amministratore monitora l'andamento dell'applicazione e le interazioni dell'utenza.
+•	Precondizione: L'amministratore ha effettuato il login ed è all'interno della propria dashboard statistica.
+
+•	Scenario principale di successo:
+o	1a. L'amministratore chiede al sistema di effettuare l'analisi delle statistiche della piattaforma.
+o	1b. Il sistema mostra un'interfaccia che permette di selezionare un determinato periodo di tempo.
+o	2a. L'amministratore imposta il periodo di tempo desiderato, con l’apposito tasto che permette di selezionare con un calendario il periodo da analizzare e avvia la ricerca.
+o	2b. Il sistema aggrega i dati del periodo richiesto e mostra a schermo le interazioni che ci sono state con il sito, utilizzando dati e grafici dedicati. Nello specifico, il sistema visualizza il monitoraggio del numero di visite al sito da parte degli utenti e il quantitativo di nuove registrazioni effettuate.
+•	Postcondizioni: L'amministratore ha analizzato i dati statistici richiesti; il sistema resta in attesa di nuovi filtri o di navigazione verso altre aree del pannello.
+
+
+
+
